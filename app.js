@@ -226,7 +226,6 @@ function onItemPicked (data) {
 	console.log("item picked");
 
 	io.emit('itemremove', object);
-	this.emit('item_picked');
 }
 
 function playerKilled (player) {
