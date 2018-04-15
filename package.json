@@ -1,5 +1,5 @@
 {
-  "name": "Pirate ship battle",
+  "name": "PirateShipBattle",
   "version": "0.1.0",
   "description": "Online multiplayer game about pirates for USPGameDev",
   "main": "index.js",
@@ -12,7 +12,8 @@
     "socket.io": "^2.0.3"
   },
   "scripts": {
-    "start": "node app.js"
+    "start": "node app.js",
+    "serve": "npx nodemon app.js"
   },
   "engines": {
     "node": "4.1.x"
