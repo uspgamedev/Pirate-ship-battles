@@ -5,14 +5,13 @@ var player;
 class Player {
 	constructor(scene, x, y, username) {
 		var style = {fill: "black"};
-		this.text = scene.add.text(x, y - 50, username, style);
-		this.body = scene.physics.add.image(x, y, "ball");
-		this.text.setOrigin(0.5);
+		var text = scene.add.text(0, -50, username, style);
+		var body = scene.add.image(0, 0, "ball");
+		text.setOrigin(0.5);
+		this.body = scene.add.container(x, y, [body, text]);
 	}
 
 	move(x, y) {
-		this.text.x = x;
-		this.text.y = y - 50;
 		this.body.x = x;
 		this.body.y = y;
 	}
