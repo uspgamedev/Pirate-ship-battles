@@ -86,6 +86,9 @@ class Main extends Phaser.Scene {
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+		this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
+									gameProperties.gameHeight);
 	}
 
 	update() {

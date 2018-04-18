@@ -82,7 +82,7 @@ function heartbeat () {
 
 //create n number of foods to the game
 function addfood(n) {
-	for (var i = 0; i < n; i++) {
+	for (var i = 0; i < n/2; i++) {
 		//create the unique id using node-uuid
 		var unique_id = unique.v4();
 		var foodentity = new Item(game_instance.canvas_width,

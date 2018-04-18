@@ -4,11 +4,10 @@ var player;
 
 class Player {
 	constructor(scene, x, y, username) {
-		var style = {fill: "black"};
-		var text = scene.add.text(0, -50, username, style);
-		var body = scene.add.image(0, 0, "ball");
+		var text = scene.add.text(0, -50, username, {fill: "black"});
+		var image = scene.add.image(0, 0, "ball");
 		text.setOrigin(0.5);
-		this.body = scene.add.container(x, y, [body, text]);
+		this.body = scene.add.container(x, y, [image, text]);
 	}
 
 	move(x, y) {
@@ -28,14 +27,14 @@ class Enemy {
 
 function createPlayer(data) {
 	player = new Player(this, data.x, data.y, data.username);
+	this.cameras.main.startFollow(player.body);
 
 	// TODO: Add collisions
 	// TODO: Make camera follow the player
 }
 
 function createEnemy (data) {
-	var new_enemy = new Enemy(this, data.id, data.x, data.y);
-	enemies[data.id] = new_enemy;
+	enemies[data.id] = new Enemy(this, data.id, data.x, data.y);
 }
 
 function player_coll (body, bodyB, shapeA, shapeB, equation) {
