@@ -7,7 +7,8 @@ var config = {
 	physics: {
 		default: 'arcade',
 		arcade: {
-			gravity: 0
+			gravity: 0,
+			debug: true // TODO: Remove this at main branch
 		}
 	},
     backgroundColor: "#AFF7F0",

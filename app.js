@@ -180,7 +180,7 @@ function onPlayerCollision (data) {
 	if (movePlayer.dead || enemyPlayer.dead)
 		return;
 
-	if (movePlayer.size == enemyPlayer)
+	if (movePlayer.size == enemyPlayer.size)
 		return;
 
 	//the main player size is less than the enemy size

@@ -41,22 +41,16 @@ function onEnemyMove(data) {
 }
 
 function onGained (data) {
-	player.body_size = data.new_size;
-	var new_scale = data.new_size/player.initial_size;
-	player.scale.set(new_scale);
-	player.body.clearShapes();
-	player.body.addCircle(player.body_size, 0 , 0);
-	player.body.data.shapes[0].sensor = true;
+	player.scale = data.new_size;
 }
 
 function onKilled (data) {
-	player.destroy();
+	player.body.destroy();
 }
 
 class Main extends Phaser.Scene {
 
 	constructor() {
-		// TODO: Create camera
 		super({key: "Main"});
 	}
 
@@ -89,6 +83,7 @@ class Main extends Phaser.Scene {
 
 		this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
 									gameProperties.gameHeight);
+
 	}
 
 	update() {
@@ -105,5 +100,9 @@ class Main extends Phaser.Scene {
 			if (v[0] != 0 || v[1] != 0)
 				socket.emit('input_fired', v);
 		}
+	}
+
+	colide(event) {
+		console.log(event);
 	}
 }
