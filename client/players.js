@@ -4,12 +4,14 @@ var player;
 
 class Player {
 	constructor(scene, x, y, username) {
-		var text = scene.add.text(32, -15, username, {fill: "black"});
-		var image = scene.add.image(0, 0, "ball");
-		text.setOrigin(0.5);
-		image.setOrigin(0);
-		this.body = scene.add.container(x, y, [image, text]);
-		this.scale = 0;
+		this.text = scene.add.text(x, y - 45, username, {fill: "black"});
+		this.body = scene.add.image(x, y, "player");
+		this.text.setOrigin(0.5);
+		this.body.setOrigin(0.5);
+		// var text = scene.add.text(32, -15, username, {fill: "black"});
+		// var image = scene.add.image(0, 0, "star");
+		// this.body = scene.add.container(x, y, [image, text]);
+		this.size = 0;
 		scene.physics.world.enable(this.body);
 		//this.body.body.setCollideWorldBounds(true);
 	}
@@ -17,6 +19,13 @@ class Player {
 	move(x, y) {
 		this.body.x = x;
 		this.body.y = y;
+		this.text.x = x;
+		this.text.y = y - 45;
+	}
+
+	destroy() {
+		this.body.destroy();
+		this.text.destroy();
 	}
 };
 

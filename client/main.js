@@ -41,11 +41,11 @@ function onEnemyMove(data) {
 }
 
 function onGained (data) {
-	player.scale = data.new_size;
+	player.size = data.new_size;
 }
 
 function onKilled (data) {
-	player.body.destroy();
+	player.destroy();
 }
 
 class Main extends Phaser.Scene {
@@ -55,7 +55,7 @@ class Main extends Phaser.Scene {
 	}
 
 	preload() {
-		this.load.image("ball", "client/assets/ball.png");
+		this.load.image("player", "client/assets/player.png");
 		this.load.image("star", "client/assets/star.png");
 		this.load.image("enemy", "client/assets/enemy.png");
     }
