@@ -23,9 +23,13 @@ function onItemUpdate (data) {
 // function called when food needs to be removed at the client.
 function onItemRemove (data) {
 
-	if (!(data.id in food_pickup))
+	if (!(data.id in food_pickup)) {
+		console.log("Could not find item to remove");
 		return;
+	}
 
+	console.log("Removed: ");
+	console.log(data);
 	//destroy the phaser object
 	food_pickup[data.id].item.destroy();
 

@@ -68,11 +68,9 @@ function player_coll (body, bodyB, shapeA, shapeB, equation) {
 }
 
 function fight(player, enemy) {
-	console.log("YAYAY");
 	socket.emit("player_collision", {id: enemy.par_obj.id});
 }
 
 function pickup_food(player, food) {
-	console.log("YAY");
 	socket.emit("item_picked", {id: food.par_obj.id});
 }

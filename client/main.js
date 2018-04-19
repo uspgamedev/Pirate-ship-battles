@@ -4,7 +4,7 @@ var gameProperties = {
 	gameHeight: 4000,
 	game_elemnt: "gameDiv",
 	in_game: false,
-};
+}
 
 function onSocketConnected (data) {
 	console.log("connected to server");
@@ -73,7 +73,7 @@ class Main extends Phaser.Scene {
 		socket.on('input_recieved', onInputRecieved);
 		socket.on('killed', onKilled);
 		socket.on('gained', onGained);
-		socket.on ('itemremove', onItemRemove);
+		socket.on('itemremove', onItemRemove);
 		socket.on('item_update', onItemUpdate.bind(this));
 
 		this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);

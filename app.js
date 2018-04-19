@@ -17,24 +17,24 @@ serv.listen({
 });
 console.log("Server started.");
 
-var player_lst = {};
-
 //needed for physics update
-var startTime = (new Date).getTime();
-var lastTime;
-var timeStep = 1/70;
+// var startTime = (new Date).getTime();
+// var lastTime;
+// var timeStep = 1/70;
 
 // create a new game instance
-var game_instance = {
-	//The constant number of foods in the game
-	food_num: 100,
-	//food object list
-	food_pickup: {},
-	//size of food list
+var game = {
+	// List of players in the game
+	player_list: {},
+	// Food object list
+	food_list: {},
+	// The max number of foods in the game
+	food_max: 100,
+	// Size of the food list
 	food_len: 0,
-	//game size height
+	// Game height
 	canvas_height: 4000,
-	//game size width
+	// Game width
 	canvas_width: 4000
 }
 
@@ -60,48 +60,38 @@ class Item {
 		this.y = getRndInteger(10, max_y - 10);
 		this.type = type;
 		this.id = id;
-		this.powerup;
+		this.powerup = 0;
 	}
 }
 
+// Returns a random integer between min and max
 function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
-//We call physics handler 60fps.
-setInterval(heartbeat, 1000/60);
-
-function heartbeat () {
-	//the number of food that needs to be generated
-	//in this demo, we keep the food always at 100
-	var food_generatenum = game_instance.food_num - game_instance.food_len;
-
-	//add the food
-	addfood(food_generatenum);
-}
-
-//create n number of foods to the game
-function addfood(n) {
-	for (var i = 0; i < n/2; i++) {
-		//create the unique id using node-uuid
-		var unique_id = unique.v4();
-		var foodentity = new Item(game_instance.canvas_width,
-								  game_instance.canvas_height,
+// Create the foods there are missing at the game
+function addFood() {
+	var n = game.food_max - game.food_len;
+	for (var i = 0; i < n; i++) {
+		var unique_id = unique.v4(); // Creates a unique id
+		var foodentity = new Item(game.canvas_width, game.canvas_height,
 								  'food', unique_id);
-		game_instance.food_pickup[unique_id] = foodentity;
-		//set the food data back to client
+		game.food_list[unique_id] = foodentity;
 		io.emit("item_update", foodentity);
+		game.food_len++;
+		console.log("Item added " + game.food_len + "/" + game.food_max);
 	}
-	game_instance.food_len += n;
 }
 
+// Called after the player entered its name
 function onEntername (data) {
 	this.emit('join_game', {username: data.username, id: this.id});
 }
 
+// Called when a new player connects to the server
 function onNewPlayer (data) {
-	var newPlayer = new Player(data.x, data.y, data.angle,
-							   this.id, data.username);
+	var newPlayer = new Player(data.x, data.y, data.angle, this.id,
+							   data.username);
 
 	console.log("created new player with id " + this.id);
 
@@ -115,8 +105,8 @@ function onNewPlayer (data) {
 		size: newPlayer.size
 	};
 
-	for (let k in player_lst) {
-		existingPlayer = player_lst[k];
+	for (let k in game.player_list) {
+		existingPlayer = game.player_list[k];
 		var player_info = {
 			id: existingPlayer.id,
 			username: existingPlayer.username,
@@ -129,17 +119,18 @@ function onNewPlayer (data) {
 		this.emit("new_enemyPlayer", player_info);
 	}
 
-	for (let k in game_instance.food_pickup)
-		this.emit('item_update', game_instance.food_pickup[k]);
+	for (let k in game.food_list)
+		this.emit('item_update', game.food_list[k]);
 
 	//send message to every connected client except the sender
 	this.broadcast.emit('new_enemyPlayer', current_info);
 
-	player_lst[this.id] = newPlayer;
+	game.player_list[this.id] = newPlayer;
 }
 
+// Called when someone fired an input
 function onInputFired(data) {
-	var movePlayer = player_lst[this.id];
+	var movePlayer = game.player_list[this.id];
 
 	if (movePlayer === undefined || movePlayer.dead || !movePlayer.sendData)
 		return;
@@ -169,13 +160,14 @@ function onInputFired(data) {
 	this.broadcast.emit('enemy_move', movePlayerData);
 }
 
+// Called when players collide
 function onPlayerCollision (data) {
 
-	if (!(this.id in player_lst) || !(data.id in player_lst))
+	if (!(this.id in game.player_list) || !(data.id in game.player_list))
 		return;
 
-	var movePlayer = player_lst[this.id];
-	var enemyPlayer = player_lst[data.id];
+	var movePlayer = game.player_list[this.id];
+	var enemyPlayer = game.player_list[data.id];
 
 	if (movePlayer.dead || enemyPlayer.dead)
 		return;
@@ -206,49 +198,54 @@ function onPlayerCollision (data) {
 	console.log("someone ate someone!!!");
 }
 
+// Called when an item is picked
 function onItemPicked (data) {
-	var movePlayer = player_lst[this.id];
+	var movePlayer = game.player_list[this.id];
 
-	if (!(data.id in game_instance.food_pickup)) {
+	if (!(data.id in game.food_list)) {
 		console.log(data);
 		console.log("could not find object");
+		this.emit("itemremove", { id: data.id });
 		return;
 	}
-	var object = game_instance.food_pickup[data.id];
+	var object = game.food_list[data.id];
 
 	//increase player size
 	movePlayer.size += 3;
 	//broadcast the new size
 	this.emit("gained", {new_size: movePlayer.size});
 
-	delete game_instance.food_pickup[data.id];
-	game_instance.food_len--;
+	delete game.food_list[data.id];
+	game.food_len--;
 	console.log("item picked");
 
 	io.emit('itemremove', object);
+
+	addFood();
 }
 
+// Called when a someone dies
 function playerKilled (player) {
-	if (player.id in player_lst)
-		delete player_lst[player.id];
+	if (player.id in game.player_list)
+		delete game.player_list[player.id];
 
 	player.dead = true;
 }
 
-//call when a client disconnects and tell the clients except sender to remove
-//the disconnected player
+// Called when a client disconnects to tell the clients, except sender, to
+// remove the disconnected player
 function onClientDisconnect() {
 	console.log('disconnect');
 
-	if (this.id in player_lst)
-		delete player_lst[this.id];
+	if (this.id in game.player_list)
+		delete game.player_list[this.id];
 
 	console.log("removing player " + this.id);
 
 	this.broadcast.emit('remove_player', {id: this.id});
 }
 
- // io connection
+// io connection
 var io = require('socket.io')(serv,{});
 
 io.sockets.on('connection', function(socket) {
@@ -263,3 +260,6 @@ io.sockets.on('connection', function(socket) {
 	socket.on("player_collision", onPlayerCollision);
 	socket.on('item_picked', onItemPicked);
 });
+
+// Prepare the foods
+addFood();
