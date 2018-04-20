@@ -22,6 +22,12 @@ console.log("Server started.");
 // var lastTime;
 // var timeStep = 1/70;
 
+const MAX_ACCEL = 30;
+const DRAG_CONST = 0.1;
+const UPDATE_TIME = 0.06;
+const ANGULAR_VEL = 0.5;
+const DRAG_POWER = 1.5;
+
 // create a new game instance
 var game = {
 	// List of players in the game
@@ -45,11 +51,18 @@ class Player {
 		this.username = username;
 		this.x = startX;
 		this.y = startY;
-		this.angle = startAngle;
-		this.speed = 5;
+		this.angle = Math.PI/2;
+		this.speed = 0;
+		this.accel = 0;
+		this.ang_vel = 0;
 		this.sendData = true;
 		this.size = getRndInteger(40, 100);
 		this.dead = false;
+		this.inputs = {
+			up: false,
+			left: false,
+			right: false
+		};
 	}
 }
 
@@ -69,6 +82,24 @@ function getRndInteger(min, max) {
     return Math.floor(Math.random() * (max - min + 1) ) + min;
 }
 
+setInterval(updateGame, 1000*UPDATE_TIME);
+
+function updateGame() {
+	for (var k in game.player_list) {
+		var p = game.player_list[k];
+		p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
+		p.accel += (p.inputs.up)? MAX_ACCEL : 0;
+		p.speed += p.accel*UPDATE_TIME;
+		p.x += Math.sin(p.angle)*p.speed*UPDATE_TIME;
+		p.y -= Math.cos(p.angle)*p.speed*UPDATE_TIME;
+		var ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
+		p.angle += (p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
+		p.angle -= (p.inputs.left)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
+	}
+
+	io.emit("update_game", game.player_list);
+}
+
 // Create the foods there are missing at the game
 function addFood() {
 	var n = game.food_max - game.food_len;
@@ -79,7 +110,6 @@ function addFood() {
 		game.food_list[unique_id] = foodentity;
 		io.emit("item_update", foodentity);
 		game.food_len++;
-		console.log("Item added " + game.food_len + "/" + game.food_max);
 	}
 }
 
@@ -94,6 +124,8 @@ function onNewPlayer (data) {
 							   data.username);
 
 	console.log("created new player with id " + this.id);
+
+	console.log(newPlayer);
 
 	this.emit('create_player', data);
 
@@ -136,28 +168,32 @@ function onInputFired(data) {
 		return;
 
 	//every 20ms, we send the data.
-	setTimeout(function() {movePlayer.sendData = true}, 20);
+	setTimeout(function() {movePlayer.sendData = true}, 60);
 	//we set sendData to false when we send the data.
 	movePlayer.sendData = false;
 
-	movePlayer.x += movePlayer.speed*data[0];
-	movePlayer.y += movePlayer.speed*data[1];
+	//movePlayer.x += movePlayer.speed*data[0];
+	//movePlayer.y += movePlayer.speed*data[1];
 
-	var info = {
-		x: movePlayer.x,
-		y: movePlayer.y
-	};
+	movePlayer.inputs.up = data.up;
+	movePlayer.inputs.left = data.left;
+	movePlayer.inputs.right = data.right;
 
-	this.emit('input_recieved', info);
-
-	var movePlayerData = {
-		id: movePlayer.id,
-		x: movePlayer.x,
-		y: movePlayer.y
-	};
-
-	//send to everyone except sender
-	this.broadcast.emit('enemy_move', movePlayerData);
+	// var info = {
+	// 	x: movePlayer.x,
+	// 	y: movePlayer.y
+	// };
+	//
+	// this.emit('input_recieved', info);
+	//
+	// var movePlayerData = {
+	// 	id: movePlayer.id,
+	// 	x: movePlayer.x,
+	// 	y: movePlayer.y
+	// };
+	//
+	// //send to everyone except sender
+	// this.broadcast.emit('enemy_move', movePlayerData);
 }
 
 // Called when players collide

@@ -2,25 +2,29 @@
 var enemies = {};
 var player;
 
+const LABEL_DIFF = 45;
+
 class Player {
 	constructor(scene, x, y, username) {
-		this.text = scene.add.text(x, y - 45, username, {fill: "black"});
-		this.body = scene.add.image(x, y, "player");
+		this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "black"});
+		this.body = scene.physics.add.image(x, y, "player");
 		this.text.setOrigin(0.5);
 		this.body.setOrigin(0.5);
-		// var text = scene.add.text(32, -15, username, {fill: "black"});
-		// var image = scene.add.image(0, 0, "star");
-		// this.body = scene.add.container(x, y, [image, text]);
+		this.body.setCircle(32, -16, 0);
+		// this.body.setSize(32, 32, true);
 		this.size = 0;
 		scene.physics.world.enable(this.body);
 		//this.body.body.setCollideWorldBounds(true);
+		this.body.angle = 90;
 	}
 
-	move(x, y) {
-		this.body.x = x;
-		this.body.y = y;
-		this.text.x = x;
-		this.text.y = y - 45;
+	update(data) {
+		this.body.x = data.x;
+		this.body.y = data.y;
+		this.text.x = data.x;
+		this.text.y = data.y - LABEL_DIFF;
+		this.body.setVelocity(Math.sin(data.angle)*data.speed, -Math.cos(data.angle)*data.speed);
+		this.body.angle = data.angle*180/Math.PI;
 	}
 
 	destroy() {
@@ -32,9 +36,20 @@ class Player {
 class Enemy {
 	constructor(scene, id, startx, starty) {
 		this.id = id;
-		this.body = scene.add.image(startx, starty, "enemy");
+		this.body = scene.physics.add.image(startx, starty, "enemy");
+		this.body.setOrigin(0.5);
+		this.body.setCircle(32, -16, 0);
 		scene.physics.world.enable(this.body);
 		this.body.par_obj = this; // Just to associate this id with the image
+	}
+
+	update(data) {
+		this.body.x = data.x;
+		this.body.y = data.y;
+		//this.text.x = data.x;
+		//this.text.y = data.y - LABEL_DIFF;
+		this.body.setVelocity(Math.sin(data.angle)*data.speed, -Math.cos(data.angle)*data.speed);
+		this.body.angle = data.angle*180/Math.PI;
 	}
 };
 

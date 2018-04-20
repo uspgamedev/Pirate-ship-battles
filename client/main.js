@@ -25,10 +25,6 @@ function onRemovePlayer (data) {
 	delete enemies[data.id];
 }
 
-function onInputRecieved(data) {
-	player.move(data.x, data.y);
-}
-
 function onEnemyMove(data) {
 	if (!(data.id in enemies)) {
 		return;
@@ -46,6 +42,15 @@ function onGained (data) {
 
 function onKilled (data) {
 	player.destroy();
+}
+
+function onUpdate(data) {
+	for (var k in data) {
+		if (k in enemies)
+			enemies[k].update(data[k]);
+		else
+			player.update(data[k]);
+	}
 }
 
 class Main extends Phaser.Scene {
@@ -70,11 +75,11 @@ class Main extends Phaser.Scene {
 		socket.on("new_enemyPlayer", createEnemy.bind(this));
 		socket.on("enemy_move", onEnemyMove);
 		socket.on('remove_player', onRemovePlayer);
-		socket.on('input_recieved', onInputRecieved);
 		socket.on('killed', onKilled);
 		socket.on('gained', onGained);
 		socket.on('itemremove', onItemRemove);
 		socket.on('item_update', onItemUpdate.bind(this));
+		socket.on('update_game', onUpdate);
 
 		this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -86,20 +91,16 @@ class Main extends Phaser.Scene {
 
 	}
 
-	update() {
+	update(dt) {
 		if (gameProperties.in_game) {
-			var v = [0, 0];
-			if (this.key_W.isDown)
-				v[1] -= 1;
-	        if (this.key_A.isDown)
-				v[0] -= 1;
-	        if (this.key_S.isDown)
-				v[1] += 1;
-	        if (this.key_D.isDown)
-				v[0] += 1;
-			if (v[0] != 0 || v[1] != 0)
-				socket.emit('input_fired', v);
+			var data = {
+				up: this.key_W.isDown,
+				left: this.key_A.isDown,
+				right: this.key_D.isDown
+			}
+			socket.emit('input_fired', data);
 		}
+		//console.log(dt);
 	}
 
 	colide(event) {
