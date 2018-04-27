@@ -56,7 +56,6 @@ class Player {
 		this.accel = 0;
 		this.ang_vel = 0;
 		this.sendData = true;
-		this.size = getRndInteger(40, 100);
 		this.dead = false;
 		this.inputs = {
 			up: false,
@@ -134,7 +133,6 @@ function onNewPlayer (data) {
 		x: newPlayer.x,
 		y: newPlayer.y,
 		angle: newPlayer.angle,
-		size: newPlayer.size
 	};
 
 	for (let k in game.player_list) {
@@ -145,7 +143,6 @@ function onNewPlayer (data) {
 			x: existingPlayer.x,
 			y: existingPlayer.y,
 			angle: existingPlayer.angle,
-			size: existingPlayer.size
 		};
 		console.log("pushing player");
 		this.emit("new_enemyPlayer", player_info);
@@ -207,31 +204,6 @@ function onPlayerCollision (data) {
 
 	if (movePlayer.dead || enemyPlayer.dead)
 		return;
-
-	if (movePlayer.size == enemyPlayer.size)
-		return;
-
-	//the main player size is less than the enemy size
-	else if (movePlayer.size < enemyPlayer.size) {
-		var gained_size = movePlayer.size / 2;
-		enemyPlayer.size += gained_size;
-		this.emit("killed");
-		//provide the new size the enemy will become
-		this.broadcast.emit('remove_player', {id: this.id});
-		this.broadcast.to(data.id).emit("gained", {new_size: enemyPlayer.size});
-		playerKilled(movePlayer);
-	} else {
-		var gained_size = enemyPlayer.size / 2;
-		movePlayer.size += gained_size;
-		this.emit('remove_player', {id: enemyPlayer.id});
-		this.emit("gained", {new_size: movePlayer.size});
-		this.broadcast.to(data.id).emit("killed");
-		//send to everyone except sender.
-		this.broadcast.emit('remove_player', {id: enemyPlayer.id});
-		playerKilled(enemyPlayer);
-	}
-
-	console.log("someone ate someone!!!");
 }
 
 // Called when an item is picked
@@ -245,11 +217,6 @@ function onItemPicked (data) {
 		return;
 	}
 	var object = game.food_list[data.id];
-
-	//increase player size
-	movePlayer.size += 3;
-	//broadcast the new size
-	this.emit("gained", {new_size: movePlayer.size});
 
 	delete game.food_list[data.id];
 	game.food_len--;

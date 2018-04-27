@@ -12,7 +12,6 @@ class Player {
 		this.body.setOrigin(0.5);
 		this.body.setCircle(32, -16, 0);
 		// this.body.setSize(32, 32, true);
-		this.size = 0;
 		scene.physics.world.enable(this.body);
 		//this.body.body.setCollideWorldBounds(true);
 		this.body.angle = 90;

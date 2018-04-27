@@ -1,4 +1,3 @@
-
 var gameProperties = {
 	gameWidth: 4000,
 	gameHeight: 4000,
@@ -34,10 +33,6 @@ function onEnemyMove(data) {
 
 	movePlayer.body.x = data.x;
 	movePlayer.body.y = data.y;
-}
-
-function onGained (data) {
-	player.size = data.new_size;
 }
 
 function onKilled (data) {
@@ -76,7 +71,6 @@ class Main extends Phaser.Scene {
 		socket.on("enemy_move", onEnemyMove);
 		socket.on('remove_player', onRemovePlayer);
 		socket.on('killed', onKilled);
-		socket.on('gained', onGained);
 		socket.on('itemremove', onItemRemove);
 		socket.on('item_update', onItemUpdate.bind(this));
 		socket.on('update_game', onUpdate);
