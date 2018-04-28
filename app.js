@@ -32,12 +32,12 @@ const DRAG_POWER = 1.5;
 var game = {
 	// List of players in the game
 	player_list: {},
-	// Food object list
-	food_list: {},
-	// The max number of foods in the game
-	food_max: 100,
-	// Size of the food list
-	food_len: 0,
+	// bullet object list
+	bullet_list: {},
+	// The max number of bullets in the game
+	bullet_max: 100,
+	// Size of the bullet list
+	bullet_len: 0,
 	// Game height
 	canvas_height: 4000,
 	// Game width
@@ -99,16 +99,16 @@ function updateGame() {
 	io.emit("update_game", game.player_list);
 }
 
-// Create the foods there are missing at the game
-function addFood() {
-	var n = game.food_max - game.food_len;
+// Create the bullets there are missing at the game
+function addBullet() {
+	var n = game.bullet_max - game.bullet_len;
 	for (var i = 0; i < n; i++) {
 		var unique_id = unique.v4(); // Creates a unique id
-		var foodentity = new Item(game.canvas_width, game.canvas_height,
-								  'food', unique_id);
-		game.food_list[unique_id] = foodentity;
-		io.emit("item_update", foodentity);
-		game.food_len++;
+		var bulletentity = new Item(game.canvas_width, game.canvas_height,
+								  'bullet', unique_id);
+		game.bullet_list[unique_id] = bulletentity;
+		io.emit("item_update", bulletentity);
+		game.bullet_len++;
 	}
 }
 
@@ -148,8 +148,8 @@ function onNewPlayer (data) {
 		this.emit("new_enemyPlayer", player_info);
 	}
 
-	for (let k in game.food_list)
-		this.emit('item_update', game.food_list[k]);
+	for (let k in game.bullet_list)
+		this.emit('item_update', game.bullet_list[k]);
 
 	//send message to every connected client except the sender
 	this.broadcast.emit('new_enemyPlayer', current_info);
@@ -210,21 +210,21 @@ function onPlayerCollision (data) {
 function onItemPicked (data) {
 	var movePlayer = game.player_list[this.id];
 
-	if (!(data.id in game.food_list)) {
+	if (!(data.id in game.bullet_list)) {
 		console.log(data);
 		console.log("could not find object");
 		this.emit("itemremove", { id: data.id });
 		return;
 	}
-	var object = game.food_list[data.id];
+	var object = game.bullet_list[data.id];
 
-	delete game.food_list[data.id];
-	game.food_len--;
+	delete game.bullet_list[data.id];
+	game.bullet_len--;
 	console.log("item picked");
 
 	io.emit('itemremove', object);
 
-	addFood();
+	addBullet();
 }
 
 // Called when a someone dies
@@ -239,8 +239,8 @@ function playerKilled (player) {
 // remove the disconnected player
 function onClientDisconnect() {
 	console.log('disconnect');
-
 	if (this.id in game.player_list)
+    
 		delete game.player_list[this.id];
 
 	console.log("removing player " + this.id);
@@ -264,5 +264,5 @@ io.sockets.on('connection', function(socket) {
 	socket.on('item_picked', onItemPicked);
 });
 
-// Prepare the foods
-addFood();
+// Prepare the bullets
+addBullet();

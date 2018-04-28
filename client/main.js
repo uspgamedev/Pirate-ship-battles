@@ -56,7 +56,7 @@ class Main extends Phaser.Scene {
 
 	preload() {
 		this.load.image("player", "client/assets/player.png");
-		this.load.image("star", "client/assets/star.png");
+		this.load.image("bullet", "client/assets/cannon_ball.png");
 		this.load.image("enemy", "client/assets/enemy.png");
     }
 

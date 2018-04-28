@@ -75,8 +75,8 @@ function player_coll (body, bodyB, shapeA, shapeB, equation) {
 	if (type == "player_body") {
 		//send the player collision
 		socket.emit('player_collision', {id: key});
-	} else if (type == "food_body") {
-		console.log("items food");
+	} else if (type == "bullet_body") {
+		console.log("items bullet");
 		socket.emit('item_picked', {id: key});
 	}
 }
@@ -85,6 +85,6 @@ function fight(player, enemy) {
 	socket.emit("player_collision", {id: enemy.par_obj.id});
 }
 
-function pickup_food(player, food) {
-	socket.emit("item_picked", {id: food.par_obj.id});
+function pickup_bullet(player, bullet) {
+	socket.emit("item_picked", {id: bullet.par_obj.id});
 }
