@@ -6,8 +6,10 @@ class Bullet {
 	constructor(scene, id, type, startx, starty) {
         this.sizeX = 8; this.sizeY = 8;
 		this.id = id;
-		this.item = scene.add.image(startx, starty, "bullet").setDisplaySize(this.sizeX, this.sizeY);
-		scene.physics.world.enable(this.item.setSize(this.sizeX, this.sizeY));
+		this.item = scene.add.image(startx, starty, "bullet");
+        this.item.setDisplaySize(this.sizeX, this.sizeY);
+        this.item.setSize(this.sizeX, this.sizeY);
+		scene.physics.world.enable(this.item);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 };

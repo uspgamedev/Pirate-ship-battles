@@ -62,17 +62,19 @@ class Player {
 			left: false,
 			right: false
 		};
+        this.nextCannon = 0;
+        this.leftCannons = [0, 0, 0];
+        this.rightCannons = [0, 0, 0];
 	}
 }
 
 // Item class inside the server
 class Item {
 	constructor(max_x, max_y, type, id) {
-		this.x = getRndInteger(10, max_x - 10);
+        this.x = getRndInteger(10, max_x - 10);
 		this.y = getRndInteger(10, max_y - 10);
 		this.type = type;
 		this.id = id;
-		this.powerup = 0;
 	}
 }
 
@@ -218,6 +220,14 @@ function onItemPicked (data) {
 	}
 	var object = game.bullet_list[data.id];
 
+    if (movePlayer.nextCannon%2 == 0) { // The next cannon is in the right side
+        movePlayer.rightCannons[parseInt(movePlayer.nextCannon/2)]++;
+    }
+    else { // The next cannon is in the left side
+        movePlayer.leftCannons[parseInt(movePlayer.nextCannon/2)]++;
+    }
+    movePlayer.nextCannon = (movePlayer.nextCannon + 1)%6;
+
 	delete game.bullet_list[data.id];
 	game.bullet_len--;
 	console.log("item picked");
@@ -240,7 +250,7 @@ function playerKilled (player) {
 function onClientDisconnect() {
 	console.log('disconnect');
 	if (this.id in game.player_list)
-    
+
 		delete game.player_list[this.id];
 
 	console.log("removing player " + this.id);
