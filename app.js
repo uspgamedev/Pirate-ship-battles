@@ -32,12 +32,12 @@ const DRAG_POWER = 1.5;
 var game = {
 	// List of players in the game
 	player_list: {},
-	// bullet object list
-	bullet_list: {},
-	// The max number of bullets in the game
-	bullet_max: 100,
-	// Size of the bullet list
-	bullet_len: 0,
+	// boxes object list
+	boxes_list: {},
+	// The max number of pickable boxes in the game
+	boxes_max: 100,
+	// Size of the boxes list
+	boxes_len: 0,
 	// Game height
 	canvas_height: 4000,
 	// Game width
@@ -57,22 +57,21 @@ class Player {
 		this.ang_vel = 0;
 		this.sendData = true;
 		this.dead = false;
-		this.inputs = {
+        this.bullets = 0;
+        this.inputs = {
 			up: false,
 			left: false,
 			right: false
 		};
-        this.nextCannon = 0;
-        this.leftCannons = [0, 0, 0];
-        this.rightCannons = [0, 0, 0];
 	}
 }
 
 // Item class inside the server
 class Item {
 	constructor(max_x, max_y, type, id) {
-        this.x = getRndInteger(10, max_x - 10);
-		this.y = getRndInteger(10, max_y - 10);
+        this.x = getRndInteger(100, max_x - 100);
+		this.y = getRndInteger(100, max_y - 100);
+        this.bullets = getRndInteger(1, 10);
 		this.type = type;
 		this.id = id;
 	}
@@ -101,16 +100,16 @@ function updateGame() {
 	io.emit("update_game", game.player_list);
 }
 
-// Create the bullets there are missing at the game
-function addBullet() {
-	var n = game.bullet_max - game.bullet_len;
+// Create the pickable boxes there are missing at the game
+function addBox() {
+	var n = game.boxes_max - game.boxes_len;
 	for (var i = 0; i < n; i++) {
 		var unique_id = unique.v4(); // Creates a unique id
-		var bulletentity = new Item(game.canvas_width, game.canvas_height,
-								  'bullet', unique_id);
-		game.bullet_list[unique_id] = bulletentity;
-		io.emit("item_update", bulletentity);
-		game.bullet_len++;
+		var boxentity = new Item(game.canvas_width, game.canvas_height,
+								 'box', unique_id);
+		game.boxes_list[unique_id] = boxentity;
+		io.emit("item_update", boxentity); // MAYBE CHANGE THE FUNCTION DEPENDING OF WHAT I DO ON ITEM.JS
+		game.boxes_len++;
 	}
 }
 
@@ -150,8 +149,8 @@ function onNewPlayer (data) {
 		this.emit("new_enemyPlayer", player_info);
 	}
 
-	for (let k in game.bullet_list)
-		this.emit('item_update', game.bullet_list[k]);
+	for (let k in game.boxes_list)
+		this.emit('item_update', game.boxes_list[k]);
 
 	//send message to every connected client except the sender
 	this.broadcast.emit('new_enemyPlayer', current_info);
@@ -212,29 +211,23 @@ function onPlayerCollision (data) {
 function onItemPicked (data) {
 	var movePlayer = game.player_list[this.id];
 
-	if (!(data.id in game.bullet_list)) {
+	if (!(data.id in game.boxes_list)) {
 		console.log(data);
 		console.log("could not find object");
 		this.emit("itemremove", { id: data.id });
 		return;
 	}
-	var object = game.bullet_list[data.id];
+	var object = game.boxes_list[data.id];
 
-    if (movePlayer.nextCannon%2 == 0) { // The next cannon is in the right side
-        movePlayer.rightCannons[parseInt(movePlayer.nextCannon/2)]++;
-    }
-    else { // The next cannon is in the left side
-        movePlayer.leftCannons[parseInt(movePlayer.nextCannon/2)]++;
-    }
-    movePlayer.nextCannon = (movePlayer.nextCannon + 1)%6;
+    movePlayer.bullets += object.bullets;
 
-	delete game.bullet_list[data.id];
-	game.bullet_len--;
+	delete game.boxes_list[data.id];
+	game.boxes_len--;
 	console.log("item picked");
 
 	io.emit('itemremove', object);
 
-	addBullet();
+	addBox();
 }
 
 // Called when a someone dies
@@ -274,5 +267,5 @@ io.sockets.on('connection', function(socket) {
 	socket.on('item_picked', onItemPicked);
 });
 
-// Prepare the bullets
-addBullet();
+// Prepare the boxes
+addBox();
