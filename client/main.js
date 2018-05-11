@@ -81,6 +81,9 @@ class Main extends Phaser.Scene {
         this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
         this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
+        this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+
 		this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
 									gameProperties.gameHeight);
 
@@ -91,7 +94,9 @@ class Main extends Phaser.Scene {
 			var data = {
 				up: this.key_W.isDown,
 				left: this.key_A.isDown,
-				right: this.key_D.isDown
+				right: this.key_D.isDown,
+				shootLeft: Phaser.Input.Keyboard.JustDown(this.key_J),
+				shootRight: Phaser.Input.Keyboard.JustDown(this.key_K)
 			}
 			socket.emit('input_fired', data);
 		}

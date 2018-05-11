@@ -61,7 +61,9 @@ class Player {
         this.inputs = {
 			up: false,
 			left: false,
-			right: false
+			right: false,
+			shootLeft: false,
+			shootRight: false
 		};
 	}
 }
@@ -95,6 +97,13 @@ function updateGame() {
 		var ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
 		p.angle += (p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
 		p.angle -= (p.inputs.left)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
+
+		if (p.inputs.shootLeft) {
+			console.log("Shoot Left");
+		}
+		if (p.inputs.shootRight) {
+			console.log("Shoot Right");
+		}
 	}
 
 	io.emit("update_game", game.player_list);
@@ -172,10 +181,11 @@ function onInputFired(data) {
 
 	//movePlayer.x += movePlayer.speed*data[0];
 	//movePlayer.y += movePlayer.speed*data[1];
-
 	movePlayer.inputs.up = data.up;
 	movePlayer.inputs.left = data.left;
 	movePlayer.inputs.right = data.right;
+	movePlayer.inputs.shootLeft = data.shootLeft;
+	movePlayer.inputs.shootRight = data.shootRight;
 
 	// var info = {
 	// 	x: movePlayer.x,
