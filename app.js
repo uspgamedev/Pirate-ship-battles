@@ -1,4 +1,4 @@
-var express = require('express');
+const express = require('express');
 //get the node-uuid package for creating unique id
 var unique = require('node-uuid');
 
@@ -6,7 +6,7 @@ var app = express();
 var serv = require('http').Server(app);
 
 app.get('/',function(req, res) {
-	res.sendFile(__dirname + '/client/index.html');
+	res.sendFile(__dirname + '/index.html');
 });
 app.use('/client',express.static(__dirname + '/client'));
 
@@ -42,7 +42,7 @@ var game = {
 	canvas_height: 4000,
 	// Game width
 	canvas_width: 4000
-}
+};
 
 // Player class inside the server
 class Player {

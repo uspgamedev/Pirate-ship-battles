@@ -1,39 +1,31 @@
-<!doctype html> 
+<!doctype html>
 <html lang = "en">
 	<head>
-	
-		<meta charset = "UTF-8">
-		<meta name="viewport" content="initial-scale=1 maximum-scale=1 user-scalable=0 minimal-ui" />
-		<title>Game</title> 
-		
-		<link href='https://fonts.googleapis.com/css?family=Roboto:300,400,500,700' rel='stylesheet' type='text/css'>
-		<link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+		<link rel="stylesheet" type="text/css" href="client/css/style.css" />
 
 	</head>
 	<body>
-	
 		<div id = "signDiv">
-			<div class="app">
-				<div class="content">
-					<div class="button">
-					  <div class="sign-up">ENTER</div>
-					  <form class="hidden form">
-						<input id ="signdiv-username" type="text" placeholder="Username"/>
-					  </form>
-					  <button id = "entername" class="hidden"><span class="text">PLAY</span></button>
-					</div>
-				</div>
-			</div>
+		  <div class="sign-up">Enter your name:</div>
+			<input id="signdivusername" type="text" placeholder="Username"/>
+		  <button id="entername" class="hidden"><span class="text">PLAY</span></button>
 		</div>
-	
+		<script>
+			var a = function(e) {
+				if (e.keyCode == 13)
+					document.getElementById('entername').click();
+			}
+			document.getElementById('signdivusername').onkeypress = a
+		</script>
 		<div id="gameDiv">
 		</div>
-	
-	</body>
 
-	<script src="client/lib/phaser.js"></script>
-	<script src="/socket.io/socket.io.js"></script>
-	
-	<script>
-	</script>
+		<script src="client/lib/phaser.js"></script>
+		<script src="/socket.io/socket.io.js"></script>
+		<script src="client/players.js"></script>
+		<script src="client/item.js"></script>
+		<script src="client/login.js"></script>
+		<script src="client/main.js"></script>
+		<script src="client/game.js"></script>
+	</body>
 </html>
