@@ -39,13 +39,20 @@ function onKilled (data) {
 	player.destroy();
 }
 
+/**
+ * Process data received from the server
+ * @param {{player_list: {},bullets_list: []}} data
+ */
 function onUpdate(data) {
-	for (var k in data) {
+	for (const k in data.player_list) {
 		if (k in enemies)
-			enemies[k].update(data[k]);
+			enemies[k].update(data.player_list[k]);
 		else
-			player.update(data[k]);
+			player.update(data.player_list[k]);
 	}
+	for (const bullet of data.bullets_list) {
+		console.log(bullet); // TODO show bullets in the screen
+    }
 }
 
 class Main extends Phaser.Scene {
