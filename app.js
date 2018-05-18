@@ -1,6 +1,6 @@
 const express = require('express');
-//get the node-uuid package for creating unique id
 const unique = require('node-uuid');
+const SAT = require('sat');
 
 let app = express();
 let serv = require('http').Server(app);
@@ -27,6 +27,8 @@ const DRAG_CONST = 0.1;
 const UPDATE_TIME = 0.06;
 const ANGULAR_VEL = 0.5;
 const DRAG_POWER = 1.5;
+
+var counter = 0;
 
 // create a new game instance
 var game = {
@@ -58,6 +60,18 @@ class Player {
 		this.sendData = true;
 		this.dead = false;
         this.bullets = 0;
+		this.poly = new SAT.Polygon(new SAT.Vector(startX, startY), [
+			new SAT.Vector(-32, -8),
+			new SAT.Vector(-16, -15),
+			new SAT.Vector(7, -15),
+			new SAT.Vector(21, -11),
+			new SAT.Vector(31, -3),
+			new SAT.Vector(31, 2),
+			new SAT.Vector(21, 10),
+			new SAT.Vector(7, 14),
+			new SAT.Vector(-16, 14),
+			new SAT.Vector(-32, 7)
+		]);
         this.inputs = {
 			up: false,
 			left: false,
@@ -65,6 +79,18 @@ class Player {
 			shootLeft: false,
 			shootRight: false
 		};
+	}
+
+	addAngle(angle) {
+		this.angle += angle;
+		this.poly.setAngle(this.angle-Math.PI/2);
+	}
+
+	addPos(x, y) {
+		this.x += x;
+		this.y += y;
+		this.poly.pos.x = this.x;
+		this.poly.pos.y = this.y;
 	}
 }
 
@@ -76,6 +102,12 @@ class Item {
         this.bullets = getRndInteger(1, 10);
 		this.type = type;
 		this.id = id;
+		this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
+			new SAT.Vector(-8, -8),
+			new SAT.Vector(-8, 8),
+			new SAT.Vector(8, 8),
+			new SAT.Vector(8, -8)
+		]);
 	}
 }
 
@@ -88,15 +120,16 @@ setInterval(updateGame, 1000*UPDATE_TIME);
 
 function updateGame() {
 	for (let k in game.player_list) {
+		if (!(k in game.player_list))
+			continue;
 		let p = game.player_list[k];
 		p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
 		p.accel += (p.inputs.up)? MAX_ACCEL : 0;
 		p.speed += p.accel*UPDATE_TIME;
-		p.x += Math.sin(p.angle)*p.speed*UPDATE_TIME;
-		p.y -= Math.cos(p.angle)*p.speed*UPDATE_TIME;
+		p.addPos(Math.sin(p.angle)*p.speed*UPDATE_TIME, -Math.cos(p.angle)*p.speed*UPDATE_TIME);
 		let ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
-		p.angle += (p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
-		p.angle -= (p.inputs.left)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
+		p.addAngle((p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0);
+		p.addAngle((p.inputs.left)? -ratio*ANGULAR_VEL*UPDATE_TIME : 0);
 
 		if (p.inputs.shootLeft) {
 			console.log("Shoot Left");
@@ -104,6 +137,14 @@ function updateGame() {
 		if (p.inputs.shootRight) {
 			console.log("Shoot Right");
 		}
+	}
+
+	for (let k1 in game.player_list) {
+		let p1 = game.player_list[k1];
+		for (let k2 in game.player_list)
+			collidePlayers(p1, game.player_list[k2]);
+		for (let kb in game.boxes_list)
+			collidePlayerAndBox(p1, game.boxes_list[kb])
 	}
 
 	io.emit("update_game", game.player_list);
@@ -187,39 +228,40 @@ function onInputFired(data) {
 }
 
 // Called when players collide
-function onPlayerCollision (data) {
-
-	if (!(this.id in game.player_list) || !(data.id in game.player_list))
+function collidePlayers (p1, p2) {
+	if (!(p2.id in game.player_list) || !(p1.id in game.player_list)
+		|| p1.id == p2.id || p1.dead || p2.dead)
 		return;
-
-	var movePlayer = game.player_list[this.id];
-	var enemyPlayer = game.player_list[data.id];
-
-	if (movePlayer.dead || enemyPlayer.dead)
-		return;
+	if (SAT.testPolygonPolygon(p1.poly, p2.poly)) {
+		console.log(`${counter}: ${p1.username} collided with ${p2.username}`);
+		counter++;
+	}
 }
 
 // Called when an item is picked
-function onItemPicked (data) {
-	let movePlayer = game.player_list[this.id];
+function collidePlayerAndBox (p1, bx) {
 
-	if (!(data.id in game.boxes_list)) {
+	if (!(bx.id in game.boxes_list)) {
 		console.log(data);
 		console.log("could not find object");
 		this.emit("itemremove", { id: data.id });
 		return;
 	}
-	let object = game.boxes_list[data.id];
 
-    movePlayer.bullets += object.bullets;
+	if (!(p1.id in game.player_list))
+		return;
 
-	delete game.boxes_list[data.id];
-	game.boxes_len--;
-	console.log("item picked");
+	if (SAT.testPolygonPolygon(p1.poly, bx.poly)) {
+		p1.bullets += bx.bullets;
 
-	io.emit('itemremove', object);
+		delete game.boxes_list[bx.id];
+		game.boxes_len--;
+		console.log("item picked");
 
-	addBox();
+		io.emit('itemremove', bx);
+
+		addBox();
+	}
 }
 
 // Called when a someone dies
@@ -255,8 +297,8 @@ io.sockets.on('connection', function(socket) {
 	socket.on('disconnect', onClientDisconnect);
 	socket.on("new_player", onNewPlayer);
 	socket.on("input_fired", onInputFired);
-	socket.on("player_collision", onPlayerCollision);
-	socket.on('item_picked', onItemPicked);
+	//socket.on("player_collision", onPlayerCollision);
+	//socket.on('item_picked', onItemPicked);
 });
 
 // Prepare the boxes

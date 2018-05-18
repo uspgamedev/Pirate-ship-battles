@@ -24,7 +24,6 @@ class Box {
 		this.item = scene.add.image(startx, starty, "box");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
         this.item.setSize(this.sizeX, this.sizeY);
-		scene.physics.world.enable(this.item);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 };
@@ -33,7 +32,6 @@ class Box {
 function onItemUpdate (data) {
 	var new_box = new Box(this, data.id, data.type, data.x, data.y);
 	box_pickup[data.id] = new_box;
-	this.physics.add.collider(player.body, new_box.item, pickup_box, null, this);
 }
 
 // function called when box needs to be removed at the client.

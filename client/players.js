@@ -10,10 +10,7 @@ class Player {
 		this.body = scene.physics.add.image(x, y, "player");
 		this.text.setOrigin(0.5);
 		this.body.setOrigin(0.5);
-		this.body.setCircle(32, -16, 0);
-		// this.body.setSize(32, 32, true);
-		scene.physics.world.enable(this.body);
-		//this.body.body.setCollideWorldBounds(true);
+		this.body.setCircle(1, 16, 32);
 		this.body.angle = 90;
 	}
 
@@ -37,8 +34,7 @@ class Enemy {
 		this.id = id;
 		this.body = scene.physics.add.image(startx, starty, "enemy");
 		this.body.setOrigin(0.5);
-		this.body.setCircle(32, -16, 0);
-		scene.physics.world.enable(this.body);
+		this.body.setCircle(1, 16, 32);
 		this.body.par_obj = this; // Just to associate this id with the image
 	}
 
@@ -60,7 +56,6 @@ function createPlayer(data) {
 function createEnemy (data) {
 	var new_enemy = new Enemy(this, data.id, data.x, data.y);
 	enemies[data.id] = new_enemy
-	this.physics.add.collider(player.body, new_enemy.body, fight, null, this);
 
 }
 
