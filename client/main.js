@@ -39,13 +39,20 @@ function onKilled (data) {
 	player.destroy();
 }
 
+/**
+ * Process data received from the server
+ * @param {{player_list: {},bullets_list: []}} data
+ */
 function onUpdate(data) {
-	for (var k in data) {
+	for (const k in data.player_list) {
 		if (k in enemies)
-			enemies[k].update(data[k]);
+			enemies[k].update(data.player_list[k]);
 		else
-			player.update(data[k]);
+			player.update(data.player_list[k]);
 	}
+	for (const bullet of data.bullets_list) {
+		console.log(bullet); // TODO show bullets in the screen
+    }
 }
 
 class Main extends Phaser.Scene {
@@ -74,6 +81,8 @@ class Main extends Phaser.Scene {
 		socket.on('killed', onKilled);
 		socket.on('itemremove', onItemRemove);
 		socket.on('item_update', onItemUpdate.bind(this));
+		socket.on('bullet_remove', onBulletRemove);
+		socket.on('bullet_update', onBulletUpdate.bind(this));
 		socket.on('update_game', onUpdate);
 
 		this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
@@ -95,8 +104,8 @@ class Main extends Phaser.Scene {
 				up: this.key_W.isDown,
 				left: this.key_A.isDown,
 				right: this.key_D.isDown,
-				shootLeft: Phaser.Input.Keyboard.JustDown(this.key_J),
-				shootRight: Phaser.Input.Keyboard.JustDown(this.key_K)
+				shootLeft: this.key_J.isDown,
+				shootRight: this.key_K.isDown
 			}
 			socket.emit('input_fired', data);
 		}

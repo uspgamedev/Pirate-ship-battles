@@ -1,25 +1,29 @@
 //the box list
 var box_pickup = {};
 
-/*
+//bullets list
+var bullets_list = {};
+
 // client bullet class
 class Bullet {
-	constructor(scene, id, type, startx, starty) {
-        this.sizeX = 8; this.sizeY = 8;
+	constructor(scene, id, creator, startx, starty) {
+        this.sizeX = 8;
+		this.sizeY = 8;
+		this.creator = creator;
 		this.id = id;
-		this.item = scene.add.image(startx, starty, "bullet");
+		this.item = scene.physics.add.image(startx, starty, "bullet");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
-        this.item.setSize(this.sizeX, this.sizeY);
-		scene.physics.world.enable(this.item);
+		this.item.setOrigin(0.5);
+		this.item.setCircle(4, 4, 4);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 };
-*/
 
 // client box class
 class Box {
-	constructor(scene, id, type, startx, starty) {
-        this.sizeX = 16; this.sizeY = 16;
+	constructor(scene, id, startx, starty) {
+        this.sizeX = 16;
+		this.sizeY = 16;
 		this.id = id;
 		this.item = scene.add.image(startx, starty, "box");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
@@ -30,7 +34,7 @@ class Box {
 
 // function called when new box is added at the server.
 function onItemUpdate (data) {
-	var new_box = new Box(this, data.id, data.type, data.x, data.y);
+	var new_box = new Box(this, data.id, data.x, data.y);
 	box_pickup[data.id] = new_box;
 }
 
@@ -48,4 +52,26 @@ function onItemRemove (data) {
 	box_pickup[data.id].item.destroy();
 
 	delete box_pickup[data.id];
+}
+
+// function called when new bullet is added at the server.
+function onBulletUpdate (data) {
+	var new_bullet = new Bullet(this, data.id, data.creator, data.x, data.y);
+	bullet_list[data.id] = new_bullet;
+}
+
+// function called when bullet needs to be removed at the client.
+function onBulletRemove (data) {
+
+	if (!(data.id in bullet_list)) {
+		console.log("Could not find bullet to remove");
+		return;
+	}
+
+	console.log("Removed: ");
+	console.log(data);
+	//destroy the phaser object
+	bullet_list[data.id].item.destroy();
+
+	delete bullet_list[data.id];
 }
