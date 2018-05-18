@@ -1,4 +1,4 @@
-var gameProperties = {
+let gameProperties = {
 	gameWidth: 4000,
 	gameHeight: 4000,
 	game_elemnt: "gameDiv",
@@ -8,7 +8,7 @@ var gameProperties = {
 function onSocketConnected (data) {
 	console.log("connected to server");
 	gameProperties.in_game = true;
-	var username = data.username;
+	let username = data.username;
 	socket.emit('new_player', {username: data.username, x: 50, y: 50, angle: 0});
 }
 
@@ -91,7 +91,7 @@ class Main extends Phaser.Scene {
 
 	update(dt) {
 		if (gameProperties.in_game) {
-			var data = {
+			let data = {
 				up: this.key_W.isDown,
 				left: this.key_A.isDown,
 				right: this.key_D.isDown,

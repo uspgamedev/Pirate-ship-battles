@@ -1,14 +1,14 @@
 const express = require('express');
 //get the node-uuid package for creating unique id
-var unique = require('node-uuid');
+const unique = require('node-uuid');
 
-var app = express();
-var serv = require('http').Server(app);
+let app = express();
+let serv = require('http').Server(app);
 
 app.get('/',function(req, res) {
 	res.sendFile(__dirname + '/index.html');
 });
-app.use('/client',express.static(__dirname + '/client'));
+app.use('/client', express.static(__dirname + '/client'));
 
 serv.listen({
 	host: '0.0.0.0',
@@ -87,14 +87,14 @@ function getRndInteger(min, max) {
 setInterval(updateGame, 1000*UPDATE_TIME);
 
 function updateGame() {
-	for (var k in game.player_list) {
-		var p = game.player_list[k];
+	for (let k in game.player_list) {
+		let p = game.player_list[k];
 		p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
 		p.accel += (p.inputs.up)? MAX_ACCEL : 0;
 		p.speed += p.accel*UPDATE_TIME;
 		p.x += Math.sin(p.angle)*p.speed*UPDATE_TIME;
 		p.y -= Math.cos(p.angle)*p.speed*UPDATE_TIME;
-		var ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
+		let ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
 		p.angle += (p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
 		p.angle -= (p.inputs.left)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
 
@@ -111,10 +111,10 @@ function updateGame() {
 
 // Create the pickable boxes there are missing at the game
 function addBox() {
-	var n = game.boxes_max - game.boxes_len;
-	for (var i = 0; i < n; i++) {
-		var unique_id = unique.v4(); // Creates a unique id
-		var boxentity = new Item(game.canvas_width, game.canvas_height,
+	let n = game.boxes_max - game.boxes_len;
+	for (let i = 0; i < n; i++) {
+		let unique_id = unique.v4(); // Creates a unique id
+		let boxentity = new Item(game.canvas_width, game.canvas_height,
 								 'box', unique_id);
 		game.boxes_list[unique_id] = boxentity;
 		io.emit("item_update", boxentity); // MAYBE CHANGE THE FUNCTION DEPENDING OF WHAT I DO ON ITEM.JS
@@ -129,7 +129,7 @@ function onEntername (data) {
 
 // Called when a new player connects to the server
 function onNewPlayer (data) {
-	var newPlayer = new Player(data.x, data.y, data.angle, this.id,
+	let newPlayer = new Player(data.x, data.y, data.angle, this.id,
 							   data.username);
 
 	console.log("created new player with id " + this.id);
@@ -138,7 +138,7 @@ function onNewPlayer (data) {
 
 	this.emit('create_player', data);
 
-	var current_info = {
+	let current_info = {
 		id: newPlayer.id,
 		x: newPlayer.x,
 		y: newPlayer.y,
@@ -147,7 +147,7 @@ function onNewPlayer (data) {
 
 	for (let k in game.player_list) {
 		existingPlayer = game.player_list[k];
-		var player_info = {
+		let player_info = {
 			id: existingPlayer.id,
 			username: existingPlayer.username,
 			x: existingPlayer.x,
@@ -169,7 +169,7 @@ function onNewPlayer (data) {
 
 // Called when someone fired an input
 function onInputFired(data) {
-	var movePlayer = game.player_list[this.id];
+	let movePlayer = game.player_list[this.id];
 
 	if (movePlayer === undefined || movePlayer.dead || !movePlayer.sendData)
 		return;
@@ -179,29 +179,11 @@ function onInputFired(data) {
 	//we set sendData to false when we send the data.
 	movePlayer.sendData = false;
 
-	//movePlayer.x += movePlayer.speed*data[0];
-	//movePlayer.y += movePlayer.speed*data[1];
 	movePlayer.inputs.up = data.up;
 	movePlayer.inputs.left = data.left;
 	movePlayer.inputs.right = data.right;
 	movePlayer.inputs.shootLeft = data.shootLeft;
 	movePlayer.inputs.shootRight = data.shootRight;
-
-	// var info = {
-	// 	x: movePlayer.x,
-	// 	y: movePlayer.y
-	// };
-	//
-	// this.emit('input_recieved', info);
-	//
-	// var movePlayerData = {
-	// 	id: movePlayer.id,
-	// 	x: movePlayer.x,
-	// 	y: movePlayer.y
-	// };
-	//
-	// //send to everyone except sender
-	// this.broadcast.emit('enemy_move', movePlayerData);
 }
 
 // Called when players collide
@@ -219,7 +201,7 @@ function onPlayerCollision (data) {
 
 // Called when an item is picked
 function onItemPicked (data) {
-	var movePlayer = game.player_list[this.id];
+	let movePlayer = game.player_list[this.id];
 
 	if (!(data.id in game.boxes_list)) {
 		console.log(data);
@@ -227,7 +209,7 @@ function onItemPicked (data) {
 		this.emit("itemremove", { id: data.id });
 		return;
 	}
-	var object = game.boxes_list[data.id];
+	let object = game.boxes_list[data.id];
 
     movePlayer.bullets += object.bullets;
 
@@ -262,7 +244,7 @@ function onClientDisconnect() {
 }
 
 // io connection
-var io = require('socket.io')(serv,{});
+let io = require('socket.io')(serv,{});
 
 io.sockets.on('connection', function(socket) {
 	console.log("socket connected");
