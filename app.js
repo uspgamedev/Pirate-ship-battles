@@ -52,10 +52,11 @@ let lastBulletId = 0;
 
 class Bullet {
     constructor(/** Number */ startX, /** Number */ startY, /** Number */ angle,
-                /** Player */ creator) {
+				/** Player ID */ creator, /** Number */ speed) {
         this.x = startX;
         this.y = startY;
         this.angle = angle;
+		this.speed = speed;
         this.creator = creator;
         this.timeCreated = Date.now();
         this.id = ++lastBulletId;
@@ -122,7 +123,8 @@ class Player {
         }
         if (canShoot) {
             console.log('SHOOT');
-            return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1) * Math.PI / 4, this);
+            return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1) * Math.PI / 4,
+							  this.id, 100);
         } else {
             return null;
         }
@@ -196,8 +198,8 @@ function updateGame() {
         // TODO check bullet life and dissapear if too old
 
         // Move bullet
-        bullet.x += Math.sin(bullet.angle) * 100 * UPDATE_TIME;
-        bullet.y += Math.cos(bullet.angle) * 100 * UPDATE_TIME;
+        bullet.x += Math.sin(bullet.angle) * bullet.speed * UPDATE_TIME;
+        bullet.y -= Math.cos(bullet.angle) * bullet.speed * UPDATE_TIME;
 
         // TODO check collision with ships that are not the creator of the bullet
     }

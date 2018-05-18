@@ -6,16 +6,26 @@ var bullets_list = {};
 
 // client bullet class
 class Bullet {
-	constructor(scene, id, creator, startx, starty) {
+	constructor(scene, id, creator, startx, starty, speed) {
         this.sizeX = 8;
 		this.sizeY = 8;
 		this.creator = creator;
 		this.id = id;
+		this.speed = speed;
 		this.item = scene.physics.add.image(startx, starty, "bullet");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
-		this.item.setOrigin(0.5);
-		this.item.setCircle(4, 4, 4);
+		//this.item.setOrigin(0.5);
+		//this.item.setCircle(1, 4, 4);
 		this.item.par_obj = this; // Just to associate this id with the image
+	}
+
+	update(data) {
+		this.item.x = data.x;
+		this.item.y = data.y;
+		this.item.setVelocity(Math.sin(data.angle)*this.speed, -Math.cos(data.angle)*this.speed);
+		this.item.angle = data.angle*180/Math.PI;
+		//console.log(data);
+		//console.log(this.item.x);
 	}
 };
 
@@ -56,8 +66,8 @@ function onItemRemove (data) {
 
 // function called when new bullet is added at the server.
 function onBulletUpdate (data) {
-	var new_bullet = new Bullet(this, data.id, data.creator, data.x, data.y);
-	bullet_list[data.id] = new_bullet;
+	var new_bullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
+	bullets_list[data.id] = new_bullet;
 }
 
 // function called when bullet needs to be removed at the client.

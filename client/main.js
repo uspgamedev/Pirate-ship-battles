@@ -51,7 +51,8 @@ function onUpdate(data) {
 			player.update(data.player_list[k]);
 	}
 	for (const bullet of data.bullets_list) {
-		console.log(bullet); // TODO show bullets in the screen
+		bullets_list[bullet.id].update(bullet);
+		//console.log(bullets_list[bullet.id]); // TODO show bullets in the screen
     }
 }
 
