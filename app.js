@@ -29,7 +29,7 @@ const ANGULAR_VEL = 0.5;
 const DRAG_POWER = 1.5;
 
 // create a new game instance
-var game = {
+const game = {
 	// List of players in the game
 	player_list: {},
 	// boxes object list
@@ -65,7 +65,29 @@ class Player {
 			shootLeft: false,
 			shootRight: false
 		};
+        this.lastShootTimeLeft = 0;
+        this.lastShootTimeRight = 0;
+        this.shootIntervalLeft = 1000; // ms
+        this.shootIntervalRight = 1000; // ms
 	}
+
+    tryToShoot(rightSide) {
+        let canShoot = false; // TODO check ammo here
+        if (rightSide) {
+            if (this.lastShootTimeRight + this.shootIntervalRight  < Date.now()) {
+                canShoot = true;
+                this.lastShootTimeRight = Date.now();
+            }
+        } else {
+            if (this.lastShootTimeLeft + this.shootIntervalLeft < Date.now()) {
+                canShoot = true;
+                this.lastShootTimeLeft = Date.now();
+            }
+        }
+        if (canShoot) {
+            console.log('SHOOT');
+        }
+    }
 }
 
 // Item class inside the server
@@ -88,6 +110,7 @@ setInterval(updateGame, 1000*UPDATE_TIME);
 
 function updateGame() {
 	for (let k in game.player_list) {
+	    /** Player */
 		let p = game.player_list[k];
 		p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
 		p.accel += (p.inputs.up)? MAX_ACCEL : 0;
@@ -99,10 +122,10 @@ function updateGame() {
 		p.angle -= (p.inputs.left)? ratio*ANGULAR_VEL*UPDATE_TIME : 0;
 
 		if (p.inputs.shootLeft) {
-			console.log("Shoot Left");
+            p.tryToShoot(false);
 		}
 		if (p.inputs.shootRight) {
-			console.log("Shoot Right");
+            p.tryToShoot(true);
 		}
 	}
 

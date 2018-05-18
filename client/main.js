@@ -95,8 +95,8 @@ class Main extends Phaser.Scene {
 				up: this.key_W.isDown,
 				left: this.key_A.isDown,
 				right: this.key_D.isDown,
-				shootLeft: Phaser.Input.Keyboard.JustDown(this.key_J),
-				shootRight: Phaser.Input.Keyboard.JustDown(this.key_K)
+				shootLeft: this.key_J.isDown,
+				shootRight: this.key_K.isDown
 			}
 			socket.emit('input_fired', data);
 		}
