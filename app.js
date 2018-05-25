@@ -1,6 +1,8 @@
 const express = require('express');
 const unique = require('node-uuid');
 const SAT = require('sat');
+const Player = require('./objects/player.js');
+const Box = require('./objects/box.js')
 
 let app = express();
 let serv = require('http').Server(app);
@@ -33,154 +35,37 @@ var counter = 0;
 // create a new game instance
 const game = {
     // List of players in the game
-    player_list: {},
+    playerList: {},
     /** @type Bullet[]*/
-    bullets_list: [],
+    bulletList: [],
     // boxes object list
-    boxes_list: [],
+    boxList: [],
     // The max number of pickable boxes in the game
-    boxes_max: 100,
+    boxesMax: 100,
     // Size of the boxes list
-    boxes_len: 0,
+    numOfBoxes: 0,
     // Game height
-    canvas_height: 4000,
+    canvasHeight: 4000,
     // Game width
-    canvas_width: 4000
+    canvasWidth: 4000
 };
-
-let lastBulletId = 0;
-
-class Bullet {
-    constructor(/** Number */ startX, /** Number */ startY, /** Number */ angle,
-				/** Player ID */ creator, /** Number */ speed) {
-        this.x = startX;
-        this.y = startY;
-        this.angle = angle;
-		this.speed = speed;
-        this.creator = creator;
-        this.timeCreated = Date.now();
-        this.id = ++lastBulletId;
-    }
-}
-
-// Player class inside the server
-class Player {
-    constructor(startX, startY, startAngle, id, username) {
-        this.id = id;
-        this.username = username;
-        this.x = startX;
-        this.y = startY;
-        this.angle = Math.PI / 2;
-        this.speed = 0;
-        this.accel = 0;
-        this.ang_vel = 0;
-        this.sendData = true;
-        this.dead = false;
-        this.bullets = 0;
-		this.poly = new SAT.Polygon(new SAT.Vector(startX, startY), [
-			new SAT.Vector(-32, -8),
-			new SAT.Vector(-16, -15),
-			new SAT.Vector(7, -15),
-			new SAT.Vector(21, -11),
-			new SAT.Vector(31, -3),
-			new SAT.Vector(31, 2),
-			new SAT.Vector(21, 10),
-			new SAT.Vector(7, 14),
-			new SAT.Vector(-16, 14),
-			new SAT.Vector(-32, 7)
-		]);
-        this.inputs = {
-            up: false,
-            left: false,
-            right: false,
-            shootLeft: false,
-            shootRight: false
-        };
-        this.lastShootTimeLeft = 0;
-        this.lastShootTimeRight = 0;
-        this.shootIntervalLeft = 1000; // ms
-        this.shootIntervalRight = 1000; // ms
-    }
-
-    /**
-     * Attempts to shoot a bullet in the provided direction taking into account the last time it
-     * shoot in the same direction.
-     * @param {Boolean}rightSide whether the ship is shooting from the right side
-     * @returns {Bullet} The bullet just created, or null if can not shoot
-     */
-    tryToShoot(rightSide) {
-        let canShoot = false; // TODO check ammo here
-        if (rightSide) {
-            if (this.lastShootTimeRight + this.shootIntervalRight < Date.now()) {
-                canShoot = true;
-                this.lastShootTimeRight = Date.now();
-            }
-        } else {
-            if (this.lastShootTimeLeft + this.shootIntervalLeft < Date.now()) {
-                canShoot = true;
-                this.lastShootTimeLeft = Date.now();
-            }
-        }
-        if (canShoot) {
-            console.log('SHOOT');
-            return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1) * Math.PI / 4,
-							  this.id, 100);
-        } else {
-            return null;
-        }
-    }
-
-	addAngle(angle) {
-		this.angle += angle;
-		this.poly.setAngle(this.angle-Math.PI/2);
-	}
-
-	addPos(x, y) {
-		this.x += x;
-		this.y += y;
-		this.poly.pos.x = this.x;
-		this.poly.pos.y = this.y;
-	}
-}
-
-// Item class inside the server
-class Item {
-    constructor(max_x, max_y, type, id) {
-        this.x = getRndInteger(100, max_x - 100);
-        this.y = getRndInteger(100, max_y - 100);
-        this.bullets = getRndInteger(1, 10);
-		this.type = type;
-		this.id = id;
-		this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-			new SAT.Vector(-8, -8),
-			new SAT.Vector(-8, 8),
-			new SAT.Vector(8, 8),
-			new SAT.Vector(8, -8)
-		]);
-	}
-}
-
-// Returns a random integer between min and max
-function getRndInteger(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-}
 
 setInterval(updateGame, 1000 * UPDATE_TIME);
 
 function updateGame() {
-	for (let k in game.player_list) {
-		if (!(k in game.player_list))
-			continue;
-		let p = game.player_list[k];
-		p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
-		p.accel += (p.inputs.up)? MAX_ACCEL : 0;
-		p.speed += p.accel*UPDATE_TIME;
-		p.addPos(Math.sin(p.angle)*p.speed*UPDATE_TIME, -Math.cos(p.angle)*p.speed*UPDATE_TIME);
-		let ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
-		p.addAngle((p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0);
-		p.addAngle((p.inputs.left)? -ratio*ANGULAR_VEL*UPDATE_TIME : 0);
+    for (let k in game.playerList) {
+        if (!(k in game.playerList))
+            continue;
+        let p = game.playerList[k];
+        p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
+        p.accel += (p.inputs.up)? MAX_ACCEL : 0;
+        p.speed += p.accel*UPDATE_TIME;
+        p.addPos(Math.sin(p.angle)*p.speed*UPDATE_TIME, -Math.cos(p.angle)*p.speed*UPDATE_TIME);
+        let ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
+        p.addAngle((p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0);
+        p.addAngle((p.inputs.left)? -ratio*ANGULAR_VEL*UPDATE_TIME : 0);
 
-		/** @type Bullet */
+        /** @type Bullet */
         let newBullet = null;
         if (p.inputs.shootLeft) {
             newBullet = p.tryToShoot(false);
@@ -189,12 +74,12 @@ function updateGame() {
             newBullet = p.tryToShoot(true);
         }
         if (newBullet) {
-            game.bullets_list.push(newBullet);
-			io.emit("bullet_update", newBullet)
+            game.bulletList.push(newBullet);
+            io.emit("bullet_update", newBullet)
         }
     }
 
-    for (const bullet of game.bullets_list) {
+    for (const bullet of game.bulletList) {
         // TODO check bullet life and dissapear if too old
 
         // Move bullet
@@ -204,27 +89,27 @@ function updateGame() {
         // TODO check collision with ships that are not the creator of the bullet
     }
 
-	for (let k1 in game.player_list) {
-		let p1 = game.player_list[k1];
-		for (let k2 in game.player_list)
-			collidePlayers(p1, game.player_list[k2]);
-		for (let kb in game.boxes_list)
-			collidePlayerAndBox(p1, game.boxes_list[kb]);
-	}
+    for (let k1 in game.playerList) {
+        let p1 = game.playerList[k1];
+        for (let k2 in game.playerList)
+            collidePlayers(p1, game.playerList[k2]);
+        for (let kb in game.boxList)
+            collidePlayerAndBox(p1, game.boxList[kb]);
+    }
 
-	io.emit("update_game", {player_list: game.player_list, bullets_list: game.bullets_list});
+    io.emit("update_game", {playerList: game.playerList, bulletList: game.bulletList});
 }
 
 // Create the pickable boxes there are missing at the game
 function addBox() {
-    let n = game.boxes_max - game.boxes_len;
+    let n = game.boxesMax - game.numOfBoxes;
     for (let i = 0; i < n; i++) {
         let unique_id = unique.v4(); // Creates a unique id
-        let boxentity = new Item(game.canvas_width, game.canvas_height,
+        let boxentity = new Box(game.canvasWidth, game.canvasHeight,
             'box', unique_id);
-        game.boxes_list[unique_id] = boxentity;
-        io.emit("item_update", boxentity); // MAYBE CHANGE THE FUNCTION DEPENDING OF WHAT I DO ON ITEM.JS
-        game.boxes_len++;
+        game.boxList[unique_id] = boxentity;
+        io.emit("item_update", boxentity);
+        game.numOfBoxes++;
     }
 }
 
@@ -251,8 +136,8 @@ function onNewPlayer(data) {
         angle: newPlayer.angle,
     };
 
-    for (let k in game.player_list) {
-        existingPlayer = game.player_list[k];
+    for (let k in game.playerList) {
+        existingPlayer = game.playerList[k];
         let player_info = {
             id: existingPlayer.id,
             username: existingPlayer.username,
@@ -264,18 +149,18 @@ function onNewPlayer(data) {
         this.emit("new_enemyPlayer", player_info);
     }
 
-    for (let k in game.boxes_list)
-        this.emit('item_update', game.boxes_list[k]);
+    for (let k in game.boxList)
+        this.emit('item_update', game.boxList[k]);
 
     //send message to every connected client except the sender
     this.broadcast.emit('new_enemyPlayer', current_info);
 
-    game.player_list[this.id] = newPlayer;
+    game.playerList[this.id] = newPlayer;
 }
 
 // Called when someone fired an input
 function onInputFired(data) {
-    let movePlayer = game.player_list[this.id];
+    let movePlayer = game.playerList[this.id];
 
     if (movePlayer === undefined || movePlayer.dead || !movePlayer.sendData)
         return;
@@ -296,45 +181,45 @@ function onInputFired(data) {
 
 // Called when players collide
 function collidePlayers (p1, p2) {
-	if (!(p2.id in game.player_list) || !(p1.id in game.player_list)
-		|| p1.id == p2.id || p1.dead || p2.dead)
-		return;
-	if (SAT.testPolygonPolygon(p1.poly, p2.poly)) {
-		console.log(`${counter}: ${p1.username} collided with ${p2.username}`);
-		counter++;
-	}
+    if (!(p2.id in game.playerList) || !(p1.id in game.playerList)
+        || p1.id == p2.id || p1.dead || p2.dead)
+        return;
+    if (SAT.testPolygonPolygon(p1.poly, p2.poly)) {
+        console.log(`${counter}: ${p1.username} collided with ${p2.username}`);
+        counter++;
+    }
 }
 
 // Called when an item is picked
 function collidePlayerAndBox (p1, bx) {
 
-	if (!(bx.id in game.boxes_list)) {
-		console.log(data);
-		console.log("could not find object");
-		this.emit("itemremove", { id: data.id });
-		return;
-	}
+    if (!(bx.id in game.boxList)) {
+        console.log(data);
+        console.log("could not find object");
+        this.emit("itemremove", { id: data.id });
+        return;
+    }
 
-	if (!(p1.id in game.player_list))
-		return;
+    if (!(p1.id in game.playerList))
+        return;
 
-	if (SAT.testPolygonPolygon(p1.poly, bx.poly)) {
-		p1.bullets += bx.bullets;
+    if (SAT.testPolygonPolygon(p1.poly, bx.poly)) {
+        p1.bullets += bx.bullets;
 
-		delete game.boxes_list[bx.id];
-		game.boxes_len--;
-		console.log("item picked");
+        delete game.boxList[bx.id];
+        game.numOfBoxes--;
+        console.log("Box picked");
 
-		io.emit('itemremove', bx);
+        io.emit('itemremove', bx);
 
-		addBox();
-	}
+        addBox();
+    }
 }
 
 // Called when a someone dies
 function playerKilled(player) {
-    if (player.id in game.player_list)
-        delete game.player_list[player.id];
+    if (player.id in game.playerList)
+        delete game.playerList[player.id];
 
     player.dead = true;
 }
@@ -343,9 +228,9 @@ function playerKilled(player) {
 // remove the disconnected player
 function onClientDisconnect() {
     console.log('disconnect');
-    if (this.id in game.player_list)
+    if (this.id in game.playerList)
 
-        delete game.player_list[this.id];
+        delete game.playerList[this.id];
 
     console.log("removing player " + this.id);
 
@@ -356,14 +241,14 @@ function onClientDisconnect() {
 let io = require('socket.io')(serv,{});
 
 io.sockets.on('connection', function(socket) {
-	console.log("socket connected");
-	socket.on('enter_name', onEntername);
-	socket.on('logged_in', function(data){
-		this.emit('enter_game', {username: data.username});
-	});
-	socket.on('disconnect', onClientDisconnect);
-	socket.on("new_player", onNewPlayer);
-	socket.on("input_fired", onInputFired);
+    console.log("socket connected");
+    socket.on('enter_name', onEntername);
+    socket.on('logged_in', function(data){
+        this.emit('enter_game', {username: data.username});
+    });
+    socket.on('disconnect', onClientDisconnect);
+    socket.on("new_player", onNewPlayer);
+    socket.on("input_fired", onInputFired);
 });
 
 // Prepare the boxes

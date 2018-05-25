@@ -41,18 +41,18 @@ function onKilled (data) {
 
 /**
  * Process data received from the server
- * @param {{player_list: {},bullets_list: []}} data
+ * @param {{playerList: {},bulletList: []}} data
  */
 function onUpdate(data) {
-	for (const k in data.player_list) {
+	for (const k in data.playerList) {
 		if (k in enemies)
-			enemies[k].update(data.player_list[k]);
+			enemies[k].update(data.playerList[k]);
 		else
-			player.update(data.player_list[k]);
+			player.update(data.playerList[k]);
 	}
-	for (const bullet of data.bullets_list) {
-		bullets_list[bullet.id].update(bullet);
-		//console.log(bullets_list[bullet.id]); // TODO show bullets in the screen
+	for (const bullet of data.bulletList) {
+		bulletList[bullet.id].update(bullet);
+		//console.log(bulletList[bullet.id]); // TODO show bullets in the screen
     }
 }
 

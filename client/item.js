@@ -2,7 +2,7 @@
 var box_pickup = {};
 
 //bullets list
-var bullets_list = {};
+var bulletList = {};
 
 // client bullet class
 class Bullet {
@@ -67,7 +67,7 @@ function onItemRemove (data) {
 // function called when new bullet is added at the server.
 function onBulletUpdate (data) {
 	var new_bullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
-	bullets_list[data.id] = new_bullet;
+	bulletList[data.id] = new_bullet;
 }
 
 // function called when bullet needs to be removed at the client.
