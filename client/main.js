@@ -14,14 +14,21 @@ function onSocketConnected (data) {
 
 function onRemovePlayer (data) {
 
-	if (!(data.id in enemies)) {
-		console.log('Player not found: ', data.id);
+	if (data.id in enemies) {
+		var removePlayer = enemies[data.id];
+		removePlayer.body.destroy();
+		delete enemies[data.id];
 		return;
 	}
 
-	var removePlayer = enemies[data.id];
-	removePlayer.body.destroy();
-	delete enemies[data.id];
+	if (data.id == player.id) {
+		player.body.destroy();
+		player = null;
+		game.scene.start('Login');
+		return;
+	}
+
+	console.log('Player not found: ', data.id);
 }
 
 function onEnemyMove(data) {
@@ -35,25 +42,19 @@ function onEnemyMove(data) {
 	movePlayer.body.y = data.y;
 }
 
-function onKilled (data) {
-	player.destroy();
-}
-
 /**
  * Process data received from the server
- * @param {{playerList: {},bulletList: []}} data
+ * @param {{playerList: {},bulletList: {}}} data
  */
 function onUpdate(data) {
 	for (const k in data.playerList) {
 		if (k in enemies)
 			enemies[k].update(data.playerList[k]);
-		else
+		else if (player)
 			player.update(data.playerList[k]);
 	}
-	for (const bullet of data.bulletList) {
-		bulletList[bullet.id].update(bullet);
-		//console.log(bulletList[bullet.id]); // TODO show bullets in the screen
-    }
+	for (const bk in data.bulletList)
+		bulletList[bk].update(data.bulletList[bk]);
 }
 
 class Main extends Phaser.Scene {
@@ -79,8 +80,7 @@ class Main extends Phaser.Scene {
 		socket.on("new_enemyPlayer", createEnemy.bind(this));
 		socket.on("enemy_move", onEnemyMove);
 		socket.on('remove_player', onRemovePlayer);
-		socket.on('killed', onKilled);
-		socket.on('itemremove', onItemRemove);
+		socket.on('item_remove', onItemRemove);
 		socket.on('item_update', onItemUpdate.bind(this));
 		socket.on('bullet_remove', onBulletRemove);
 		socket.on('bullet_update', onBulletUpdate.bind(this));

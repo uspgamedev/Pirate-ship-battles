@@ -1,6 +1,6 @@
 
 var enemies = {};
-var player;
+var player = null;
 
 const LABEL_DIFF = 45;
 

@@ -73,7 +73,7 @@ function onBulletUpdate (data) {
 // function called when bullet needs to be removed at the client.
 function onBulletRemove (data) {
 
-	if (!(data.id in bullet_list)) {
+	if (!(data.id in bulletList)) {
 		console.log("Could not find bullet to remove");
 		return;
 	}
@@ -81,7 +81,7 @@ function onBulletRemove (data) {
 	console.log("Removed: ");
 	console.log(data);
 	//destroy the phaser object
-	bullet_list[data.id].item.destroy();
+	bulletList[data.id].item.destroy();
 
-	delete bullet_list[data.id];
+	delete bulletList[data.id];
 }
