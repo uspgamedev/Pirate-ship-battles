@@ -134,6 +134,7 @@ function onNewPlayer(data) {
         x: newPlayer.x,
         y: newPlayer.y,
         angle: newPlayer.angle,
+        username: newPlayer.username,
     };
 
     for (let k in game.playerList) {
