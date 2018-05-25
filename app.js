@@ -19,11 +19,6 @@ serv.listen({
 });
 console.log("Server started.");
 
-//needed for physics update
-// var startTime = (new Date).getTime();
-// var lastTime;
-// var timeStep = 1/70;
-
 const MAX_ACCEL = 30;
 const DRAG_CONST = 0.1;
 const UPDATE_TIME = 0.06;
@@ -36,7 +31,7 @@ var counter = 0;
 const game = {
     // List of players in the game
     playerList: {},
-    /** @type Bullet[]*/
+    /** @type Bullet{}*/
     bulletList: {},
     // boxes object list
     boxList: {},
