@@ -15,13 +15,13 @@ function onRemovePlayer(data) {
 
 	if (data.id in enemies) {
 		var removePlayer = enemies[data.id];
-		removePlayer.body.destroy();
+		removePlayer.destroy();
 		delete enemies[data.id];
 		return;
 	}
 
 	if (data.id == player.id) {
-		player.body.destroy();
+		player.destroy();
 		player = null;
 		game.scene.start('Login');
 		return;

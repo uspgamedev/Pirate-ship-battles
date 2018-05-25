@@ -55,6 +55,11 @@ class Enemy {
         this.text.y = this.body.y - LABEL_DIFF;
     }
 
+	destroy() {
+        this.body.destroy();
+        this.text.destroy();
+    }
+
 };
 
 function createPlayer(data) {
