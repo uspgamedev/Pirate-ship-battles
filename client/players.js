@@ -36,9 +36,14 @@ class Player extends Ship {
         this.body.setOrigin(0.5);
         this.body.setCircle(1, 16, 32);
 		this.body.angle = 90; // This starts the player facing the right direction
+		this.bullets = 0;
 		scene.cameras.main.startFollow(this.body);
     }
 
+	update(data) {
+		super.update(data);
+		this.bullets = data.bullets;
+	}
 
 };
 

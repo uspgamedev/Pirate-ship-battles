@@ -22,7 +22,7 @@ module.exports = class Player {
         this.angularVel = 0; // Previously ang_vel, are we even using it?
         this.sendData = true;
         this.dead = false;
-        this.bullets = 0;
+        this.bullets = 10;
         this.poly = new SAT.Polygon(new SAT.Vector(startX, startY), [
             new SAT.Vector(-32, -8),
             new SAT.Vector(-16, -15),
@@ -55,7 +55,10 @@ module.exports = class Player {
      * @returns {Bullet} The bullet just created, or null if it can not shoot
      */
     tryToShoot(rightSide) {
-        let canShoot = false; // TODO check ammo here
+        if (this.bullets <= 0)
+            return null;
+
+        let canShoot = false;
 
         if (rightSide) {
             if (this.lastShootTimeRight + this.shootIntervalRight < Date.now()) {
@@ -70,7 +73,8 @@ module.exports = class Player {
         }
 
         if (canShoot) {
-            console.log('SHOOT');
+            this.bullets--;
+            console.log(`SHOOT bullets left: ${this.bullets}`);
             return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1)
                               * Math.PI / 4, this.id, 100);
         } else {

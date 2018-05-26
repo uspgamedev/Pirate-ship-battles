@@ -1,5 +1,5 @@
 //the box list
-var box_pickup = {};
+var boxList = {};
 
 //bullets list
 var bulletList = {};
@@ -14,8 +14,6 @@ class Bullet {
 		this.speed = speed;
 		this.item = scene.physics.add.image(startx, starty, "bullet");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
-		//this.item.setOrigin(0.5);
-		//this.item.setCircle(1, 4, 4);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 
@@ -24,8 +22,6 @@ class Bullet {
 		this.item.y = data.y;
 		this.item.setVelocity(Math.sin(data.angle)*this.speed, -Math.cos(data.angle)*this.speed);
 		this.item.angle = data.angle*180/Math.PI;
-		//console.log(data);
-		//console.log(this.item.x);
 	}
 };
 
@@ -44,30 +40,28 @@ class Box {
 
 // function called when new box is added at the server.
 function onCreateItem (data) {
-	var new_box = new Box(this, data.id, data.x, data.y);
-	box_pickup[data.id] = new_box;
+	let newBox = new Box(this, data.id, data.x, data.y);
+	boxList[data.id] = newBox;
 }
 
 // function called when box needs to be removed at the client.
 function onItemRemove (data) {
 
-	if (!(data.id in box_pickup)) {
-		console.log("Could not find item to remove");
+	if (!(data.id in boxList)) {
+		console.log("Could not find box to remove");
 		return;
 	}
 
-	console.log("Removed: ");
-	console.log(data);
 	//destroy the phaser object
-	box_pickup[data.id].item.destroy();
+	boxList[data.id].item.destroy();
 
-	delete box_pickup[data.id];
+	delete boxList[data.id];
 }
 
 // function called when new bullet is added at the server.
 function onCreateBullet (data) {
-	var new_bullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
-	bulletList[data.id] = new_bullet;
+	let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
+	bulletList[data.id] = newBullet;
 }
 
 // function called when bullet needs to be removed at the client.
@@ -78,8 +72,6 @@ function onBulletRemove (data) {
 		return;
 	}
 
-	console.log("Removed: ");
-	console.log(data);
 	//destroy the phaser object
 	bulletList[data.id].item.destroy();
 

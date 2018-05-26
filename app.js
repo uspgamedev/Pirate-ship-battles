@@ -196,9 +196,9 @@ function collidePlayerAndBox (p1, bx) {
     if (SAT.testPolygonPolygon(p1.poly, bx.poly)) {
         p1.bullets += bx.bullets;
 
+        console.log(`Box with ${bx.bullets} bullets picked`);
         delete game.boxList[bx.id];
         game.numOfBoxes--;
-        console.log("Box picked");
 
         io.in('game').emit('item_remove', bx);
 
@@ -208,12 +208,7 @@ function collidePlayerAndBox (p1, bx) {
 
 // Called to verify if a bullet collide with a player
 function collidePlayerAndBullet (p1, bullet) {
-    if (!(p1.id in game.playerList) || !(bullet.id in game.bulletList)) {
-        console.log("Returned");
-        return;
-    }
-
-    if (bullet.creator == p1.id)
+    if (!(p1.id in game.playerList) || !(bullet.id in game.bulletList) || bullet.creator == p1.id)
         return;
 
     if (SAT.testPolygonCircle(p1.poly, bullet.poly)) {
