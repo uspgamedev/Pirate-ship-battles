@@ -43,7 +43,7 @@ class Box {
 };
 
 // function called when new box is added at the server.
-function onItemUpdate (data) {
+function onCreateItem (data) {
 	var new_box = new Box(this, data.id, data.x, data.y);
 	box_pickup[data.id] = new_box;
 }
@@ -65,7 +65,7 @@ function onItemRemove (data) {
 }
 
 // function called when new bullet is added at the server.
-function onBulletUpdate (data) {
+function onCreateBullet (data) {
 	var new_bullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
 	bulletList[data.id] = new_bullet;
 }

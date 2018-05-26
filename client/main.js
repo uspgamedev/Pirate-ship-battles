@@ -80,9 +80,9 @@ class Main extends Phaser.Scene {
 		socket.on("enemy_move", onEnemyMove);
 		socket.on('remove_player', onRemovePlayer);
 		socket.on('item_remove', onItemRemove);
-		socket.on('item_update', onItemUpdate.bind(this));
+		socket.on('item_create', onCreateItem.bind(this));
 		socket.on('bullet_remove', onBulletRemove);
-		socket.on('bullet_update', onBulletUpdate.bind(this));
+		socket.on('bullet_create', onCreateBullet.bind(this));
 		socket.on('update_game', onUpdate);
 
         this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);

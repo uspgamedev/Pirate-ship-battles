@@ -19,11 +19,7 @@ serv.listen({
 });
 console.log("Server started.");
 
-const MAX_ACCEL = 30;
-const DRAG_CONST = 0.1;
 const UPDATE_TIME = 0.06;
-const ANGULAR_VEL = 0.5;
-const DRAG_POWER = 1.5;
 
 var counter = 0;
 
@@ -53,13 +49,7 @@ function updateGame() {
         if (!(k in game.playerList))
             continue;
         let p = game.playerList[k];
-        p.accel = -Math.max(DRAG_CONST*Math.pow(p.speed, DRAG_POWER), 0);
-        p.accel += (p.inputs.up)? MAX_ACCEL : 0;
-        p.speed += p.accel*UPDATE_TIME;
-        p.addPos(Math.sin(p.angle)*p.speed*UPDATE_TIME, -Math.cos(p.angle)*p.speed*UPDATE_TIME);
-        let ratio = p.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
-        p.addAngle((p.inputs.right)? ratio*ANGULAR_VEL*UPDATE_TIME : 0);
-        p.addAngle((p.inputs.left)? -ratio*ANGULAR_VEL*UPDATE_TIME : 0);
+        p.updatePos(UPDATE_TIME);
 
         /** @type Bullet */
         let newBullet = null;
@@ -71,7 +61,7 @@ function updateGame() {
         }
         if (newBullet) {
             game.bulletList[newBullet.id] = newBullet;
-            io.emit("bullet_update", newBullet)
+            io.emit("bullet_create", newBullet)
         }
     }
 
@@ -82,9 +72,7 @@ function updateGame() {
         let bullet = game.bulletList[kb];
         // TODO check bullet life and dissapear if too old
 
-        // Move bullet
-        let ds = bullet.speed * UPDATE_TIME
-        bullet.addPos(Math.sin(bullet.angle) * ds, -Math.cos(bullet.angle) * ds);
+        bullet.updatePos(UPDATE_TIME);
     }
 
     // Do collisions
@@ -113,7 +101,7 @@ function addBox() {
         let boxentity = new Box(game.canvasWidth, game.canvasHeight,
             'box', unique_id);
         game.boxList[boxentity.id] = boxentity;
-        io.emit("item_update", boxentity);
+        io.emit("item_create", boxentity);
         game.numOfBoxes++;
     }
 }
@@ -156,10 +144,10 @@ function onNewPlayer(data) {
     }
 
     for (let k in game.boxList)
-        this.emit('item_update', game.boxList[k]);
+        this.emit('item_create', game.boxList[k]);
 
     for (let k in game.bulletList)
-        this.emit('bullet_update', game.bulletList[k]);
+        this.emit('bullet_create', game.bulletList[k]);
 
     //send message to every connected client except the sender
     this.broadcast.emit('new_enemyPlayer', current_info);

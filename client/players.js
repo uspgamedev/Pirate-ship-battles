@@ -3,7 +3,7 @@ var player = null;
 
 const LABEL_DIFF = 45;
 
-class Playable {
+class Ship {
 	constructor() {
 		this.body = null;
 		this.text = null;
@@ -27,7 +27,7 @@ class Playable {
     }
 }
 
-class Player extends Playable{
+class Player extends Ship {
     constructor(scene, x, y, username) {
 		super();
 		this.text = scene.add.text(x, y - LABEL_DIFF, username, {fill: "black"});
@@ -42,7 +42,7 @@ class Player extends Playable{
 
 };
 
-class Enemy extends Playable {
+class Enemy extends Ship {
     constructor(scene, id, x, y, username) {
 		super();
         this.id = id;

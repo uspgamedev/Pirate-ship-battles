@@ -5,6 +5,11 @@
 const SAT = require('sat');
 const Bullet = require('./bullet.js');
 
+const MAX_ACCEL = 30;
+const DRAG_CONST = 0.1;
+const ANGULAR_VEL = 0.5;
+const DRAG_POWER = 1.5;
+
 module.exports = class Player {
     constructor(startX, startY, startAngle, id, username) {
         this.id = id;
@@ -44,14 +49,14 @@ module.exports = class Player {
     }
 
     /**
-     * Attempts to shoot a bullet in the provided direction taking into account 
+     * Attempts to shoot a bullet in the provided direction taking into account
      * the last time it shot in the same direction.
      * @param {Boolean} rightSide whether the ship is shooting from the right side
      * @returns {Bullet} The bullet just created, or null if it can not shoot
      */
     tryToShoot(rightSide) {
         let canShoot = false; // TODO check ammo here
-        
+
         if (rightSide) {
             if (this.lastShootTimeRight + this.shootIntervalRight < Date.now()) {
                 canShoot = true;
@@ -66,7 +71,7 @@ module.exports = class Player {
 
         if (canShoot) {
             console.log('SHOOT');
-            return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1) 
+            return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1)
                               * Math.PI / 4, this.id, 100);
         } else {
             return null;
@@ -83,5 +88,16 @@ module.exports = class Player {
         this.y += y;
         this.poly.pos.x = this.x;
         this.poly.pos.y = this.y;
+    }
+
+    updatePos(dt) {
+        this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
+        this.accel += (this.inputs.up)? MAX_ACCEL : 0;
+        this.speed += this.accel*dt;
+        this.addPos(Math.sin(this.angle)*this.speed*dt,
+                    -Math.cos(this.angle)*this.speed*dt);
+        let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);
+        this.addAngle((this.inputs.right)? ratio*ANGULAR_VEL*dt : 0);
+        this.addAngle((this.inputs.left)? -ratio*ANGULAR_VEL*dt : 0);
     }
 };

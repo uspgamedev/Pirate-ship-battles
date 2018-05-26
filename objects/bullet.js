@@ -24,4 +24,9 @@ module.exports = class Bullet {
         this.poly.pos.x = this.x;
         this.poly.pos.y = this.y;
     }
+
+    updatePos(dt) {
+        this.addPos(Math.sin(this.angle) * this.speed * dt,
+                    -Math.cos(this.angle) * this.speed * dt);
+    }
 }
