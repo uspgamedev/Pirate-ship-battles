@@ -17,11 +17,11 @@ serv.listen({
     port: 2000,
     exclusive: true
 });
+
 console.log("Server started.");
 
-const UPDATE_TIME = 0.06;
-
-var counter = 0;
+const UPDATE_TIME = 0.06; // sec
+const BULLET_LIFETIME = 1000; // ms
 
 // create a new game instance
 const game = {
@@ -70,9 +70,12 @@ function updateGame() {
         if (!(kb in game.bulletList))
             continue;
         let bullet = game.bulletList[kb];
-        // TODO check bullet life and dissapear if too old
-
         bullet.updatePos(UPDATE_TIME);
+
+        if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
+            delete game.bulletList[bullet.id];
+            io.emit('bullet_remove', bullet);
+        }
     }
 
     // Do collisions
@@ -97,9 +100,7 @@ function updateGame() {
 function addBox() {
     let n = game.boxesMax - game.numOfBoxes;
     for (let i = 0; i < n; i++) {
-        let unique_id = unique.v4(); // Creates a unique id
-        let boxentity = new Box(game.canvasWidth, game.canvasHeight,
-            'box', unique_id);
+        let boxentity = new Box(game.canvasWidth, game.canvasHeight, 'box');
         game.boxList[boxentity.id] = boxentity;
         io.emit("item_create", boxentity);
         game.numOfBoxes++;
@@ -162,11 +163,9 @@ function onInputFired(data) {
     if (movePlayer === undefined || movePlayer.dead || !movePlayer.sendData)
         return;
 
-    //every 20ms, we send the data.
     setTimeout(function () {
         movePlayer.sendData = true
     }, 60);
-    //we set sendData to false when we send the data.
     movePlayer.sendData = false;
 
     movePlayer.inputs.up = data.up;
@@ -176,18 +175,19 @@ function onInputFired(data) {
     movePlayer.inputs.shootRight = data.shootRight;
 }
 
-// Called when players collide
+// Called to verify if two players collide
 function collidePlayers (p1, p2) {
     if (!(p2.id in game.playerList) || !(p1.id in game.playerList)
         || p1.dead || p2.dead)
         return;
     if (SAT.testPolygonPolygon(p1.poly, p2.poly)) {
-        console.log(`${counter}: ${p1.username} collided with ${p2.username}`);
-        counter++;
+
+        // TODO : Do something when players collide
+
     }
 }
 
-// Called when an item is picked
+// Called to verify if an item is picked
 function collidePlayerAndBox (p1, bx) {
 
     if (!(p1.id in game.playerList) || !(bx.id in game.boxList))
@@ -206,6 +206,7 @@ function collidePlayerAndBox (p1, bx) {
     }
 }
 
+// Called to verify if a bullet collide with a player
 function collidePlayerAndBullet (p1, bullet) {
     if (!(p1.id in game.playerList) || !(bullet.id in game.bulletList)) {
         console.log("Returned");
@@ -217,9 +218,9 @@ function collidePlayerAndBullet (p1, bullet) {
 
     if (SAT.testPolygonCircle(p1.poly, bullet.poly)) {
         delete game.bulletList[bullet.id];
+        io.emit('bullet_remove', bullet);
         console.log(`Bullet hit ${p1.username}`);
 
-        io.emit('bullet_remove', bullet);
         playerKilled(p1);
     }
 }
@@ -248,7 +249,6 @@ function onClientDisconnect() {
     this.broadcast.emit('remove_player', {id: this.id});
 }
 
-// io connection
 let io = require('socket.io')(serv,{});
 
 io.sockets.on('connection', function(socket) {

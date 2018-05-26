@@ -2,8 +2,7 @@
  * Server-side Bullet class
  */
 const SAT = require('sat');
-
-let lastBulletId = 0;
+const unique = require('node-uuid');
 
 module.exports = class Bullet {
     constructor(/** Number */ startX, /** Number */ startY, /** Number */ angle,
@@ -15,7 +14,7 @@ module.exports = class Bullet {
         this.creator = creator;
         this.timeCreated = Date.now();
         this.poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 8);
-        this.id = ++lastBulletId;
+        this.id = unique.v4();
     }
 
     addPos(x, y) {
