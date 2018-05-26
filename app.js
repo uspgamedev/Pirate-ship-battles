@@ -61,7 +61,7 @@ function updateGame() {
         }
         if (newBullet) {
             game.bulletList[newBullet.id] = newBullet;
-            io.emit("bullet_create", newBullet)
+            io.in('game').emit("bullet_create", newBullet)
         }
     }
 
@@ -74,7 +74,7 @@ function updateGame() {
 
         if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
             delete game.bulletList[bullet.id];
-            io.emit('bullet_remove', bullet);
+            io.in('game').emit('bullet_remove', bullet);
         }
     }
 
@@ -93,7 +93,7 @@ function updateGame() {
             collidePlayerAndBullet(p1, game.bulletList[kb]);
     }
 
-    io.emit("update_game", {playerList: game.playerList, bulletList: game.bulletList});
+    io.in('game').emit("update_game", {playerList: game.playerList, bulletList: game.bulletList});
 }
 
 // Create the pickable boxes there are missing at the game
@@ -102,7 +102,7 @@ function addBox() {
     for (let i = 0; i < n; i++) {
         let boxentity = new Box(game.canvasWidth, game.canvasHeight, 'box');
         game.boxList[boxentity.id] = boxentity;
-        io.emit("item_create", boxentity);
+        io.in('game').emit("item_create", boxentity);
         game.numOfBoxes++;
     }
 }
@@ -200,7 +200,7 @@ function collidePlayerAndBox (p1, bx) {
         game.numOfBoxes--;
         console.log("Box picked");
 
-        io.emit('item_remove', bx);
+        io.in('game').emit('item_remove', bx);
 
         addBox();
     }
@@ -218,7 +218,7 @@ function collidePlayerAndBullet (p1, bullet) {
 
     if (SAT.testPolygonCircle(p1.poly, bullet.poly)) {
         delete game.bulletList[bullet.id];
-        io.emit('bullet_remove', bullet);
+        io.in('game').emit('bullet_remove', bullet);
         console.log(`Bullet hit ${p1.username}`);
 
         playerKilled(p1);
@@ -231,7 +231,9 @@ function playerKilled(player) {
     if (player.id in game.playerList) {
         console.log(`${player.username} was removed`);
         delete game.playerList[player.id];
-        io.emit('remove_player', player);
+        io.in('game').emit('remove_player', player);
+        io.sockets.sockets[player.id].leave('game');
+        io.sockets.sockets[player.id].join('login');
     }
 
     player.dead = true;
@@ -253,9 +255,12 @@ let io = require('socket.io')(serv,{});
 
 io.sockets.on('connection', function(socket) {
     console.log("socket connected");
+    socket.join('login');
     socket.on('enter_name', onEntername);
-    socket.on('logged_in', function(data){
+    socket.on('logged_in', function(data) {
         this.emit('enter_game', {username: data.username});
+        socket.leave('login');
+        socket.join('game');
     });
     socket.on('disconnect', onClientDisconnect);
     socket.on("new_player", onNewPlayer);

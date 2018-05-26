@@ -72,7 +72,8 @@ class Main extends Phaser.Scene {
     create(username) {
 
         console.log("client started");
-        socket.emit('logged_in', {username: username});
+
+		socket.emit('logged_in', {username: username});
 
 		socket.on('enter_game', onSocketConnected);
 		socket.on("create_player", createPlayer.bind(this));
