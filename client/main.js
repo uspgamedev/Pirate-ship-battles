@@ -84,6 +84,7 @@ class Main extends Phaser.Scene {
         this.load.image("bullet", "client/assets/cannon_ball.png");
         this.load.image("box", "client/assets/box.png");
         this.load.image("enemy", "client/assets/enemy.png");
+        this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     }
 
     create(username) {
@@ -117,6 +118,13 @@ class Main extends Phaser.Scene {
             MainConnected = true;
         }
 
+        var background = this.add.sprite(200, 100, 'ocean');
+        var frameNames = this.anims.generateFrameNames('ocean', {
+            start: 1, end: 21, zeroPad: 2,
+            prefix: 'ocean', suffix: '.png'
+        });
+        this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
+        background.anims.play('ocean');
     }
 
     update(dt) {
