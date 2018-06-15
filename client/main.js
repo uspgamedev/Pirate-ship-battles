@@ -1,26 +1,32 @@
 let gameProperties = {
     gameWidth: 4000,
     gameHeight: 4000,
-    game_elemnt: "gameDiv",
-    in_game: false,
+    inGame: false,
 }
 
 function onSocketConnected(data) {
     console.log("connected to server");
-    gameProperties.in_game = true;
+    gameProperties.inGame = true;
     socket.emit('new_player', {username: data.username, x: 50, y: 50, angle: 0});
 }
 
 function onRemovePlayer(data) {
 
-    if (!(data.id in enemies)) {
-        console.log('Player not found: ', data.id);
-        return;
-    }
+	if (data.id in enemies) {
+		var removePlayer = enemies[data.id];
+		removePlayer.destroy();
+		delete enemies[data.id];
+		return;
+	}
 
-    var removePlayer = enemies[data.id];
-    removePlayer.body.destroy();
-    delete enemies[data.id];
+	if (data.id == player.id) {
+		player.destroy();
+		player = null;
+		game.scene.start('Login');
+		return;
+	}
+
+	console.log('Player not found: ', data.id);
 }
 
 function onEnemyMove(data) {
@@ -34,25 +40,19 @@ function onEnemyMove(data) {
     movePlayer.body.y = data.y;
 }
 
-function onKilled(data) {
-    player.destroy();
-}
-
 /**
  * Process data received from the server
- * @param {{playerList: {},bulletList: []}} data
+ * @param {{playerList: {},bulletList: {}}} data
  */
 function onUpdate(data) {
-    for (const k in data.playerList) {
-        if (k in enemies)
-            enemies[k].update(data.playerList[k]);
-        else
-            player.update(data.playerList[k]);
-    }
-    for (const bullet of data.bulletList) {
-        bulletList[bullet.id].update(bullet);
-        //console.log(bulletList[bullet.id]); // TODO show bullets in the screen
-    }
+	for (const k in data.playerList) {
+		if (k in enemies)
+			enemies[k].update(data.playerList[k]);
+		else if (player)
+			player.update(data.playerList[k]);
+	}
+	for (const bk in data.bulletList)
+		bulletList[bk].update(data.bulletList[bk]);
 }
 
 class Main extends Phaser.Scene {
@@ -72,19 +72,19 @@ class Main extends Phaser.Scene {
     create(username) {
 
         console.log("client started");
-        socket.emit('logged_in', {username: username});
 
-        socket.on('enter_game', onSocketConnected);
-        socket.on("create_player", createPlayer.bind(this));
-        socket.on("new_enemyPlayer", createEnemy.bind(this));
-        socket.on("enemy_move", onEnemyMove);
-        socket.on('remove_player', onRemovePlayer);
-        socket.on('killed', onKilled);
-        socket.on('itemremove', onItemRemove);
-        socket.on('item_update', onItemUpdate.bind(this));
-        socket.on('bullet_remove', onBulletRemove);
-        socket.on('bullet_update', onBulletUpdate.bind(this));
-        socket.on('update_game', onUpdate);
+		socket.emit('logged_in', {username: username});
+
+		socket.on('enter_game', onSocketConnected);
+		socket.on("create_player", createPlayer.bind(this));
+		socket.on("new_enemyPlayer", createEnemy.bind(this));
+		socket.on("enemy_move", onEnemyMove);
+		socket.on('remove_player', onRemovePlayer);
+		socket.on('item_remove', onItemRemove);
+		socket.on('item_create', onCreateItem.bind(this));
+		socket.on('bullet_remove', onBulletRemove);
+		socket.on('bullet_create', onCreateBullet.bind(this));
+		socket.on('update_game', onUpdate);
 
         this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -107,7 +107,7 @@ class Main extends Phaser.Scene {
     }
 
     update(dt) {
-        if (gameProperties.in_game) {
+        if (gameProperties.inGame) {
             let data = {
                 up: this.key_W.isDown,
                 left: this.key_A.isDown,
