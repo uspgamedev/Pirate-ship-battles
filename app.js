@@ -109,17 +109,20 @@ function addBox() {
 
 // Called after the player entered its name
 function onEntername(data) {
+    console.log(`Received joinning request from ${this.id}`);
     this.emit('join_game', {username: data.username, id: this.id});
 }
 
 // Called when a new player connects to the server
 function onNewPlayer(data) {
+    if (this.id in game.playerList) {
+        console.log(`Player with id ${this.id} already exists`);
+        return;
+    }
     let newPlayer = new Player(data.x, data.y, data.angle, this.id,
         data.username);
 
-    console.log("created new player with id " + this.id);
-
-    console.log(newPlayer);
+    console.log("Created new player with id " + this.id);
 
     this.emit('create_player', data);
 
@@ -144,6 +147,8 @@ function onNewPlayer(data) {
         this.emit("new_enemyPlayer", player_info);
     }
 
+    game.playerList[this.id] = newPlayer;
+
     for (let k in game.boxList)
         this.emit('item_create', game.boxList[k]);
 
@@ -152,8 +157,6 @@ function onNewPlayer(data) {
 
     //send message to every connected client except the sender
     this.broadcast.emit('new_enemyPlayer', current_info);
-
-    game.playerList[this.id] = newPlayer;
 }
 
 // Called when someone fired an input

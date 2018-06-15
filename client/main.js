@@ -6,8 +6,10 @@ let gameProperties = {
 
 function onSocketConnected(data) {
     console.log("connected to server");
-    gameProperties.inGame = true;
-    socket.emit('new_player', {username: data.username, x: 50, y: 50, angle: 0});
+    if (!gameProperties.inGame) {
+        socket.emit('new_player', {username: data.username, x: 50, y: 50, angle: 0});
+        gameProperties.inGame = true;
+    }
 }
 
 function onRemovePlayer(data) {
@@ -19,14 +21,28 @@ function onRemovePlayer(data) {
 		return;
 	}
 
-	if (data.id == player.id) {
-		player.destroy();
-		player = null;
+	if (data.id == socket.id) {
+        resetObjects();
 		game.scene.start('Login');
+        game.scene.restart("Main");
 		return;
 	}
 
 	console.log('Player not found: ', data.id);
+}
+
+function resetObjects() {
+    for (let k in enemies)
+        enemies[k].destroy();
+    enemies = {};
+    player.destroy();
+    player = null;
+    for (let k in boxList)
+        boxList[k].item.destroy();
+    boxList = {};
+    for (let k in bulletList)
+        bulletList[k].item.destroy();
+    bulletList = {};
 }
 
 function onEnemyMove(data) {
@@ -51,8 +67,10 @@ function onUpdate(data) {
 		else if (player)
 			player.update(data.playerList[k]);
 	}
-	for (const bk in data.bulletList)
-		bulletList[bk].update(data.bulletList[bk]);
+	for (const bk in data.bulletList) {
+        if (bk in data.bulletList)
+            bulletList[bk].update(data.bulletList[bk]);
+    }
 }
 
 class Main extends Phaser.Scene {
@@ -74,27 +92,30 @@ class Main extends Phaser.Scene {
 
 		socket.emit('logged_in', {username: username});
 
-		socket.on('enter_game', onSocketConnected);
-		socket.on("create_player", createPlayer.bind(this));
-		socket.on("new_enemyPlayer", createEnemy.bind(this));
-		socket.on("enemy_move", onEnemyMove);
-		socket.on('remove_player', onRemovePlayer);
-		socket.on('item_remove', onItemRemove);
-		socket.on('item_create', onCreateItem.bind(this));
-		socket.on('bullet_remove', onBulletRemove);
-		socket.on('bullet_create', onCreateBullet.bind(this));
-		socket.on('update_game', onUpdate);
+        if (!MainConnected) {
+            socket.on('enter_game', onSocketConnected);
+            socket.on("create_player", createPlayer.bind(this));
+            socket.on("new_enemyPlayer", createEnemy.bind(this));
+            socket.on("enemy_move", onEnemyMove);
+            socket.on('remove_player', onRemovePlayer);
+            socket.on('item_remove', onItemRemove);
+            socket.on('item_create', onCreateItem.bind(this));
+            socket.on('bullet_remove', onBulletRemove);
+            socket.on('bullet_create', onCreateBullet.bind(this));
+            socket.on('update_game', onUpdate);
 
-        this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+            this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+            this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+            this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+            this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
 
-        this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-        this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+            this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+            this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
-        this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
-            gameProperties.gameHeight);
+            this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
+                gameProperties.gameHeight);
+            MainConnected = true;
+        }
 
     }
 
@@ -118,6 +139,10 @@ class Main extends Phaser.Scene {
         }
 
         //console.log(dt);
+    }
+
+    destroy() {
+        console.log("DESTROIED");
     }
 
     colide(event) {

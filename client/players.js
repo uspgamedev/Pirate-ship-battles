@@ -62,9 +62,13 @@ class Enemy extends Ship {
 };
 
 function createPlayer(data) {
-    player = new Player(this, data.x, data.y, data.username);
+	if (!player)
+    	player = new Player(this, data.x, data.y, data.username);
 }
 
 function createEnemy(data) {
-    enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username)
+	if (!(data.id in enemies))
+    	enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username)
+	else
+		console.log("Failed to create enemy")
 }

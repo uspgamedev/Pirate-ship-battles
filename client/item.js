@@ -40,8 +40,10 @@ class Box {
 
 // function called when new box is added at the server.
 function onCreateItem (data) {
-	let newBox = new Box(this, data.id, data.x, data.y);
-	boxList[data.id] = newBox;
+	if (!(data.id in boxList)) {
+		let newBox = new Box(this, data.id, data.x, data.y);
+		boxList[data.id] = newBox;
+	}
 }
 
 // function called when box needs to be removed at the client.
@@ -60,8 +62,10 @@ function onItemRemove (data) {
 
 // function called when new bullet is added at the server.
 function onCreateBullet (data) {
-	let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
-	bulletList[data.id] = newBullet;
+	if (!(data.id in bulletList)) {
+		let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
+		bulletList[data.id] = newBullet;
+	}
 }
 
 // function called when bullet needs to be removed at the client.
