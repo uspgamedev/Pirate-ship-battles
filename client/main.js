@@ -36,6 +36,8 @@ function resetObjects() {
     for (let k in enemies)
         enemies[k].destroy();
     enemies = {};
+    hud.destroy();
+    hud = null;
     player.destroy();
     player = null;
     for (let k in boxList)
@@ -107,12 +109,11 @@ class Main extends Phaser.Scene {
             socket.on('bullet_create', onCreateBullet.bind(this));
             socket.on('update_game', onUpdate);
 
-
             this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
                 gameProperties.gameHeight);
             MainConnected = true;
         }
-        
+
         this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -128,6 +129,7 @@ class Main extends Phaser.Scene {
         });
         this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
         background.anims.play('ocean');
+
     }
 
     update(dt) {
@@ -146,6 +148,7 @@ class Main extends Phaser.Scene {
             }
             if (player) {
                 player.updatePredictive(dt);
+                hud.update();
             }
         }
 

@@ -43,6 +43,7 @@ class Player extends Ship {
 	update(data) {
 		super.update(data);
 		this.bullets = data.bullets;
+		this.life = data.life;
 	}
 
 };
@@ -62,8 +63,10 @@ class Enemy extends Ship {
 };
 
 function createPlayer(data) {
-	if (!player)
-    	player = new Player(this, data.x, data.y, data.username);
+	if (!player) {
+		player = new Player(this, data.x, data.y, data.username);
+		hud = new HUD(this);
+	}
 }
 
 function createEnemy(data) {
