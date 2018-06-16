@@ -23,6 +23,7 @@ function onRemovePlayer(data) {
 
 	if (data.id == socket.id) {
         resetObjects();
+        this.disableInputs();
 		game.scene.start('Login');
         game.scene.restart("Main");
 		return;
@@ -94,29 +95,31 @@ class Main extends Phaser.Scene {
 		socket.emit('logged_in', {username: username});
 
         if (!MainConnected) {
+            // Everything here will execute just one time per client session
             socket.on('enter_game', onSocketConnected);
             socket.on("create_player", createPlayer.bind(this));
             socket.on("new_enemyPlayer", createEnemy.bind(this));
             socket.on("enemy_move", onEnemyMove);
-            socket.on('remove_player', onRemovePlayer);
+            socket.on('remove_player', onRemovePlayer.bind(this));
             socket.on('item_remove', onItemRemove);
             socket.on('item_create', onCreateItem.bind(this));
             socket.on('bullet_remove', onBulletRemove);
             socket.on('bullet_create', onCreateBullet.bind(this));
             socket.on('update_game', onUpdate);
 
-            this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-            this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-            this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-            this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-
-            this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-            this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
             this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
                 gameProperties.gameHeight);
             MainConnected = true;
         }
+        
+        this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+
+        this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
         var background = this.add.sprite(200, 100, 'ocean');
         var frameNames = this.anims.generateFrameNames('ocean', {
@@ -146,11 +149,15 @@ class Main extends Phaser.Scene {
             }
         }
 
-        //console.log(dt);
     }
 
-    destroy() {
-        console.log("DESTROIED");
+    disableInputs() {
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.K);
     }
 
     colide(event) {

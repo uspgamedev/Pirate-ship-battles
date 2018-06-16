@@ -9,6 +9,9 @@ const MAX_ACCEL = 30;
 const DRAG_CONST = 0.1;
 const ANGULAR_VEL = 0.5;
 const DRAG_POWER = 1.5;
+const BULLET_COOLDOWN = 1000; // ms
+const DBHT = 500; // ms  // double bullet hold time
+const TBHT = 1000; // ms  // triple bullet hold time
 
 module.exports = class Player {
     constructor(startX, startY, startAngle, id, username) {
@@ -19,10 +22,10 @@ module.exports = class Player {
         this.angle = Math.PI / 2;
         this.speed = 0;
         this.accel = 0;
-        this.angularVel = 0; // Previously ang_vel, are we even using it?
         this.sendData = true;
         this.dead = false;
         this.bullets = 10;
+        this.life = 3;
         this.poly = new SAT.Polygon(new SAT.Vector(startX, startY), [
             new SAT.Vector(-32, -8),
             new SAT.Vector(-16, -15),
@@ -42,10 +45,12 @@ module.exports = class Player {
             shootLeft: false,
             shootRight: false
         };
+        this.leftHoldStart = 0;
+        this.rightHoldStart = 0;
         this.lastShootTimeLeft = 0;
         this.lastShootTimeRight = 0;
-        this.shootIntervalLeft = 1000; // ms
-        this.shootIntervalRight = 1000; // ms
+        this.shootIntervalLeft = BULLET_COOLDOWN;
+        this.shootIntervalRight = BULLET_COOLDOWN;
     }
 
     /**
@@ -59,27 +64,56 @@ module.exports = class Player {
             return null;
 
         let canShoot = false;
+        let numShots = 1;
 
         if (rightSide) {
-            if (this.lastShootTimeRight + this.shootIntervalRight < Date.now()) {
+            if (this.canShoot(true)) {
                 canShoot = true;
                 this.lastShootTimeRight = Date.now();
+                if (this.bullets >= 3 && Date.now() - this.rightHoldStart > TBHT)
+                    numShots = 3;
+                else if (this.bullets >= 2 && Date.now() - this.rightHoldStart > DBHT)
+                    numShots = 2;
             }
         } else {
-            if (this.lastShootTimeLeft + this.shootIntervalLeft < Date.now()) {
+            if (this.canShoot(false)) {
                 canShoot = true;
                 this.lastShootTimeLeft = Date.now();
+                if (this.bullets >= 3 && Date.now() - this.leftHoldStart > TBHT)
+                    numShots = 3;
+                else if (this.bullets >= 2 && Date.now() - this.leftHoldStart > DBHT)
+                    numShots = 2;
             }
         }
 
         if (canShoot) {
-            this.bullets--;
+            this.bullets -= numShots;
             console.log(`SHOOT bullets left: ${this.bullets}`);
-            return new Bullet(this.x, this.y, this.angle + (rightSide ? 1 : -1)
-                              * Math.PI / 4, this.id, 100);
+            let bullets = [new Bullet(this.x, this.y,
+                                      this.angle + (rightSide ? 3 : -3) *
+                                      Math.PI / 8, this.id, 100)];
+            if (numShots >= 2) {
+                bullets.push(new Bullet(this.x, this.y,
+                             this.angle + (rightSide ? 4 : -4) * Math.PI / 8,
+                             this.id, 100));
+            }
+            if (numShots == 3) {
+                bullets.push(new Bullet(this.x, this.y,
+                             this.angle + (rightSide ? 5 : -5) * Math.PI / 8,
+                             this.id, 100));
+            }
+            return bullets;
         } else {
             return null;
         }
+    }
+
+    canShoot(rightSide) {
+        if (rightSide && this.lastShootTimeRight + this.shootIntervalRight < Date.now())
+            return true;
+        if (!rightSide && this.lastShootTimeLeft + this.shootIntervalLeft < Date.now())
+            return true;
+        return false;
     }
 
     addAngle(angle) {
@@ -98,6 +132,8 @@ module.exports = class Player {
         this.accel = -Math.max(DRAG_CONST*Math.pow(this.speed, DRAG_POWER), 0);
         this.accel += (this.inputs.up)? MAX_ACCEL : 0;
         this.speed += this.accel*dt;
+        if (this.speed < 2 && this.accel < 2)
+            this.speed = 0;
         this.addPos(Math.sin(this.angle)*this.speed*dt,
                     -Math.cos(this.angle)*this.speed*dt);
         let ratio = this.speed/Math.pow(MAX_ACCEL/DRAG_CONST, 1/DRAG_POWER);

@@ -21,6 +21,7 @@ class Login extends Phaser.Scene {
 		game.backgroundColor = "#AFF7F0";
 		gameProperties.inGame = false;
 		if (!LoginConnected) {
+			// Everything here will execute just one time per client session
 			socket.on('join_game', join_game.bind(this));
 			LoginConnected = true;
 		}

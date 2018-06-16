@@ -52,16 +52,25 @@ function updateGame() {
         p.updatePos(UPDATE_TIME);
 
         /** @type Bullet */
-        let newBullet = null;
-        if (p.inputs.shootLeft) {
-            newBullet = p.tryToShoot(false);
+        let newBullets = null;
+        if (p.inputs.shootLeft && !p.leftHoldStart && p.canShoot(false))
+            p.leftHoldStart = Date.now();
+        if (p.inputs.shootRight && !p.rightHoldStart && p.canShoot(true))
+            p.rightHoldStart = Date.now();
+
+        if (!p.inputs.shootLeft && p.leftHoldStart) {
+            newBullets = p.tryToShoot(false);
+            p.leftHoldStart = 0;
         }
-        if (p.inputs.shootRight) {
-            newBullet = p.tryToShoot(true);
+        if (!p.inputs.shootRight && p.rightHoldStart) {
+            newBullets = p.tryToShoot(true);
+            p.rightHoldStart = 0;
         }
-        if (newBullet) {
-            game.bulletList[newBullet.id] = newBullet;
-            io.in('game').emit("bullet_create", newBullet)
+        if (newBullets) {
+            for (const b of newBullets) {
+                game.bulletList[b.id] = b;
+                io.in('game').emit("bullet_create", b);
+            }
         }
     }
 
@@ -218,8 +227,9 @@ function collidePlayerAndBullet (p1, bullet) {
         delete game.bulletList[bullet.id];
         io.in('game').emit('bullet_remove', bullet);
         console.log(`Bullet hit ${p1.username}`);
-
-        playerKilled(p1);
+        p1.life--;
+        if (p1.life <= 0)
+            playerKilled(p1);
     }
 }
 
