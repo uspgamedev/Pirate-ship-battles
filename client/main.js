@@ -7,7 +7,7 @@ let gameProperties = {
 function onSocketConnected(data) {
     console.log("connected to server");
     if (!gameProperties.inGame) {
-        socket.emit('new_player', {username: data.username, x: 50, y: 50, angle: 0});
+        socket.emit('new_player', {username: data.username});
         gameProperties.inGame = true;
     }
 }
@@ -48,17 +48,6 @@ function resetObjects() {
     bulletList = {};
 }
 
-function onEnemyMove(data) {
-    if (!(data.id in enemies)) {
-        return;
-    }
-
-    var movePlayer = enemies[data.id];
-
-    movePlayer.body.x = data.x;
-    movePlayer.body.y = data.y;
-}
-
 /**
  * Process data received from the server
  * @param {{playerList: {},bulletList: {}}} data
@@ -83,9 +72,9 @@ class Main extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("player", "client/assets/player.png");
+        this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
         this.load.image("bullet", "client/assets/cannon_ball.png");
-        this.load.image("box", "client/assets/box.png");
+        this.load.image("barrel", "client/assets/barrel.png");
         this.load.image("enemy", "client/assets/enemy.png");
         this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     }
@@ -101,7 +90,6 @@ class Main extends Phaser.Scene {
             socket.on('enter_game', onSocketConnected);
             socket.on("create_player", createPlayer.bind(this));
             socket.on("new_enemyPlayer", createEnemy.bind(this));
-            socket.on("enemy_move", onEnemyMove);
             socket.on('remove_player', onRemovePlayer.bind(this));
             socket.on('item_remove', onItemRemove);
             socket.on('item_create', onCreateItem.bind(this));

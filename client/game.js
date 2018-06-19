@@ -18,3 +18,6 @@ var config = {
 };
 
 var game = new Phaser.Game(config);
+
+const ISO_CONST = Math.sin(0.61540852); // 35.2603 degrees
+const HALF_FRAME = Math.PI/16;

@@ -16,11 +16,12 @@ module.exports = class Box {
         this.bullets = getRndInteger(1, 10);
         this.type = type;
         this.id = unique.v4();
-        this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
-            new SAT.Vector(-8, -8),
-            new SAT.Vector(-8, 8),
-            new SAT.Vector(8, 8),
-            new SAT.Vector(8, -8)
-        ]);
+        this.poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 9);
+        // this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
+        //     new SAT.Vector(-10, -10),
+        //     new SAT.Vector(-10, 10),
+        //     new SAT.Vector(10, 10),
+        //     new SAT.Vector(10, -10)
+        // ]);
     }
 }

@@ -13,7 +13,7 @@ module.exports = class Bullet {
         this.speed = speed;
         this.creator = creator;
         this.timeCreated = Date.now();
-        this.poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 8);
+        this.poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 10);
         this.id = unique.v4();
     }
 

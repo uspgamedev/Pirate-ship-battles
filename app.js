@@ -128,8 +128,7 @@ function onNewPlayer(data) {
         console.log(`Player with id ${this.id} already exists`);
         return;
     }
-    let newPlayer = new Player(data.x, data.y, data.angle, this.id,
-        data.username);
+    let newPlayer = new Player( 50, 50, 90, this.id, data.username);
 
     console.log("Created new player with id " + this.id);
 
@@ -205,7 +204,7 @@ function collidePlayerAndBox (p1, bx) {
     if (!(p1.id in game.playerList) || !(bx.id in game.boxList))
         return;
 
-    if (SAT.testPolygonPolygon(p1.poly, bx.poly)) {
+    if (SAT.testPolygonCircle(p1.poly, bx.poly)) {
         p1.bullets += bx.bullets;
 
         console.log(`Box with ${bx.bullets} bullets picked`);

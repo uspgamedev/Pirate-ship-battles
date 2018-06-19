@@ -7,31 +7,32 @@ var bulletList = {};
 // client bullet class
 class Bullet {
 	constructor(scene, id, creator, startx, starty, speed) {
-        this.sizeX = 8;
-		this.sizeY = 8;
+        this.sizeX = 10;
+		this.sizeY = 10;
 		this.creator = creator;
 		this.id = id;
 		this.speed = speed;
-		this.item = scene.physics.add.image(startx, starty, "bullet");
+		this.item = scene.physics.add.image(startx, ISO_CONST*starty, "bullet");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 
 	update(data) {
 		this.item.x = data.x;
-		this.item.y = data.y;
-		this.item.setVelocity(Math.sin(data.angle)*this.speed, -Math.cos(data.angle)*this.speed);
-		this.item.angle = data.angle*180/Math.PI;
+		this.item.y = ISO_CONST*data.y;
+		this.item.setVelocity(Math.sin(data.angle)*this.speed, -ISO_CONST*Math.cos(data.angle)*this.speed);
+		this.item.setDepth(this.item.y);
+		//this.item.angle = data.angle*180/Math.PI;
 	}
 };
 
 // client box class
 class Box {
 	constructor(scene, id, startx, starty) {
-        this.sizeX = 16;
-		this.sizeY = 16;
+        this.sizeX = 20;
+		this.sizeY = 20;
 		this.id = id;
-		this.item = scene.add.image(startx, starty, "box");
+		this.item = scene.add.image(startx, ISO_CONST*starty, "barrel");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
         this.item.setSize(this.sizeX, this.sizeY);
 		this.item.par_obj = this; // Just to associate this id with the image

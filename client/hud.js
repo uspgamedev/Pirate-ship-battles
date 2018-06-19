@@ -8,7 +8,7 @@ class HUD {
         this.life.setScrollFactor(0).setDepth(1);
         this.bullets = scene.add.text(50, 70, `Bullets: ${player.bullets}`,
                                       {fill: "red"});
-        this.bullets.setScrollFactor(0).setDepth(1);
+        this.bullets.setScrollFactor(0).setDepth(5000);
         // this.ping = scene.add.text(50, 90, `Ping: ${ping}`,
         //                            {fill: "red"});
         // this.ping.setScrollFactor(0).setDepth(1);
