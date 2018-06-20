@@ -6,33 +6,38 @@ var bulletList = {};
 
 // client bullet class
 class Bullet {
-	constructor(scene, id, creator, startx, starty, speed) {
+	constructor(scene, id, creator, x, y, z, speed) {
         this.sizeX = 10;
 		this.sizeY = 10;
 		this.creator = creator;
 		this.id = id;
 		this.speed = speed;
-		this.item = scene.physics.add.image(startx, ISO_CONST*starty, "bullet");
+		this.z = z;
+		this.zVelocity = 0;
+		this.item = scene.physics.add.image(x, toIsometric(y, z), "bullet");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 
 	update(data) {
 		this.item.x = data.x;
-		this.item.y = ISO_CONST*data.y;
-		this.item.setVelocity(Math.sin(data.angle)*this.speed, -ISO_CONST*Math.cos(data.angle)*this.speed);
+		this.item.y = toIsometric(data.y, data.z);
+		this.z = data.z;
+		this.item.setVelocity(Math.sin(data.angle)*this.speed,
+							  -toIsometric(Math.cos(data.angle)*this.speed));
 		this.item.setDepth(this.item.y);
-		//this.item.angle = data.angle*180/Math.PI;
+		// this.zVelocity -= G_ACCEL/1000;
+		// this.z += this.zVelocity;
 	}
 };
 
 // client box class
 class Box {
-	constructor(scene, id, startx, starty) {
+	constructor(scene, id, x, y) {
         this.sizeX = 20;
 		this.sizeY = 20;
 		this.id = id;
-		this.item = scene.add.image(startx, ISO_CONST*starty, "barrel");
+		this.item = scene.add.image(x, toIsometric(y), "barrel");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
         this.item.setSize(this.sizeX, this.sizeY);
 		this.item.par_obj = this; // Just to associate this id with the image
@@ -64,7 +69,8 @@ function onItemRemove (data) {
 // function called when new bullet is added at the server.
 function onCreateBullet (data) {
 	if (!(data.id in bulletList)) {
-		let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y, data.speed);
+		let newBullet = new Bullet(this, data.id, data.creator, data.x, data.y,
+								   data.z, data.speed);
 		bulletList[data.id] = newBullet;
 	}
 }

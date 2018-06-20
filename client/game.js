@@ -10,7 +10,7 @@ var config = {
 		default: 'arcade',
 		arcade: {
 			gravity: 0,
-			debug: true // TODO: Remove this at main branch
+			debug: false // TODO: Remove this at main branch
 		}
 	},
     backgroundColor: "#AFF7F0",
@@ -19,5 +19,5 @@ var config = {
 
 var game = new Phaser.Game(config);
 
-const ISO_CONST = Math.sin(0.61540852); // 35.2603 degrees
 const HALF_FRAME = Math.PI/16;
+const G_ACCEL = 9.8;

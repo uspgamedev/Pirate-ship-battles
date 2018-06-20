@@ -89,16 +89,16 @@ module.exports = class Player {
         if (canShoot) {
             this.bullets -= numShots;
             console.log(`SHOOT bullets left: ${this.bullets}`);
-            let bullets = [new Bullet(this.x, this.y,
+            let bullets = [new Bullet(this.x, this.y, 0,
                                       this.angle + (rightSide ? 3 : -3) *
                                       Math.PI / 8, this.id, 100)];
             if (numShots >= 2) {
-                bullets.push(new Bullet(this.x, this.y,
+                bullets.push(new Bullet(this.x, this.y, 0,
                              this.angle + (rightSide ? 4 : -4) * Math.PI / 8,
                              this.id, 100));
             }
             if (numShots == 3) {
-                bullets.push(new Bullet(this.x, this.y,
+                bullets.push(new Bullet(this.x, this.y, 0,
                              this.angle + (rightSide ? 5 : -5) * Math.PI / 8,
                              this.id, 100));
             }

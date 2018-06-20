@@ -110,13 +110,19 @@ class Main extends Phaser.Scene {
         this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
         this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
-        var background = this.add.sprite(200, 100, 'ocean');
         var frameNames = this.anims.generateFrameNames('ocean', {
             start: 1, end: 21, zeroPad: 2,
             prefix: 'ocean', suffix: '.png'
         });
         this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
-        background.anims.play('ocean');
+        let background = []
+        for (let i = 0; i < 10; i++) {
+            for (let j = 0; j < 10; j++) {
+                let tmp = this.add.sprite(342*i, 180*j, 'ocean')
+                background.push(tmp);
+                tmp.anims.play('ocean');
+            }
+        }
 
     }
 
