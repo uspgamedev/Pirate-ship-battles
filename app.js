@@ -81,7 +81,8 @@ function updateGame() {
         let bullet = game.bulletList[kb];
         bullet.updatePos(UPDATE_TIME);
 
-        if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
+        //if (Date.now() > bullet.timeCreated + BULLET_LIFETIME) {
+        if (bullet.z <= 0) {
             delete game.bulletList[bullet.id];
             io.in('game').emit('bullet_remove', bullet);
         }
@@ -128,7 +129,7 @@ function onNewPlayer(data) {
         console.log(`Player with id ${this.id} already exists`);
         return;
     }
-    let newPlayer = new Player( 50, 50, 90, this.id, data.username);
+    let newPlayer = new Player( 200, 200, Math.PI / 2, this.id, data.username);
 
     console.log("Created new player with id " + this.id);
 
@@ -151,7 +152,6 @@ function onNewPlayer(data) {
             y: existingPlayer.y,
             angle: existingPlayer.angle,
         };
-        console.log("pushing player");
         this.emit("new_enemyPlayer", player_info);
     }
 
@@ -171,13 +171,8 @@ function onNewPlayer(data) {
 function onInputFired(data) {
     let movePlayer = game.playerList[this.id];
 
-    if (movePlayer === undefined || movePlayer.dead || !movePlayer.sendData)
+    if (!(this.id in game.playerList) || game.playerList[this.id].dead)
         return;
-
-    setTimeout(function () {
-        movePlayer.sendData = true
-    }, 60);
-    movePlayer.sendData = false;
 
     movePlayer.inputs.up = data.up;
     movePlayer.inputs.left = data.left;

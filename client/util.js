@@ -3,7 +3,7 @@ const ISO_SIN = Math.sin(ISO_ANGLE);
 const ISO_COS = Math.cos(ISO_ANGLE);
 
 function toIsometric(y, z=0) {
-    return ISO_SIN*y + ISO_COS*(z - 1/ISO_SIN)
+    return ISO_SIN*y - ISO_COS*(z - 1/ISO_SIN)
 }
 
 function fmod(num, mod) {

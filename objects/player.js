@@ -13,16 +13,20 @@ const BULLET_COOLDOWN = 1000; // ms
 const DBHT = 500; // ms  // double bullet hold time
 const TBHT = 1000; // ms  // triple bullet hold time
 
+function rotate(angle, x, y=0) {
+    return [x*Math.cos(angle) - y*Math.sin(angle),
+            x*Math.sin(angle) + y*Math.cos(angle)]
+}
+
 module.exports = class Player {
     constructor(startX, startY, startAngle, id, username) {
         this.id = id;
         this.username = username;
         this.x = startX;
         this.y = startY;
-        this.angle = Math.PI / 2;
+        this.angle = startAngle;
         this.speed = 0;
         this.accel = 0;
-        this.sendData = true;
         this.dead = false;
         this.bullets = 10;
         this.life = 3;
@@ -89,16 +93,20 @@ module.exports = class Player {
         if (canShoot) {
             this.bullets -= numShots;
             console.log(`SHOOT bullets left: ${this.bullets}`);
-            let bullets = [new Bullet(this.x, this.y, 0,
+            console.log(this.angle);
+            let [offx, offy] = rotate(this.angle, (rightSide ? 1 : -1)*20, -10);
+            let bullets = [new Bullet(this.x + offx, this.y + offy, 10,
                                       this.angle + (rightSide ? 3 : -3) *
                                       Math.PI / 8, this.id, 100)];
             if (numShots >= 2) {
-                bullets.push(new Bullet(this.x, this.y, 0,
+                [offx, offy] = rotate(this.angle, (rightSide ? 1 : -1)*20, 0);
+                bullets.push(new Bullet(this.x + offx, this.y + offy, 10,
                              this.angle + (rightSide ? 4 : -4) * Math.PI / 8,
                              this.id, 100));
             }
             if (numShots == 3) {
-                bullets.push(new Bullet(this.x, this.y, 0,
+                [offx, offy] = rotate(this.angle, (rightSide ? 1 : -1)*20, 10);
+                bullets.push(new Bullet(this.x + offx, this.y + offy, 10,
                              this.angle + (rightSide ? 5 : -5) * Math.PI / 8,
                              this.id, 100));
             }

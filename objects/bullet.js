@@ -16,7 +16,6 @@ module.exports = class Bullet {
         this.speed = speed;
         this.zSpeed = 0;
         this.creator = creator;
-        console.log(`Bullet created by ${creator}`);
         this.timeCreated = Date.now();
         this.poly = new SAT.Circle(new SAT.Vector(this.x, this.y), 10);
         this.id = unique.v4();
@@ -32,8 +31,7 @@ module.exports = class Bullet {
     updatePos(dt) {
         this.addPos(Math.sin(this.angle) * this.speed * dt,
                     -Math.cos(this.angle) * this.speed * dt);
-        this.zSpeed -= G_ACCEL * dt;
+        this.zSpeed -= G_ACCEL * dt * 1.6;
         this.z += this.zSpeed * dt;
-        console.log(this.z);
     }
 }

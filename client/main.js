@@ -4,6 +4,10 @@ let gameProperties = {
     inGame: false,
 }
 
+let background = [];
+
+let ctr = 0;
+
 function onSocketConnected(data) {
     console.log("connected to server");
     if (!gameProperties.inGame) {
@@ -25,7 +29,6 @@ function onRemovePlayer(data) {
         resetObjects();
         this.disableInputs();
 		game.scene.start('Login');
-        game.scene.restart("Main");
 		return;
 	}
 
@@ -46,6 +49,11 @@ function resetObjects() {
     for (let k in bulletList)
         bulletList[k].item.destroy();
     bulletList = {};
+    for (let t of background) {
+        t.destroy();
+        t.anims.stop();
+    }
+    background = [];
 }
 
 /**
@@ -99,6 +107,13 @@ class Main extends Phaser.Scene {
 
             this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
                 gameProperties.gameHeight);
+
+            let frameNames = this.anims.generateFrameNames('ocean', {
+                start: 1, end: 21, zeroPad: 2,
+                prefix: 'ocean', suffix: '.png'
+            });
+            this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
+
             MainConnected = true;
         }
 
@@ -110,19 +125,14 @@ class Main extends Phaser.Scene {
         this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
         this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
-        var frameNames = this.anims.generateFrameNames('ocean', {
-            start: 1, end: 21, zeroPad: 2,
-            prefix: 'ocean', suffix: '.png'
-        });
-        this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
-        let background = []
         for (let i = 0; i < 10; i++) {
             for (let j = 0; j < 10; j++) {
-                let tmp = this.add.sprite(342*i, 180*j, 'ocean')
-                background.push(tmp);
+                let tmp = this.add.sprite(328*(i+ctr), 144*j, 'ocean');
                 tmp.anims.play('ocean');
+                background.push(tmp);
             }
         }
+        ctr++;
 
     }
 
