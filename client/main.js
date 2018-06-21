@@ -28,6 +28,7 @@ function onRemovePlayer(data) {
 	if (data.id == socket.id) {
         resetObjects();
         this.disableInputs();
+        game.scene.stop('Main');
 		game.scene.start('Login');
 		return;
 	}
@@ -106,8 +107,6 @@ class Main extends Phaser.Scene {
             socket.on('bullet_create', onCreateBullet.bind(this));
             socket.on('update_game', onUpdate);
 
-            this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
-                gameProperties.gameHeight);
 
             let frameNames = this.anims.generateFrameNames('ocean', {
                 start: 1, end: 21, zeroPad: 2,
@@ -118,6 +117,9 @@ class Main extends Phaser.Scene {
             MainConnected = true;
         }
 
+        this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
+            gameProperties.gameHeight);
+
         this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
         this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
@@ -126,14 +128,14 @@ class Main extends Phaser.Scene {
         this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
         this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
-        for (let i = 0; i < 10; i++) {
-            for (let j = 0; j < 10; j++) {
+        for (let i = 0; i < 20; i++) {
+            for (let j = 0; j < 20; j++) {
                 let tmp = this.add.sprite(328*(i+ctr), 144*j, 'ocean');
                 tmp.anims.play('ocean');
                 background.push(tmp);
             }
         }
-        ctr++;
+        //ctr++;
 
     }
 
