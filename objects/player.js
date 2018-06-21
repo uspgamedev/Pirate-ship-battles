@@ -92,8 +92,7 @@ module.exports = class Player {
 
         if (canShoot) {
             this.bullets -= numShots;
-            console.log(`SHOOT bullets left: ${this.bullets}`);
-            console.log(this.angle);
+            console.log(`SHOOT! bullets left: ${this.bullets}`);
             let [offx, offy] = rotate(this.angle, (rightSide ? 1 : -1)*20, -10);
             let bullets = [new Bullet(this.x + offx, this.y + offy, 10,
                                       this.angle + (rightSide ? 3 : -3) *

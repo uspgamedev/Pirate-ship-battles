@@ -44,10 +44,10 @@ function resetObjects() {
     player.destroy();
     player = null;
     for (let k in boxList)
-        boxList[k].item.destroy();
+        boxList[k].destroy();
     boxList = {};
     for (let k in bulletList)
-        bulletList[k].item.destroy();
+        bulletList[k].destroy();
     bulletList = {};
     for (let t of background) {
         t.destroy();
@@ -82,6 +82,7 @@ class Main extends Phaser.Scene {
     preload() {
         this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
         this.load.image("bullet", "client/assets/cannon_ball.png");
+        this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
         this.load.image("barrel", "client/assets/barrel.png");
         this.load.image("enemy", "client/assets/enemy.png");
         this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');

@@ -14,20 +14,32 @@ class Bullet {
 		this.speed = speed;
 		this.z = z;
 		this.zVelocity = 0;
+		this.shadow = scene.physics.add.image(x, y, "bullet_shadow");
 		this.item = scene.physics.add.image(x, toIsometric(y, z), "bullet");
         this.item.setDisplaySize(this.sizeX, this.sizeY);
 		this.item.par_obj = this; // Just to associate this id with the image
 	}
 
 	update(data) {
+		let iso_y = toIsometric(data.y);
 		this.item.x = data.x;
 		this.item.y = toIsometric(data.y, data.z);
 		this.z = data.z;
 		this.item.setVelocity(Math.sin(data.angle)*this.speed,
 							  -toIsometric(Math.cos(data.angle)*this.speed));
-		this.item.setDepth(this.item.y);
+		this.item.setDepth(iso_y);
+		this.shadow.x = data.x;
+		this.shadow.y = iso_y;
+		this.shadow.setVelocity(Math.sin(data.angle)*this.speed,
+							  -toIsometric(Math.cos(data.angle)*this.speed));
+		this.shadow.setDepth(iso_y);
 		// this.zVelocity -= G_ACCEL/1000;
 		// this.z += this.zVelocity;
+	}
+
+	destroy() {
+		this.item.destroy();
+		this.shadow.destroy();
 	}
 };
 
@@ -41,6 +53,10 @@ class Box {
         this.item.setDisplaySize(this.sizeX, this.sizeY);
         this.item.setSize(this.sizeX, this.sizeY);
 		this.item.par_obj = this; // Just to associate this id with the image
+	}
+
+	destroy() {
+		this.item.destroy();
 	}
 };
 
@@ -61,7 +77,7 @@ function onItemRemove (data) {
 	}
 
 	//destroy the phaser object
-	boxList[data.id].item.destroy();
+	boxList[data.id].destroy();
 
 	delete boxList[data.id];
 }
@@ -84,7 +100,7 @@ function onBulletRemove (data) {
 	}
 
 	//destroy the phaser object
-	bulletList[data.id].item.destroy();
+	bulletList[data.id].destroy();
 
 	delete bulletList[data.id];
 }

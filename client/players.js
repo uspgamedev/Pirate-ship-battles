@@ -16,8 +16,8 @@ class Ship {
         this.body.setVelocity(Math.sin(data.angle) * data.speed,
 							  -toIsometric(Math.cos(data.angle) * data.speed));
 		this.body.setFrame(Math.floor(fmod(data.angle - HALF_FRAME, 2*Math.PI)*8/Math.PI));
-		this.body.setDepth(this.body.y);
-		this.text.setDepth(this.body.y);
+		this.body.setDepth(toIsometric(data.y));
+		this.text.setDepth(toIsometric(data.y));
     }
 
     updatePredictive(delta) {
