@@ -5,7 +5,7 @@ class HUD {
     constructor(scene) {
         this.life = scene.add.text(50, 50, `Life: ${player.life}`,
                                    {fill: "red"});
-        this.life.setScrollFactor(0).setDepth(1);
+        this.life.setScrollFactor(0).setDepth(5000);
         this.bullets = scene.add.text(50, 70, `Bullets: ${player.bullets}`,
                                       {fill: "red"});
         this.bullets.setScrollFactor(0).setDepth(5000);

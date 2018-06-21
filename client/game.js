@@ -1,6 +1,4 @@
 var socket = io({transports: ['websocket'], upgrade: false});
-var LoginConnected = false
-var MainConnected = false
 
 var config = {
 	type: Phaser.CANVAS,

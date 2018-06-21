@@ -37,23 +37,11 @@ function onRemovePlayer(data) {
 }
 
 function resetObjects() {
-    for (let k in enemies)
-        enemies[k].destroy();
     enemies = {};
-    hud.destroy();
     hud = null;
-    player.destroy();
     player = null;
-    for (let k in boxList)
-        boxList[k].destroy();
     boxList = {};
-    for (let k in bulletList)
-        bulletList[k].destroy();
     bulletList = {};
-    for (let t of background) {
-        t.destroy();
-        t.anims.stop();
-    }
     background = [];
 }
 
@@ -78,6 +66,17 @@ class Main extends Phaser.Scene {
 
     constructor() {
         super({key: "Main"});
+        // Everything here will execute just once per client session
+        socket.on('enter_game', onSocketConnected);
+        socket.on("create_player", createPlayer.bind(this));
+        socket.on("new_enemyPlayer", createEnemy.bind(this));
+        socket.on('remove_player', onRemovePlayer.bind(this));
+        socket.on('item_remove', onItemRemove);
+        socket.on('item_create', onCreateItem.bind(this));
+        socket.on('bullet_remove', onBulletRemove);
+        socket.on('bullet_create', onCreateBullet.bind(this));
+        socket.on('update_game', onUpdate);
+
     }
 
     preload() {
@@ -93,29 +92,7 @@ class Main extends Phaser.Scene {
 
         console.log("client started");
 
-		socket.emit('logged_in', {username: username});
-
-        if (!MainConnected) {
-            // Everything here will execute just one time per client session
-            socket.on('enter_game', onSocketConnected);
-            socket.on("create_player", createPlayer.bind(this));
-            socket.on("new_enemyPlayer", createEnemy.bind(this));
-            socket.on('remove_player', onRemovePlayer.bind(this));
-            socket.on('item_remove', onItemRemove);
-            socket.on('item_create', onCreateItem.bind(this));
-            socket.on('bullet_remove', onBulletRemove);
-            socket.on('bullet_create', onCreateBullet.bind(this));
-            socket.on('update_game', onUpdate);
-
-
-            let frameNames = this.anims.generateFrameNames('ocean', {
-                start: 1, end: 21, zeroPad: 2,
-                prefix: 'ocean', suffix: '.png'
-            });
-            this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
-
-            MainConnected = true;
-        }
+        socket.emit('logged_in', {username: username});
 
         this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
             gameProperties.gameHeight);
@@ -128,14 +105,19 @@ class Main extends Phaser.Scene {
         this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
         this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
 
+        let frameNames = this.anims.generateFrameNames('ocean', {
+            start: 1, end: 21, zeroPad: 2,
+            prefix: 'ocean', suffix: '.png'
+        });
+        this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
+
         for (let i = 0; i < 20; i++) {
             for (let j = 0; j < 20; j++) {
-                let tmp = this.add.sprite(328*(i+ctr), 144*j, 'ocean');
+                let tmp = this.add.sprite(328*i, 144*j, 'ocean');
                 tmp.anims.play('ocean');
                 background.push(tmp);
             }
         }
-        //ctr++;
 
     }
 

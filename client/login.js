@@ -13,17 +13,14 @@ function join_game (data) {
 
 class Login extends Phaser.Scene {
 	constructor() {
-		super({key: "Login"})
+		super({key: "Login"});
+		// Everything here will execute just one time per client session
+		socket.on('join_game', join_game.bind(this));
 	}
 
 	create() {
 		signDiv.style.display = null;
 		game.backgroundColor = "#AFF7F0";
 		gameProperties.inGame = false;
-		if (!LoginConnected) {
-			// Everything here will execute just one time per client session
-			socket.on('join_game', join_game.bind(this));
-			LoginConnected = true;
-		}
 	}
 }
