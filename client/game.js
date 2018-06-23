@@ -8,7 +8,7 @@ var config = {
 		default: 'arcade',
 		arcade: {
 			gravity: 0,
-			debug: false // TODO: Remove this at main branch
+			debug: false
 		}
 	},
     backgroundColor: "#AFF7F0",
