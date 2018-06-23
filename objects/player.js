@@ -31,16 +31,14 @@ module.exports = class Player {
         this.bullets = 10;
         this.life = 3;
         this.poly = new SAT.Polygon(new SAT.Vector(startX, startY), [
-            new SAT.Vector(-50, -25),
-            new SAT.Vector(-25, -48),
-            new SAT.Vector(11, -48),
-            new SAT.Vector(21, -35),
-            new SAT.Vector(48, -10),
-            new SAT.Vector(48, 10),
-            new SAT.Vector(21, 35),
-            new SAT.Vector(11, 48),
-            new SAT.Vector(-25, 48),
-            new SAT.Vector(-50, 25)
+            new SAT.Vector(-47, -4),
+            new SAT.Vector(-33, -19),
+            new SAT.Vector(24, -18),
+            new SAT.Vector(48, -1),
+            new SAT.Vector(48, 1),
+            new SAT.Vector(24, 18),
+            new SAT.Vector(-33, 19),
+            new SAT.Vector(-47, 4)
         ]);
         this.inputs = {
             up: false,
