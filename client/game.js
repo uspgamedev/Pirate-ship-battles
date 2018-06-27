@@ -2,8 +2,8 @@ var socket = io({transports: ['websocket'], upgrade: false});
 
 var config = {
 	type: Phaser.CANVAS,
-	width: window.innerWidth * window.devicePixelRatio,
-	height: window.innerHeight * window.devicePixelRatio,
+	width: window.innerWidth,
+	height: window.innerHeight,
 	physics: {
 		default: 'arcade',
 		arcade: {

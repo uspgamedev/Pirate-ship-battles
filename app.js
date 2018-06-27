@@ -119,7 +119,7 @@ function addBox() {
 
 // Called after the player entered its name
 function onEntername(data) {
-    console.log(`Received joinning request from ${this.id}`);
+    console.log(`Received joinning request from ${this.id}, size: ${data.config.width}:${data.config.height}`);
     this.emit('join_game', {username: data.username, id: this.id});
 }
 
@@ -129,7 +129,7 @@ function onNewPlayer(data) {
         console.log(`Player with id ${this.id} already exists`);
         return;
     }
-    let newPlayer = new Player( 200, 200, Math.PI / 2, this.id, data.username);
+    let newPlayer = new Player( 1000, 1000, Math.PI / 2, this.id, data.username);
 
     console.log("Created new player with id " + this.id);
 

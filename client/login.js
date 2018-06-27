@@ -1,8 +1,9 @@
 entername.onclick = function () {
 	if (!gameProperties.inGame) {
 		signDiv.style.display = 'none';
+		gameDiv.style.display = null;
 		console.log(`Player ${socket.id} entered name`);
-		socket.emit('enter_name', {username: signdivusername.value});
+		socket.emit('enter_name', {username: signdivusername.value, config: config});
 	}
 }
 
@@ -20,6 +21,7 @@ class Login extends Phaser.Scene {
 
 	create() {
 		signDiv.style.display = null;
+		gameDiv.style.display = 'none';
 		game.backgroundColor = "#AFF7F0";
 		gameProperties.inGame = false;
 	}

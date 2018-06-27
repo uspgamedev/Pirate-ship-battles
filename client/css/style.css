@@ -11,9 +11,11 @@ body {
   z-index: -1;
 }
 
+input, button, .sign-up {
+    font-size: 30px;
+}
+
 #signDiv {
-	position:relative;
-	margin: 100px 0 0 -250px;
-	top: 50%;
-	left: 50%;
+    position: relative;
+    margin: 10%;
 }

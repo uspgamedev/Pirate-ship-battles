@@ -8,7 +8,7 @@
 		<div id = "signDiv">
 		  <div class="sign-up">Enter your name:</div>
 			<input id="signdivusername" type="text" placeholder="Username"/>
-		  <button id="entername" class="hidden"><span class="text">PLAY</span></button>
+			<button id="entername" class="hidden"><span class="text">PLAY</span></button>
 		</div>
 		<script>
 			signdivusername.onkeypress = function(e) {
@@ -16,7 +16,7 @@
 					entername.click();
 			}
 		</script>
-		<div id="gameDiv">
+		<div id="gameDiv" display="none">
 		</div>
 
 		<script src="client/lib/phaser.js"></script>

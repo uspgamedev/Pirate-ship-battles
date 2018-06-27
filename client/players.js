@@ -75,7 +75,7 @@ function createPlayer(data) {
 
 function createEnemy(data) {
 	if (!(data.id in enemies))
-    	enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username)
+		enemies[data.id] = new Enemy(this, data.id, data.x, data.y, data.username);
 	else
-		console.log("Failed to create enemy")
+		console.log("Failed to create enemy");
 }

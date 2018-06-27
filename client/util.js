@@ -11,3 +11,18 @@ function fmod(num, mod) {
 	r = num%mod;
 	return (r < 0)? r + mod : r;
 }
+
+function sign(num) {
+    return ((num < 0)? -1 : ((num > 0)? 1 : 0));
+}
+
+function clampRad(x, y, rad) {
+    if (rad == 0)
+        return [0, 0];
+    let dist = Math.sqrt(x*x + y*y);
+    if (dist > rad) {
+        let mod = rad/dist;
+        return [x*mod, y*mod];
+    }
+    return [x, y];
+}

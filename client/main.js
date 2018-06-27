@@ -87,6 +87,8 @@ class Main extends Phaser.Scene {
         this.load.image("barrel", "client/assets/barrel.png");
         this.load.image("enemy", "client/assets/enemy.png");
         this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
+        this.load.image('base_controller', 'client/assets/base_controller.png');
+        this.load.image('top_controller', 'client/assets/top_controller.png');
     }
 
     create(username) {
@@ -94,6 +96,10 @@ class Main extends Phaser.Scene {
         console.log("client started");
 
         socket.emit('logged_in', {username: username});
+
+        this.input.addPointer(1);
+        // this.input.pointer1.x / .y / .isDown
+        // this.input.pointer2.x / .y / .isDown
 
         this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
             gameProperties.gameHeight);
@@ -124,14 +130,17 @@ class Main extends Phaser.Scene {
 
     update(dt) {
         if (gameProperties.inGame) {
-            let data = {
-                up: this.key_W.isDown,
-                left: this.key_A.isDown,
-                right: this.key_D.isDown,
-                shootLeft: this.key_J.isDown,
-                shootRight: this.key_K.isDown
+            if (hud) {
+                let jsFeat = hud.getJSFeatures();
+                let data = {
+                    up: (this.key_W.isDown || jsFeat[0]),
+                    left: (this.key_A.isDown || jsFeat[1]),
+                    right: (this.key_D.isDown || jsFeat[2]),
+                    shootLeft: this.key_J.isDown,
+                    shootRight: this.key_K.isDown
+                }
+                socket.emit('input_fired', data);
             }
-            socket.emit('input_fired', data);
 
             for (const k in enemies) {
                 enemies[k].updatePredictive(dt);
