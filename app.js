@@ -32,7 +32,7 @@ const game = {
     // boxes object list
     boxList: {},
     // The max number of pickable boxes in the game
-    boxesMax: 100,
+    boxesMax: 50,
     // Size of the boxes list
     numOfBoxes: 0,
     // Game height

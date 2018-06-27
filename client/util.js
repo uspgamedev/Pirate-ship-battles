@@ -16,13 +16,25 @@ function sign(num) {
     return ((num < 0)? -1 : ((num > 0)? 1 : 0));
 }
 
+function normSq(x, y) {
+    return x*x + y*y;
+}
+
+function norm(x, y) {
+    return Math.sqrt(x*x + y*y);
+}
+
+function argMax(array, avalFunc=((x) => x)) {
+    return array.map((x, i) => [avalFunc(x), x]).reduce((r, a) => (a[0] > r[0] ? a : r))[1];
+}
+
 function clampRad(x, y, rad) {
     if (rad == 0)
         return [0, 0];
-    let dist = Math.sqrt(x*x + y*y);
+    let dist = norm(x, y);
     if (dist > rad) {
-        let mod = rad/dist;
-        return [x*mod, y*mod];
+        let ratio = rad/dist;
+        return [x*ratio, y*ratio];
     }
     return [x, y];
 }

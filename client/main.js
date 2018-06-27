@@ -89,6 +89,7 @@ class Main extends Phaser.Scene {
         this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
         this.load.image('base_controller', 'client/assets/base_controller.png');
         this.load.image('top_controller', 'client/assets/top_controller.png');
+        this.load.image('shot_controller', 'client/assets/shot_controller.png');
     }
 
     create(username) {
@@ -136,8 +137,8 @@ class Main extends Phaser.Scene {
                     up: (this.key_W.isDown || jsFeat[0]),
                     left: (this.key_A.isDown || jsFeat[1]),
                     right: (this.key_D.isDown || jsFeat[2]),
-                    shootLeft: this.key_J.isDown,
-                    shootRight: this.key_K.isDown
+                    shootLeft: (this.key_J.isDown || jsFeat[3]),
+                    shootRight: (this.key_K.isDown || jsFeat[4])
                 }
                 socket.emit('input_fired', data);
             }
