@@ -34,7 +34,7 @@ class Ship {
 class Player extends Ship {
     constructor(scene, x, y, username) {
 		super();
-		this.text = scene.add.text(x, toIsometric(y) - LABEL_DIFF, username, {fill: "black"});
+		this.text = scene.add.text(x, toIsometric(y) - LABEL_DIFF, username, {fill: "white"});
 		let sprite = (ISOMETRIC)? "ship" : "ship_up";
 		this.body = scene.physics.add.sprite(x, toIsometric(y) - IMAGE_OFFSET, sprite, 0);
         this.text.setOrigin(0.5);
