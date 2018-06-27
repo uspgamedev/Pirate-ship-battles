@@ -6,8 +6,6 @@ let gameProperties = {
 
 let background = [];
 
-let ctr = 0;
-
 function onSocketConnected(data) {
     console.log("connected to server");
     if (!gameProperties.inGame) {
@@ -143,6 +141,8 @@ class Main extends Phaser.Scene {
                 hud.update();
             }
         }
+        if (player)
+		      this.cameras.main.setScroll(player.body.x, player.body.y);
 
     }
 
@@ -153,9 +153,5 @@ class Main extends Phaser.Scene {
         this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.D);
         this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.J);
         this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.K);
-    }
-
-    colide(event) {
-        console.log(event);
     }
 }
