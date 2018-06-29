@@ -1,7 +1,7 @@
 
 body {
   margin: 0px;
-  overflow:hidden;
+  overflow: hidden;
   background-color: #AFF7F0;
 }
 
@@ -11,7 +11,11 @@ body {
   z-index: -1;
 }
 
-input, button, .sign-up {
+#mobilecheckbox {
+    transform: scale(1.5);
+}
+
+input, button, .sign-up, span {
     font-size: 30px;
 }
 

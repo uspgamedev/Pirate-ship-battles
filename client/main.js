@@ -104,38 +104,40 @@ class Main extends Phaser.Scene {
 
         socket.emit('logged_in', {username: username});
 
-        this.input.addPointer(1);
-        // this.input.pointer1.x / .y / .isDown
-        // this.input.pointer2.x / .y / .isDown
-
+        // Set camera limits
         camera.setBounds(0, 0, gameProperties.gameWidth,
                          gameProperties.gameHeight);
 
-        this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
-        this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
-        this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
-        this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
-
-        this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
-        this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
-
-        let frameNames = this.anims.generateFrameNames('ocean', {
-            start: 1, end: 21, zeroPad: 2,
-            prefix: 'ocean', suffix: '.png'
-        });
-        this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
-        this.heightTiles = Math.ceil((camera.height + 2*BG_MARGIN)/TILE_H);
-        this.widthTiles = Math.ceil((camera.width + 2*BG_MARGIN)/TILE_W);
-        this.cameraCornerX = 0;
-        this.cameraCornerY = 0;
+        // Rectangle that bounds the camera
         this.screenRect = {
             x: camera.width/2,
             y: camera.height/2,
             w: gameProperties.gameWidth - camera.width,
             h: gameProperties.gameHeight - camera.height
         };
-        console.log(this.widthTiles);
-        console.log(this.heightTiles);
+
+        // Get listeners for keys
+        this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+        this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+        this.key_S = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+        this.key_D = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+        this.key_J = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+        this.key_K = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+
+        // Add second pointer for mobile
+        if (mobileMode)
+            this.input.addPointer(1);
+
+        // Create background animation
+        let frameNames = this.anims.generateFrameNames('ocean', {
+            start: 1, end: 21, zeroPad: 2,
+            prefix: 'ocean', suffix: '.png'
+        });
+        this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
+
+        // Create background tiles
+        this.heightTiles = Math.ceil((camera.height + 2*BG_MARGIN)/TILE_H);
+        this.widthTiles = Math.ceil((camera.width + 2*BG_MARGIN)/TILE_W);
         for (let i = 0; i < this.widthTiles; i++) {
             for (let j = 0; j < this.heightTiles; j++) {
                 let tmp = this.add.sprite(TILE_W*i, TILE_H*j, 'ocean');
@@ -149,6 +151,7 @@ class Main extends Phaser.Scene {
     update(dt) {
         if (gameProperties.inGame) {
             if (hud) {
+                // Update inputs
                 let jsFeat = hud.getJSFeatures();
                 let data = {
                     up: (this.key_W.isDown || jsFeat[0]),
@@ -160,6 +163,7 @@ class Main extends Phaser.Scene {
                 socket.emit('input_fired', data);
             }
 
+            // Update some objects
             for (const k in enemies) {
                 enemies[k].updatePredictive(dt);
             }
@@ -169,18 +173,21 @@ class Main extends Phaser.Scene {
             }
         }
         if (player) {
+            // Scroll camera to player's position (Phaser is a little buggy when doing this)
             this.cameras.main.setScroll(player.body.x, player.body.y);
+
+            // Wrap background tiles
             let cameraPos = clampRect(player.body.x, player.body.y, this.screenRect);
-            this.cameraCornerX = cameraPos[0] - this.cameras.main.width/2 - BG_MARGIN;
-            this.cameraCornerY = cameraPos[1] - this.cameras.main.height/2 - BG_MARGIN;
+            let cameraCornerX = cameraPos[0] - this.cameras.main.width/2 - BG_MARGIN;
+            let cameraCornerY = cameraPos[1] - this.cameras.main.height/2 - BG_MARGIN;
             for (let tile of background) {
-                if (tile.x < this.cameraCornerX - TILE_W)
+                if (tile.x < cameraCornerX - TILE_W)
                     tile.x += this.widthTiles*TILE_W;
-                else if (tile.x > this.cameraCornerX + this.widthTiles*TILE_W)
+                else if (tile.x > cameraCornerX + this.widthTiles*TILE_W)
                     tile.x -= this.widthTiles*TILE_W;
-                else if (tile.y < this.cameraCornerY - TILE_H)
+                else if (tile.y < cameraCornerY - TILE_H)
                     tile.y += this.heightTiles*TILE_H;
-                else if (tile.y > this.cameraCornerY + this.heightTiles*TILE_H)
+                else if (tile.y > cameraCornerY + this.heightTiles*TILE_H)
                     tile.y -= this.heightTiles*TILE_H;
             }
         }

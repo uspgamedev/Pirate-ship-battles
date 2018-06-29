@@ -2,6 +2,7 @@ entername.onclick = function () {
 	if (!gameProperties.inGame) {
 		signDiv.style.display = 'none';
 		gameDiv.style.display = null;
+		mobileMode = mobilecheckbox.checked;
 		console.log(`Player ${socket.id} entered name`);
 		socket.emit('enter_name', {username: signdivusername.value, config: config});
 	}
