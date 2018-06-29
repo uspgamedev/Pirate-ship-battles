@@ -19,18 +19,18 @@ function rotate(angle, x, y=0) {
 }
 
 module.exports = class Player {
-    constructor(startX, startY, startAngle, id, username) {
+    constructor(x, y, angle, id, username) {
         this.id = id;
         this.username = username;
-        this.x = startX;
-        this.y = startY;
-        this.angle = startAngle;
+        this.x = x;
+        this.y = y;
+        this.angle = angle;
         this.speed = 0;
         this.accel = 0;
         this.dead = false;
         this.bullets = 10;
         this.life = 3;
-        this.poly = new SAT.Polygon(new SAT.Vector(startX, startY), [
+        this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
             new SAT.Vector(-47, -4),
             new SAT.Vector(-33, -19),
             new SAT.Vector(24, -18),
@@ -40,11 +40,11 @@ module.exports = class Player {
             new SAT.Vector(-33, 19),
             new SAT.Vector(-47, 4)
         ]);
-        this.prowLine = new SAT.Polygon(new SAT.Vector(startX, startY), [
+        this.prowLine = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
             new SAT.Vector(48, -1),
             new SAT.Vector(48, 1)
         ]);
-        this.middleLine = new SAT.Polygon(new SAT.Vector(startX, startY), [
+        this.middleLine = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
             new SAT.Vector(24, -18),
             new SAT.Vector(24, 18)
         ]);
@@ -138,6 +138,17 @@ module.exports = class Player {
     addPos(x, y) {
         this.x += x;
         this.y += y;
+        this.poly.pos.x = this.x;
+        this.poly.pos.y = this.y;
+        this.prowLine.pos.x = this.x;
+        this.prowLine.pos.y = this.y;
+        this.middleLine.pos.x = this.x;
+        this.middleLine.pos.y = this.y;
+    }
+
+    setPos(x, y) {
+        this.x = x;
+        this.y = y;
         this.poly.pos.x = this.x;
         this.poly.pos.y = this.y;
         this.prowLine.pos.x = this.x;

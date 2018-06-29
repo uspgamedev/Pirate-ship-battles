@@ -128,13 +128,38 @@ function onEntername(data) {
         this.emit('throw_error', {message: "Name is too long"});
 }
 
+function distSq(p1, p2) {
+    let xdiff = p1.x - p2.x;
+    let ydiff = p1.y - p2.y;
+    return xdiff*xdiff + ydiff*ydiff;
+}
+
+function mapFloatToInt(v, fmin, fmax, imin, imax) {
+    return Math.floor((v - fmin)*(imax - imin)/(fmax - fmin) + imin);
+}
+
+function colliding(newPlayer) {
+    let minDist = 130*130;
+    for (const k in game.playerList) {
+        if (distSq(newPlayer, game.playerList[k]) < minDist)
+            return true;
+    }
+    return false;
+}
+
 // Called when a new player connects to the server
 function onNewPlayer(data) {
     if (this.id in game.playerList) {
         console.log(`Player with id ${this.id} already exists`);
         return;
     }
-    let newPlayer = new Player( 1000, 1000, Math.PI / 2, this.id, data.username);
+    let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 500, 3500),
+                               mapFloatToInt(Math.random(), 0, 1, 500, 3500),
+                               Math.PI / 2, this.id, data.username);
+    while (colliding(newPlayer)) {
+        newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 500, 3500),
+                         mapFloatToInt(Math.random(), 0, 1, 500, 3500));
+    }
 
     console.log("Created new player with id " + this.id);
 
