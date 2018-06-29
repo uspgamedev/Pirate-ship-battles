@@ -6,6 +6,10 @@ let gameProperties = {
 
 let background = [];
 
+const BG_MARGIN = 400;
+const TILE_H = 144;
+const TILE_W = 328;
+
 function onSocketConnected(data) {
     console.log("connected to server");
     if (!gameProperties.inGame) {
@@ -94,6 +98,8 @@ class Main extends Phaser.Scene {
 
     create(username) {
 
+        let camera = this.cameras.main;
+
         console.log("client started");
 
         socket.emit('logged_in', {username: username});
@@ -102,8 +108,8 @@ class Main extends Phaser.Scene {
         // this.input.pointer1.x / .y / .isDown
         // this.input.pointer2.x / .y / .isDown
 
-        this.cameras.main.setBounds(0, 0, gameProperties.gameWidth,
-            gameProperties.gameHeight);
+        camera.setBounds(0, 0, gameProperties.gameWidth,
+                         gameProperties.gameHeight);
 
         this.key_W = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
         this.key_A = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
@@ -118,10 +124,21 @@ class Main extends Phaser.Scene {
             prefix: 'ocean', suffix: '.png'
         });
         this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
-
-        for (let i = 0; i < 20; i++) {
-            for (let j = 0; j < 20; j++) {
-                let tmp = this.add.sprite(328*i, 144*j, 'ocean');
+        this.heightTiles = Math.ceil((camera.height + 2*BG_MARGIN)/TILE_H);
+        this.widthTiles = Math.ceil((camera.width + 2*BG_MARGIN)/TILE_W);
+        this.cameraCornerX = 0;
+        this.cameraCornerY = 0;
+        this.screenRect = {
+            x: camera.width/2,
+            y: camera.height/2,
+            w: gameProperties.gameWidth - camera.width,
+            h: gameProperties.gameHeight - camera.height
+        };
+        console.log(this.widthTiles);
+        console.log(this.heightTiles);
+        for (let i = 0; i < this.widthTiles; i++) {
+            for (let j = 0; j < this.heightTiles; j++) {
+                let tmp = this.add.sprite(TILE_W*i, TILE_H*j, 'ocean');
                 tmp.anims.play('ocean');
                 background.push(tmp);
             }
@@ -151,9 +168,22 @@ class Main extends Phaser.Scene {
                 hud.update();
             }
         }
-        if (player)
-		      this.cameras.main.setScroll(player.body.x, player.body.y);
-
+        if (player) {
+            this.cameras.main.setScroll(player.body.x, player.body.y);
+            let cameraPos = clampRect(player.body.x, player.body.y, this.screenRect);
+            this.cameraCornerX = cameraPos[0] - this.cameras.main.width/2 - BG_MARGIN;
+            this.cameraCornerY = cameraPos[1] - this.cameras.main.height/2 - BG_MARGIN;
+            for (let tile of background) {
+                if (tile.x < this.cameraCornerX - TILE_W)
+                    tile.x += this.widthTiles*TILE_W;
+                else if (tile.x > this.cameraCornerX + this.widthTiles*TILE_W)
+                    tile.x -= this.widthTiles*TILE_W;
+                else if (tile.y < this.cameraCornerY - TILE_H)
+                    tile.y += this.heightTiles*TILE_H;
+                else if (tile.y > this.cameraCornerY + this.heightTiles*TILE_H)
+                    tile.y -= this.heightTiles*TILE_H;
+            }
+        }
     }
 
     disableInputs() {

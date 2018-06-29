@@ -38,3 +38,8 @@ function clampRad(x, y, rad) {
     }
     return [x, y];
 }
+
+function clampRect(x, y, r) {
+    return [Math.max(Math.min(x, r.x + r.w), r.x),
+            Math.max(Math.min(y, r.y + r.h), r.y)];
+}
