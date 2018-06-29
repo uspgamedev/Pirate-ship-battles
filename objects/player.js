@@ -71,7 +71,7 @@ module.exports = class Player {
      */
     tryToShoot(rightSide) {
         if (this.bullets <= 0)
-            return null;
+            return [];
 
         let canShoot = false;
         let numShots = 1;
@@ -118,7 +118,7 @@ module.exports = class Player {
             }
             return bullets;
         } else {
-            return null;
+            return [];
         }
     }
 
