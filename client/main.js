@@ -1,6 +1,6 @@
 let gameProperties = {
-    gameWidth: 4000,
-    gameHeight: 4000,
+    gameWidth: 2000,
+    gameHeight: 2000,
     inGame: false,
 }
 

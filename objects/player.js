@@ -5,7 +5,7 @@
 const SAT = require('sat');
 const Bullet = require('./bullet.js');
 
-const MAX_ACCEL = 30;
+const MAX_ACCEL = 50;
 const DRAG_CONST = 0.1;
 const ANGULAR_VEL = 0.5;
 const DRAG_POWER = 1.5;

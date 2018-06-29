@@ -32,13 +32,13 @@ const game = {
     // boxes object list
     boxList: {},
     // The max number of pickable boxes in the game
-    boxesMax: 50,
+    boxesMax: 15,
     // Size of the boxes list
     numOfBoxes: 0,
     // Game height
-    canvasHeight: 4000,
+    canvasHeight: 2000,
     // Game width
-    canvasWidth: 4000
+    canvasWidth: 2000
 };
 
 setInterval(updateGame, 1000 * UPDATE_TIME);
@@ -153,12 +153,12 @@ function onNewPlayer(data) {
         console.log(`Player with id ${this.id} already exists`);
         return;
     }
-    let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 500, 3500),
-                               mapFloatToInt(Math.random(), 0, 1, 500, 3500),
+    let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+                               mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
                                Math.PI / 2, this.id, data.username);
     while (colliding(newPlayer)) {
-        newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 500, 3500),
-                         mapFloatToInt(Math.random(), 0, 1, 500, 3500));
+        newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+                         mapFloatToInt(Math.random(), 0, 1, 250, gane.canvasHeight - 250));
     }
 
     console.log("Created new player with id " + this.id);
