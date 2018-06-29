@@ -120,7 +120,12 @@ function addBox() {
 // Called after the player entered its name
 function onEntername(data) {
     console.log(`Received joinning request from ${this.id}, size: ${data.config.width}:${data.config.height}`);
-    this.emit('join_game', {username: data.username, id: this.id});
+    if (data.username.length > 0 && data.username.length < 15)
+        this.emit('join_game', {username: data.username, id: this.id});
+    else if (data.username.length <= 0)
+        this.emit('throw_error', {message: "Name can't be null"});
+    else if (data.username.length >= 15)
+        this.emit('throw_error', {message: "Name is too long"});
 }
 
 // Called when a new player connects to the server

@@ -1,15 +1,21 @@
 entername.onclick = function () {
 	if (!gameProperties.inGame) {
-		signDiv.style.display = 'none';
-		gameDiv.style.display = null;
-		mobileMode = mobilecheckbox.checked;
 		console.log(`Player ${socket.id} entered name`);
 		socket.emit('enter_name', {username: signdivusername.value, config: config});
 	}
 }
 
-function join_game (data) {
+function throwError(data) {
+	//let errorLog = document.getElementById("errorLog");
+	errorLog.textContent = data.message;
+}
+
+function joinGame (data) {
 	console.log(`Player ${socket.id} joined the game`);
+	signDiv.style.display = 'none';
+	gameDiv.style.display = null;
+	errorLog.textContent = "";
+	mobileMode = mobilecheckbox.checked;
 	game.scene.start('Main', data.username);
 }
 
@@ -17,7 +23,8 @@ class Login extends Phaser.Scene {
 	constructor() {
 		super({key: "Login"});
 		// Everything here will execute just one time per client session
-		socket.on('join_game', join_game.bind(this));
+		socket.on('join_game', joinGame);
+		socket.on('throw_error', throwError);
 	}
 
 	create() {

@@ -15,6 +15,10 @@ body {
     transform: scale(1.5);
 }
 
+#errorLog {
+    color: #FF0000
+}
+
 input, button, .sign-up, span {
     font-size: 30px;
 }
