@@ -1,6 +1,10 @@
 
 var hud = null;
 
+const DBHT = 500; // ms  // double bullet hold time
+const TBHT = 1000; // ms  // triple bullet hold time
+const BULLET_COOLDOWN = 1000; // ms
+
 class HUD {
     constructor(scene, mobileMode) {
         this.JS_MARGIN = 120;
@@ -11,8 +15,8 @@ class HUD {
         this.JS_SHOT_Y = config.height - this.JS_MARGIN;
         this.JS_SHOT_RIGHT_X = config.width - this.JS_MARGIN;
         this.JS_SHOT_LEFT_X = this.JS_SHOT_RIGHT_X - 150;
-        this.hearts = [];
         this.mobileMode = mobileMode;
+        this.hearts = [];
         for (let i = 0; i < 3; i++) {
             let heart = scene.add.image(70 + 50*i, 70, "heart");
             heart.setScrollFactor(0).setDepth(5000);
@@ -23,6 +27,18 @@ class HUD {
         this.bullets = scene.add.text(100, 110, `${player.bullets}`,
             {color: "white", fontSize: 25, strokeThickness: 2});
         this.bullets.setScrollFactor(0).setDepth(5000);
+        this.leftBulletBar = [];
+        for (let i = 0; i < 3; i++) {
+            let bullet = scene.add.sprite(70 + 30*i, 170, "bullet_fill", 0);
+            bullet.setScrollFactor(0).setDepth(5000);
+            this.leftBulletBar.push(bullet);
+        }
+        this.rightBulletBar = [];
+        for (let i = 0; i < 3; i++) {
+            let bullet = scene.add.sprite(70 + 30*i, 200, "bullet_fill", 0);
+            bullet.setScrollFactor(0).setDepth(5000);
+            this.rightBulletBar.push(bullet);
+        }
         if (this.mobileMode) {
             this.baseController = scene.add.sprite(this.JS_X, this.JS_Y, "base_controller");
             this.baseController.setScrollFactor(0).setDepth(5000);
@@ -38,7 +54,10 @@ class HUD {
     }
 
     update() {
+        // Update bullets
         this.bullets.setText(`${player.bullets}`);
+
+        // Update life bar
         if (player.life < this.hearts.length) {
             let removed = this.hearts.splice(player.life, this.hearts.length - player.life);
             for (let heart of removed)
@@ -52,6 +71,44 @@ class HUD {
                 this.hearts.push(heart);
             }
         }
+
+        // Update bullet charge bar
+        if (player.bullets != 0) {
+            this.leftBulletBar[0].setFrame(mapFloatToInt(Math.min(Date.now() - player.lastShootTimeLeft, 1000), 0, 1000, 0, 4));
+            this.rightBulletBar[0].setFrame(mapFloatToInt(Math.min(Date.now() - player.lastShootTimeRight, 1000), 0, 1000, 0, 4));
+        }
+        else {
+            this.leftBulletBar[0].setFrame(0);
+            this.rightBulletBar[0].setFrame(0);
+        }
+
+        if (player.leftHoldStart == 0 || player.bullets == 1) {
+            this.leftBulletBar[1].setFrame(0);
+            this.leftBulletBar[2].setFrame(0);
+        }
+        else if (Date.now() - player.leftHoldStart <= DBHT || player.bullets == 2) {
+            this.leftBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.leftHoldStart, DBHT), 0, DBHT, 0, 4));
+            this.leftBulletBar[2].setFrame(0);
+        }
+        else {
+            this.leftBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.leftHoldStart, DBHT), 0, DBHT, 0, 4));
+            this.leftBulletBar[2].setFrame(mapFloatToInt(Math.min(Date.now() - player.leftHoldStart, TBHT), DBHT, TBHT, 0, 4));
+        }
+
+        if (player.rightHoldStart == 0 || player.bullets == 1) {
+            this.rightBulletBar[1].setFrame(0);
+            this.rightBulletBar[2].setFrame(0);
+        }
+        else if (Date.now() - player.rightHoldStart <= DBHT || player.bullets == 2) {
+            this.rightBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.rightHoldStart, DBHT), 0, DBHT, 0, 4));
+            this.rightBulletBar[2].setFrame(0);
+        }
+        else {
+            this.rightBulletBar[1].setFrame(mapFloatToInt(Math.min(Date.now() - player.rightHoldStart, DBHT), 0, DBHT, 0, 4));
+            this.rightBulletBar[2].setFrame(mapFloatToInt(Math.min(Date.now() - player.rightHoldStart, TBHT), DBHT, TBHT, 0, 4));
+        }
+
+        // Update virtual joystick
         if (this.mobileMode) {
             let nearest = argMax(this.pointers, (p) => -normSq(p.x - this.JS_X, p.y - this.JS_Y));
             if (nearest.isDown) {

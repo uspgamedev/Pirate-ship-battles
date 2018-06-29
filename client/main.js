@@ -6,7 +6,7 @@ let gameProperties = {
 
 let background = [];
 
-const BG_MARGIN = 400;
+const BG_MARGIN = 700;
 const TILE_H = 144;
 const TILE_W = 328;
 
@@ -82,7 +82,10 @@ class Main extends Phaser.Scene {
     }
 
     preload() {
-        this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
+        this.load.spritesheet("ship", "client/assets/ship.png",
+                              {frameWidth: 112, frameHeight: 96});
+        this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png",
+                              {frameWidth: 24, frameHeight: 24});
         this.load.image("ship_up", "client/assets/up_ship.png");
         this.load.image("bullet", "client/assets/cannon_ball.png");
         this.load.image("big_bullet", "client/assets/big_bullet.png");
@@ -90,7 +93,8 @@ class Main extends Phaser.Scene {
         this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
         this.load.image("barrel", "client/assets/barrel.png");
         this.load.image("enemy", "client/assets/enemy.png");
-        this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
+        this.load.atlas('ocean', 'client/assets/Animations/ocean.png',
+                        'client/assets/Animations/ocean.json');
         this.load.image('base_controller', 'client/assets/base_controller.png');
         this.load.image('top_controller', 'client/assets/top_controller.png');
         this.load.image('shot_controller', 'client/assets/shot_controller.png');

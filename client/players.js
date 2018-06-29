@@ -13,7 +13,8 @@ class Ship {
         this.body.setVelocity(Math.sin(data.angle) * data.speed,
 							  -toIsometric(Math.cos(data.angle) * data.speed));
 		if (ISOMETRIC)
-			this.body.setFrame(Math.floor(fmod(data.angle - HALF_FRAME, 2*Math.PI)*8/Math.PI));
+			this.body.setFrame(mapFloatToInt(fmod(data.angle - HALF_FRAME, 2*Math.PI),
+							   				 0, 2*Math.PI, 0, 16));
 		else
 			this.body.angle = data.angle * 180 / Math.PI;
 		this.body.setDepth(toIsometric(data.y));
@@ -23,6 +24,7 @@ class Ship {
     updatePredictive(delta) {
         this.text.x = this.body.x;
         this.text.y = this.body.y - LABEL_DIFF;
+		this.text.setDepth(this.body.y + IMAGE_OFFSET);
     }
 
     destroy() {
@@ -42,12 +44,20 @@ class Player extends Ship {
         this.body.setCircle(1, 16, 32);
 		this.bullets = 0;
 		scene.cameras.main.startFollow(this.body);
+		this.leftHoldStart = 0;
+        this.rightHoldStart = 0;
+        this.lastShootTimeLeft = 0;
+        this.lastShootTimeRight = 0;
     }
 
 	update(data) {
 		super.update(data);
 		this.bullets = data.bullets;
 		this.life = data.life;
+		this.leftHoldStart = data.leftHoldStart;
+        this.rightHoldStart = data.rightHoldStart;
+        this.lastShootTimeLeft = data.lastShootTimeLeft;
+        this.lastShootTimeRight = data.lastShootTimeRight;
 	}
 
 };

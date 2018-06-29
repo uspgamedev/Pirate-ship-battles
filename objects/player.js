@@ -59,8 +59,6 @@ module.exports = class Player {
         this.rightHoldStart = 0;
         this.lastShootTimeLeft = 0;
         this.lastShootTimeRight = 0;
-        this.shootIntervalLeft = BULLET_COOLDOWN;
-        this.shootIntervalRight = BULLET_COOLDOWN;
     }
 
     /**
@@ -123,9 +121,9 @@ module.exports = class Player {
     }
 
     canShoot(rightSide) {
-        if (rightSide && this.lastShootTimeRight + this.shootIntervalRight < Date.now())
+        if (rightSide && this.lastShootTimeRight + BULLET_COOLDOWN < Date.now())
             return true;
-        if (!rightSide && this.lastShootTimeLeft + this.shootIntervalLeft < Date.now())
+        if (!rightSide && this.lastShootTimeLeft + BULLET_COOLDOWN < Date.now())
             return true;
         return false;
     }
