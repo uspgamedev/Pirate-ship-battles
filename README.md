@@ -1,16 +1,16 @@
 # Code name: Pirate-ship-battles
 Online multiplayer game about pirates for USPGameDev
 
-## Install dependencies
+## Build docker container image
 Execute:
 ```
-yarn install
+sudo docker build . -t pirate-ship-battles
 ```
 
-## Run server
+## Run server from docker container
 * Execute:
 ```
-yarn serve
+docker run -p 2000:2000 pirate-ship-battles
 ```
 
 * Open http://localhost:2000 in a modern browser
