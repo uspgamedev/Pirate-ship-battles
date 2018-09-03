@@ -4,6 +4,7 @@
 
 const SAT = require('sat');
 const Bullet = require('./bullet.js');
+const aux = require('./aux.js');
 
 const MAX_ACCEL = 50;
 const DRAG_CONST = 0.1;
@@ -12,11 +13,6 @@ const DRAG_POWER = 1.5;
 const BULLET_COOLDOWN = 1000; // ms
 const DBHT = 500; // ms  // double bullet hold time
 const TBHT = 1000; // ms  // triple bullet hold time
-
-function rotate(angle, x, y=0) {
-    return [x*Math.cos(angle) - y*Math.sin(angle),
-            x*Math.sin(angle) + y*Math.cos(angle)]
-}
 
 module.exports = class Player {
     constructor(x, y, angle, id, username) {
@@ -49,7 +45,7 @@ module.exports = class Player {
             new SAT.Vector(24, 18)
         ]);
         this.inputs = {
-            up: false,
+   			up: false,
             left: false,
             right: false,
             shootLeft: false,
@@ -98,18 +94,18 @@ module.exports = class Player {
             this.bullets -= numShots;
             console.log(`SHOOT! bullets left: ${this.bullets}`);
             let side = (rightSide ? 1 : -1);
-            let [offx, offy] = rotate(this.angle, 20 * side, -10);
+            let [offx, offy] = aux.rotate(this.angle, 20 * side, -10);
             let bullets = [new Bullet(this.x + offx, this.y + offy, 10,
                                       this.angle + 3 * side * Math.PI / 8,
                                       this.id, 100)];
             if (numShots >= 2) {
-                [offx, offy] = rotate(this.angle, 20 * side, 0);
+                [offx, offy] = aux.rotate(this.angle, 20 * side, 0);
                 bullets.push(new Bullet(this.x + offx, this.y + offy, 10,
                              this.angle + 4 * side * Math.PI / 8,
                              this.id, 100));
             }
             if (numShots == 3) {
-                [offx, offy] = rotate(this.angle, 20 * side, 10);
+                [offx, offy] = aux.rotate(this.angle, 20 * side, 10);
                 bullets.push(new Bullet(this.x + offx, this.y + offy, 10,
                              this.angle + 5 * side * Math.PI / 8,
                              this.id, 100));

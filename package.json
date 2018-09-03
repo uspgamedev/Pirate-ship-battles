@@ -15,9 +15,13 @@
   },
   "scripts": {
     "start": "node app.js",
-    "serve": "npx nodemon app.js"
+    "serve": "npx nodemon app.js",
+    "test": "jest"
   },
   "engines": {
     "node": ">8.x"
+  },
+  "devDependencies": {
+    "jest": "^23.5.0"
   }
 }
