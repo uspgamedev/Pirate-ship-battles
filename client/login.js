@@ -15,6 +15,7 @@ function joinGame (data) {
 	signDiv.style.display = 'none';
 	gameDiv.style.display = null;
 	errorLog.textContent = "";
+	mobileMode = mobilecheckbox.checked;
 	game.scene.start('Main', data.username);
 }
 
@@ -31,6 +32,5 @@ class Login extends Phaser.Scene {
 		gameDiv.style.display = 'none';
 		game.backgroundColor = "#AFF7F0";
 		gameProperties.inGame = false;
-		mobilecheckbox.checked = isTouchDevice();
 	}
 }

@@ -6,7 +6,7 @@ const TBHT = 1000; // ms  // triple bullet hold time
 const BULLET_COOLDOWN = 1000; // ms
 
 class HUD {
-    constructor(scene) {
+    constructor(scene, mobileMode) {
         this.JS_MARGIN = 120;
         this.JS_RAD = 75;
         this.JS_X = this.JS_MARGIN;
@@ -15,7 +15,7 @@ class HUD {
         this.JS_SHOT_Y = config.height - this.JS_MARGIN;
         this.JS_SHOT_RIGHT_X = config.width - this.JS_MARGIN;
         this.JS_SHOT_LEFT_X = this.JS_SHOT_RIGHT_X - 150;
-        this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
+        this.mobileMode = mobileMode;
         this.hearts = [];
         for (let i = 0; i < 3; i++) {
             let heart = scene.add.image(70 + 50*i, 70, "heart");

@@ -79,7 +79,7 @@ class Enemy extends Ship {
 function createPlayer(data) {
 	if (!player) {
 		player = new Player(this, data.x, data.y, data.username);
-		hud = new HUD(this);
+		hud = new HUD(this, mobileMode);
 	}
 }
 
