@@ -4,7 +4,7 @@
 
 const SAT = require('sat');
 const Bullet = require('./bullet.js');
-const aux = require('./aux.js');
+const aux = require('./_aux.js');
 
 const MAX_ACCEL = 50;
 const DRAG_CONST = 0.1;

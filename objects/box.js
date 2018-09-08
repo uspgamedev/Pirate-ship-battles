@@ -3,7 +3,7 @@
  */
 const SAT = require('sat');
 const unique = require('node-uuid');
-const aux = require('./aux.js');
+const aux = require('./_aux.js');
 
 module.exports = class Box {
     constructor(max_x, max_y, type) {
