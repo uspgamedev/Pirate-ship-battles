@@ -4,7 +4,12 @@
 
 // Returns a random integer between min and max
 function getRndInteger(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
+    try {
+        if (max < min) throw "max must be bigger than min";
+        return Math.floor(Math.random() * (max - min + 1)) + min;
+    } catch (err) {
+        console.log("function getRndInteger: " + err);
+    }
 }
 
 function rotate(angle, x, y=0) {
