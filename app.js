@@ -3,6 +3,7 @@ const unique = require('node-uuid');
 const SAT = require('sat');
 const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
+const Death_Circle = require('./objects/death_circle.js');
 
 let app = express();
 let serv = require('http').Server(app);
@@ -41,6 +42,8 @@ const game = {
     canvasWidth: 2000
 };
 
+circle = new Death_Circle(1000, 1000, 1000);
+
 setInterval(updateGame, 1000 * UPDATE_TIME);
 
 function updateGame() {
@@ -72,6 +75,9 @@ function updateGame() {
             }
             p.rightHoldStart = 0;
         }
+        //checking if outside safe-zone
+        if (!circle.in_circle(p))
+          playerKilled(p);  
     }
 
     // Update bullets
@@ -156,11 +162,11 @@ function onNewPlayer(data) {
     let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
                                mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
                                Math.PI / 2, this.id, data.username);
+
     while (colliding(newPlayer)) {
         newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
                          mapFloatToInt(Math.random(), 0, 1, 250, gane.canvasHeight - 250));
     }
-
     console.log("Created new player with id " + this.id);
 
     this.emit('create_player', data);
