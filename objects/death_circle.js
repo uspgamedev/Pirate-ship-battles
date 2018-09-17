@@ -4,7 +4,7 @@
 const SAT = require('sat');
 const unique = require('node-uuid');
 
-module.exports = class Death_Circle {
+module.exports = class DeathCircle {
   constructor(center_x, center_y, radius, max_x, max_y) {
     try {
       if (center_x < 0 || center_x >= max_x) throw "center_x must be non-negative or smaller than max_x";
@@ -18,31 +18,31 @@ module.exports = class Death_Circle {
       this.radius_sqr = radius**2;
     }
     catch(err) {
-      console.log("Death_Circle constructor: " + err);
+      console.log("DeathCircle constructor: " + err);
     }  
   }  
   
   udpate_circle(new_center_x, new_center_y, new_radius) {
     try {
-      if (new_center_x >= this.center_x) throw "new_center_x must be smaller than current center_x";
-      if (new_center_y >= this.center_y) throw "new_center_y must be smaller than current center_y";
-      if (new_radius >= this.r)
+      if (new_center_x >= this.center_x) throw "new_center_x must be smaller than current center_x.";
+      if (new_center_y >= this.center_y) throw "new_center_y must be smaller than current center_y.";
+      if (new_radius >= this.r) throw "new_radius must be lower than previous radius."
+      
       this.center_x = new_center_x;
       this.center_y = new_center_y;
       this.radius = new_radius;
       this.radius_sqr = new_radius**2;
     }
     catch(err) {
-      console.log("Death_Circle constructor: " + err);
+      console.log("DeathCircle constructor: " + err);
     }  
   }  
   
   in_circle(player) {
-    var del_dist_x = player.x - this.center_x;
-    var del_dist_y = player - this.center_y;
-    if (del_dist_x**2 + del_dist_y**2 < this.radius_sqr)
+    var delta_dist_x = player.x - this.center_x;
+    var delta_dist_y = player.y - this.center_y;
+    if (delta_dist_x**2 + delta_dist_y**2 < this.radius_sqr)
       return true;
-    console.log("malandro_mon não ta no circulo");
     return false;  
   }
 

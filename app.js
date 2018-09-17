@@ -3,7 +3,7 @@ const unique = require('node-uuid');
 const SAT = require('sat');
 const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
-const Death_Circle = require('./objects/death_circle.js');
+const DeathCircle = require('./objects/death_circle.js');
 
 let app = express();
 let serv = require('http').Server(app);
@@ -42,7 +42,7 @@ const game = {
     canvasWidth: 2000
 };
 
-circle = new Death_Circle(1000, 1000, 1000);
+circle = new DeathCircle(1000, 1000, 1000);
 
 setInterval(updateGame, 1000 * UPDATE_TIME);
 
@@ -163,7 +163,7 @@ function onNewPlayer(data) {
                                mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
                                Math.PI / 2, this.id, data.username);
 
-    while (colliding(newPlayer)) {
+    while (colliding(newPlayer) && !circle.in_circle(newPlayer)) {
         newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
                          mapFloatToInt(Math.random(), 0, 1, 250, gane.canvasHeight - 250));
     }
