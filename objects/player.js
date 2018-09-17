@@ -26,6 +26,7 @@ module.exports = class Player {
         this.dead = false;
         this.bullets = 10;
         this.life = 3;
+        this.invul_time = 0;
         this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
             new SAT.Vector(-47, -4),
             new SAT.Vector(-33, -19),
@@ -165,4 +166,13 @@ module.exports = class Player {
         this.addAngle((this.inputs.right)? ratio*ANGULAR_VEL*dt : 0);
         this.addAngle((this.inputs.left)? -ratio*ANGULAR_VEL*dt : 0);
     }
+    
+    takeDamage(delta, mod) {
+      this.invul_time += delta;
+      if (this.invul_time % (mod * delta) == 0) {
+        this.life--;
+        this.invul_time = delta;
+      }
+    }
+
 };

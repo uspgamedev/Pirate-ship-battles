@@ -39,7 +39,11 @@ const game = {
     // Game height
     canvasHeight: 2000,
     // Game width
-    canvasWidth: 2000
+    canvasWidth: 2000,
+    // Advances by one each game update cycle (related to player invulnerability)
+    delta: 1,
+    // Arbitrary integer variable, used to define invulnerability time
+    mod: 120 
 };
 
 circle = new DeathCircle(1000, 1000, 1000);
@@ -76,8 +80,12 @@ function updateGame() {
             p.rightHoldStart = 0;
         }
         //checking if outside safe-zone
-        if (!circle.in_circle(p))
-          playerKilled(p);  
+        if (!circle.in_circle(p)) {
+          p.takeDamage(game.delta, game.mod);
+          if (p.life <= 0) {
+            playerKilled(p);
+          }  
+        }    
     }
 
     // Update bullets
