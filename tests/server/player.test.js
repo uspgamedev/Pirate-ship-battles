@@ -37,3 +37,26 @@ test('objects/player: tryToShoot() no bullets', () => {
     expect(p_shoot).not.toReturn;
 
 });
+
+test('objects/player: canShoot()', () => {
+    let p = new Player(0, 0, 0, 0, 'test');
+    let can = false;
+
+    p.lastShootTimeRight =  Date.now() - 2000;
+    can = p.canShoot(true);
+    expect(can).toBe(true);
+
+    p.lastShootTimeRight =  Date.now() + 6000;
+    can = p.canShoot(true);
+    expect(can).toBe(false);
+
+});
+
+// Todo: position and angle related tests
+
+test('objects/player: takeDamage()', () => {
+    let p = new Player(0, 0, 0, 0, 'test');
+
+    p.takeDamage(1, 1);
+    expect(p.life).toBe(2);
+});
