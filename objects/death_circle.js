@@ -29,7 +29,7 @@ module.exports = class DeathCircle {
     try {
       if (new_center_x >= this.center_x) throw "new_center_x must be smaller than current center_x.";
       if (new_center_y >= this.center_y) throw "new_center_y must be smaller than current center_y.";
-      if (new_radius >= this.r) throw "new_radius must be lower than previous radius."
+      if (new_radius >= this.radius) throw "new_radius must be lower than previous radius."
 
       this.center_x = new_center_x;
       this.center_y = new_center_y;
