@@ -1,8 +1,8 @@
 /*
- * Tests the _aux.js module
+ * Tests the box.js object
  */
 
-const aux = require('../../objects/box.js'); // todo : Improve this finding the absolute root 
+const Box = require('../../objects/box.js'); // todo : Improve this finding the absolute root
 
 test('objects/box: class Box - constructor', () => {
     let box = new Box(800, 600, 'box');

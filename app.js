@@ -43,10 +43,10 @@ const game = {
     // Advances by one each game update cycle (related to player invulnerability)
     delta: 1,
     // Arbitrary integer variable, used to define invulnerability time
-    mod: 120 
+    mod: 120
 };
 
-circle = new DeathCircle(1000, 1000, 1000);
+circle = new DeathCircle(1000, 1000, 1000, game.canvasWidth, game.canvasHeight);
 
 setInterval(updateGame, 1000 * UPDATE_TIME);
 
@@ -84,8 +84,8 @@ function updateGame() {
           p.takeDamage(game.delta, game.mod);
           if (p.life <= 0) {
             playerKilled(p);
-          }  
-        }    
+          }
+        }
     }
 
     // Update bullets

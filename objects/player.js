@@ -65,7 +65,7 @@ module.exports = class Player {
      * @returns {Bullet} The bullet just created, or null if it can not shoot
      */
     tryToShoot(rightSide) {
-        if (this.bullets <= 0)
+        if (this.bullets <= 0) 
             return [];
 
         let canShoot = false;
@@ -166,7 +166,7 @@ module.exports = class Player {
         this.addAngle((this.inputs.right)? ratio*ANGULAR_VEL*dt : 0);
         this.addAngle((this.inputs.left)? -ratio*ANGULAR_VEL*dt : 0);
     }
-    
+
     takeDamage(delta, mod) {
       this.invul_time += delta;
       if (this.invul_time % (mod * delta) == 0) {
