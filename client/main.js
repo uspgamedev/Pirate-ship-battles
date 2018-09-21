@@ -98,6 +98,7 @@ class Main extends Phaser.Scene {
         this.load.image('base_controller', 'client/assets/base_controller.png');
         this.load.image('top_controller', 'client/assets/top_controller.png');
         this.load.image('shot_controller', 'client/assets/shot_controller.png');
+        this.load.image('mask', 'client/assets/mask1.png');
     }
 
     create(username) {
@@ -139,7 +140,7 @@ class Main extends Phaser.Scene {
         });
         this.anims.create({key: 'ocean', frames: frameNames, frameRate: 10, repeat: -1});
 
-        // Create background tiles
+        //Create background tiles
         this.heightTiles = Math.ceil((camera.height + 2*BG_MARGIN)/TILE_H);
         this.widthTiles = Math.ceil((camera.width + 2*BG_MARGIN)/TILE_W);
         for (let i = 0; i < this.widthTiles; i++) {
@@ -150,6 +151,28 @@ class Main extends Phaser.Scene {
             }
         }
 
+        // var graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xaa0000 }, fillStyle: { color: 0x0000aa } });
+        // graphics.fillRect(0,0,500,500)
+        //
+        // var shape = this.make.graphics();
+        //
+        // //  Create a hash shape Graphics object
+        // shape.fillStyle(0xffffff);
+        //
+        // //  You have to begin a path for a Geometry mask to work
+        // shape.beginPath();
+        //
+        // shape.fillRect(50, 0, 50, 300);
+        // shape.fillRect(175, 0, 50, 300);
+        // shape.fillRect(0, 75, 275, 50);
+        // shape.fillRect(0, 200, 275, 50);
+        //
+        // var mask = shape.createGeometryMask();
+        //
+        // shape.x = 200;
+        // shape.y = 200;
+        //
+        // graphics.setMask(mask);
     }
 
     update(dt) {
