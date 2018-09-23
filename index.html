@@ -1,34 +1,52 @@
-<!doctype html>
-<html lang = "en">
-	<head>
-		<link rel="stylesheet" type="text/css" href="client/css/style.css" />
+<!--=========================================================================-->
+<!--=                          Pirate Ship Battles                          =-->
+<!--=========================================================================-->
 
-	</head>
-	<body>
-		<div id = "signDiv">
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Meta -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Title -->
+    <title>Pirate Ship Battles</title>
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    <link rel="stylesheet" type="text/css" href="client/css/style.css" />
+  </head>
+<!--=========================================================================-->
+  <body>
+    <!-- Form -->
+    <div id = "signDiv">
 		  <div class="sign-up">Enter your name:</div>
 			<input id="signdivusername" type="text" placeholder="Username"/>
 			<button id="entername" class="hidden"><span class="text">PLAY</span></button><br>
 			<input id="mobilecheckbox" type="checkbox"><span class="text"> Mobile Mode</span>
 			<p id="errorLog"></p>
 		</div>
-		<script>
-			signdivusername.onkeypress = function(e) {
-				if (e.keyCode == 13)
-					entername.click();
-			}
-		</script>
-		<div id="gameDiv" display="none">
-		</div>
 
-		<script src="client/lib/phaser.js"></script>
-		<script src="/socket.io/socket.io.js"></script>
-		<script src="client/util.js"></script>
-		<script src="client/players.js"></script>
-		<script src="client/hud.js"></script>
-		<script src="client/item.js"></script>
-		<script src="client/login.js"></script>
-		<script src="client/main.js"></script>
-		<script src="client/game.js"></script>
-	</body>
+    <!-- Game -->
+    <div id="gameDiv" display="none"></div>
+
+    <!-- Scripts -->
+    <script src="client/lib/phaser.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client/util.js"></script>
+    <script src="client/players.js"></script>
+    <script src="client/hud.js"></script>
+    <script src="client/item.js"></script>
+    <script src="client/login.js"></script>
+    <script src="client/main.js"></script>
+    <script src="client/game.js"></script>
+    <script>
+      signdivusername.onkeypress = function (e) {
+        if (e.keyCode == 13) entername.click();
+      }
+    </script>
+  </body>
 </html>
+
+<!--=========================================================================-->
