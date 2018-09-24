@@ -6,6 +6,7 @@
 
 var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
+var islandList = {}; // Islands list
 
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
@@ -71,10 +72,35 @@ class Box {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Island                                                                        //
+////////////////////////////////////////////////////////////////////////////////
+// Client Island class
+class Island {
+  constructor (scene, id, x, y, r) {
+    this.sizeX = 100;
+    this.sizeY = 100;
+    this.id = id;
+    //this.island = scene.add.image(x, toIsometric(y), "barrel");
+    //this.island.setDisplaySize(this.sizeX, this.sizeY);
+    //this.island.setSize(this.sizeX, this.sizeY);
+    //this.island.par_obj = this; // Just to associate this id with the image
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.island.destroy();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
+
+////////////////////////////////////////////////////////////////////////////////
 // Function called when new box is added at the server.
 function onCreateItem (data) {
   if (!(data.id in boxList)) {
-    let newBox = new Box(this, data.id, data.x, data.y);
+    let newBox = new Box(this, data.id, data.x, data.y, data.r);
     boxList[data.id] = newBox;
   }
 }
@@ -91,6 +117,16 @@ function onItemRemove (data) {
   boxList[data.id].destroy();
 
   delete boxList[data.id];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Function called when new island is added at the server.
+function onCreateIsland (data) {
+  if (!(data.id in islandList)) {
+    console.log(`Criando ilha ${data.id}`);
+    let newIsland = new Island(this, data.id, data.x, data.y, data.r);
+    islandList[data.id] = newIsland;
+  }
 }
 
 ////////////////////////////////////////////////////////////////////////////////

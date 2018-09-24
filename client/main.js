@@ -49,6 +49,7 @@ function resetObjects () {
   player = null;
   boxList = {};
   bulletList = {};
+  islandList = {};
   background = [];
 }
 
@@ -83,6 +84,7 @@ class Main extends Phaser.Scene {
     socket.on('remove_player', onRemovePlayer.bind(this));
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
+    socket.on('island_create', onCreateIsland.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
     socket.on('update_game', onUpdate);

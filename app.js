@@ -8,6 +8,8 @@ const SAT = require('sat');
 const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
 const DeathCircle = require('./objects/death_circle.js');
+const Island = require('./objects/island.js');
+const aux = require('./objects/_aux.js');
 
 let app = express();
 let serv = require('http').Server(app);
@@ -34,12 +36,16 @@ const game = {
   playerList: {},
   /** @type Bullet{}*/
   bulletList: {},
+  //List of islands in the game
+  islandList: {},
   // boxes object list
   boxList: {},
   // The max number of pickable boxes in the game
   boxesMax: 15,
   // Size of the boxes list
   numOfBoxes: 0,
+  // The max number of islands in the game
+  islandMax: 2,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -120,6 +126,11 @@ function updateGame () {
 
     for (const kb in game.bulletList)
       collidePlayerAndBullet(p1, game.bulletList[kb]);
+    
+      for (const kb in game.islandList) {
+        collidePlayerAndIslandRestore(p1, game.islandList[kb]);
+        collidePlayerAndIslandGround(p1, game.islandList[kb]);
+      }
   }
 
   io.in('game').emit("update_game", {playerList: game.playerList, bulletList: game.bulletList});
@@ -134,6 +145,22 @@ function addBox () {
     game.boxList[boxentity.id] = boxentity;
     io.in('game').emit("item_create", boxentity);
     game.numOfBoxes++;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Create the pickable boxes there are missing at the game
+function addIslands () {
+  let n = game.islandMax;
+  for (let i = 0; i < n; i++) {
+    // Generating them like this is redundant, considering the consistency check
+    // contained inside island.js, but this may allow more customization options later
+    let x = aux.getRndInteger(0, game.canvasWidth);
+    let y = aux.getRndInteger(0, game.canvasHeight);
+    let islandentity = new Island(x, y, 100, "bullet", game.canvasWidth, game.canvasHeight);
+    game.islandList[islandentity.id] = islandentity;
+    console.log(`Creating island of id ${islandentity.id}, x: ${islandentity.center_x}, y: ${islandentity.center_y}`);
+    io.in('game').emit("island_create", islandentity);
   }
 }
 
@@ -304,6 +331,32 @@ function collidePlayerAndBullet (p1, bullet) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Called to verify player is in island restore area
+function collidePlayerAndIslandRestore (p1, isl) {
+  if (!(p1.id in game.playerList) || !(isl.id in game.islandList))
+    return;
+
+  if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
+    p1.gainResource(game.delta, game.mod, isl.type);
+
+    console.log(`Player entered an ${isl.type} island`);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Called to verify player is in island restore area
+function collidePlayerAndIslandGround (p1, isl) {
+  if (!(p1.id in game.playerList) || !(isl.id in game.islandList))
+    return;
+
+  if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
+    playerKilled(p1);
+
+    console.log(`Player collided with an island`);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Called when a someone dies
 function playerKilled (player) {
   console.log(`${player.username} died!`);
@@ -350,5 +403,7 @@ io.sockets.on('connection', function(socket) {
 
 // Prepare the boxes
 addBox();
+// Prepare the islands
+addIslands();
 
 ////////////////////////////////////////////////////////////////////////////////

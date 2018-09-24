@@ -42,7 +42,7 @@ module.exports = class DeathCircle {
       this.radius = new_radius;
       this.radius_sqr = new_radius**2;
     } catch (err) {
-      console.log("DeathCircle constructor: " + err);
+      console.log("DeathCircle update_circle: " + err);
     }
   }
 
