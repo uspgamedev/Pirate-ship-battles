@@ -77,13 +77,13 @@ class Box {
 // Client Island class
 class Island {
   constructor (scene, id, x, y, r) {
-    this.sizeX = 100;
-    this.sizeY = 100;
+    this.sizeX = 172;
+    this.sizeY = 131;
     this.id = id;
-    //this.island = scene.add.image(x, toIsometric(y), "barrel");
-    //this.island.setDisplaySize(this.sizeX, this.sizeY);
-    //this.island.setSize(this.sizeX, this.sizeY);
-    //this.island.par_obj = this; // Just to associate this id with the image
+    this.island = scene.add.image(x, toIsometric(y), "island");
+    this.island.setDisplaySize(this.sizeX, this.sizeY);
+    this.island.setSize(this.sizeX, this.sizeY);
+    this.island.par_obj = this; // Just to associate this id with the image
   }
 
   //////////////////////////////////////////////////////////////////////////////

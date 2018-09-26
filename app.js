@@ -45,7 +45,7 @@ const game = {
   // Size of the boxes list
   numOfBoxes: 0,
   // The max number of islands in the game
-  islandMax: 2,
+  islandMax: 10,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -126,7 +126,7 @@ function updateGame () {
 
     for (const kb in game.bulletList)
       collidePlayerAndBullet(p1, game.bulletList[kb]);
-    
+
       for (const kb in game.islandList) {
         collidePlayerAndIslandRestore(p1, game.islandList[kb]);
         collidePlayerAndIslandGround(p1, game.islandList[kb]);
@@ -149,17 +149,15 @@ function addBox () {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Create the pickable boxes there are missing at the game
 function addIslands () {
-  let n = game.islandMax;
+  let n = game.islandMax - Object.keys(game.islandList).length;
   for (let i = 0; i < n; i++) {
     // Generating them like this is redundant, considering the consistency check
     // contained inside island.js, but this may allow more customization options later
     let x = aux.getRndInteger(0, game.canvasWidth);
     let y = aux.getRndInteger(0, game.canvasHeight);
-    let islandentity = new Island(x, y, 100, "bullet", game.canvasWidth, game.canvasHeight);
+    let islandentity = new Island(x, y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
     game.islandList[islandentity.id] = islandentity;
-    console.log(`Creating island of id ${islandentity.id}, x: ${islandentity.center_x}, y: ${islandentity.center_y}`);
     io.in('game').emit("island_create", islandentity);
   }
 }
@@ -190,9 +188,17 @@ function mapFloatToInt (v, fmin, fmax, imin, imax) {
 
 ////////////////////////////////////////////////////////////////////////////////
 function colliding (newPlayer) {
-  let minDist = 130*130;
+  let minPlayerDist = 130*130;
+  let minIslandDist = 220*220;
+  // Check for players
   for (const k in game.playerList) {
-    if (distSq(newPlayer, game.playerList[k]) < minDist)
+    console.log(`${game.playerList[k]}`)
+    if (distSq(newPlayer, game.playerList[k]) < minPlayerDist)
+      return true;
+  }
+  for (const i in game.islandList) {
+    console.log(`${game.islandList[i]}`)
+    if (distSq(newPlayer, game.islandList[i]) < minIslandDist)
       return true;
   }
   return false;
@@ -244,6 +250,9 @@ function onNewPlayer (data) {
 
   for (let k in game.bulletList)
     this.emit('bullet_create', game.bulletList[k]);
+
+  for (let k in game.islandList)
+    this.emit('island_create', game.islandList[k]);
 
   //send message to every connected client except the sender
   this.broadcast.emit('new_enemyPlayer', current_info);
@@ -339,7 +348,6 @@ function collidePlayerAndIslandRestore (p1, isl) {
   if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
     p1.gainResource(game.delta, game.mod, isl.type);
 
-    console.log(`Player entered an ${isl.type} island`);
   }
 }
 
@@ -352,7 +360,6 @@ function collidePlayerAndIslandGround (p1, isl) {
   if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
     playerKilled(p1);
 
-    console.log(`Player collided with an island`);
   }
 }
 
