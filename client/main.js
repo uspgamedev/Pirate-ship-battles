@@ -158,28 +158,18 @@ class Main extends Phaser.Scene {
       }
     }
 
-    // var graphics = this.add.graphics({ lineStyle: { width: 2, color: 0xaa0000 }, fillStyle: { color: 0x0000aa } });
-    // graphics.fillRect(0,0,500,500)
-    //
-    // var shape = this.make.graphics();
-    //
-    // // Create a hash shape Graphics object
-    // shape.fillStyle(0xffffff);
-    //
-    // // You have to begin a path for a Geometry mask to work
-    // shape.beginPath();
-    //
-    // shape.fillRect(50, 0, 50, 300);
-    // shape.fillRect(175, 0, 50, 300);
-    // shape.fillRect(0, 75, 275, 50);
-    // shape.fillRect(0, 200, 275, 50);
-    //
-    // var mask = shape.createGeometryMask();
-    //
-    // shape.x = 200;
-    // shape.y = 200;
-    //
-    // graphics.setMask(mask);
+    let circle = this.add.graphics();
+    let color = 0xff0000;
+    let thickness = 4;
+    let alpha = 1;
+
+    circle.lineStyle(thickness, color, alpha);
+
+    let a = new Phaser.Geom.Point(1000, 1000);
+    let radius = 1000;
+
+    circle.strokeCircle(a.x, a.y, radius);
+  
   }
 
   ////////////////////////////////////////////////////////////////////////////////
