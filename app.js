@@ -189,15 +189,13 @@ function mapFloatToInt (v, fmin, fmax, imin, imax) {
 ////////////////////////////////////////////////////////////////////////////////
 function colliding (newPlayer) {
   let minPlayerDist = 130*130;
-  let minIslandDist = 220*220;
+  let minIslandDist = 300*300;
   // Check for players
   for (const k in game.playerList) {
-    console.log(`${game.playerList[k]}`)
     if (distSq(newPlayer, game.playerList[k]) < minPlayerDist)
       return true;
   }
   for (const i in game.islandList) {
-    console.log(`${game.islandList[i]}`)
     if (distSq(newPlayer, game.islandList[i]) < minIslandDist)
       return true;
   }
