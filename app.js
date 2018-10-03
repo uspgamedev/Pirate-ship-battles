@@ -9,6 +9,7 @@ const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
 const DeathCircle = require('./objects/death_circle.js');
 const Island = require('./objects/island.js');
+const ScoreBoard = require('./objects/score_board.js');
 const aux = require('./objects/_aux.js');
 
 let app = express();
@@ -40,6 +41,8 @@ const game = {
   islandList: {},
   // boxes object list
   boxList: {},
+  // The list of scores form active players
+  score_board: new ScoreBoard(),
   // The max number of pickable boxes in the game
   boxesMax: 15,
   // Size of the boxes list
@@ -242,6 +245,7 @@ function onNewPlayer (data) {
   }
 
   game.playerList[this.id] = newPlayer;
+  game.score_board.add_player(this.id);
 
   for (let k in game.boxList)
     this.emit('item_create', game.boxList[k]);
@@ -328,6 +332,7 @@ function collidePlayerAndBullet (p1, bullet) {
     return;
 
   if (SAT.testPolygonCircle(p1.poly, bullet.poly)) {
+    game.score_board.update_score(bullet.creator);
     delete game.bulletList[bullet.id];
     io.in('game').emit('bullet_remove', bullet);
     console.log(`Bullet hit ${p1.username}`);
@@ -367,6 +372,7 @@ function playerKilled (player) {
   console.log(`${player.username} died!`);
   if (player.id in game.playerList) {
     console.log(`${player.username} was removed`);
+    game.score_board.remove_player(player.id);
     delete game.playerList[player.id];
     io.in('game').emit('remove_player', player);
     io.sockets.sockets[player.id].leave('game');
@@ -381,9 +387,10 @@ function playerKilled (player) {
 // remove the disconnected player
 function onClientDisconnect () {
   console.log('disconnect');
-  if (this.id in game.playerList)
+  if (this.id in game.playerList) {
+    game.score_board.remove_player(this.id);
     delete game.playerList[this.id];
-
+  }
   console.log("removing player " + this.id);
 
   this.broadcast.emit('remove_player', {id: this.id});
