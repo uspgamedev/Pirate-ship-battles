@@ -7,7 +7,7 @@ const unique = require('node-uuid');
 const SAT = require('sat');
 const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
-const DeathCircle = require('./objects/death_circle.js');
+const SafeZone = require('./objects/safe_zone.js');
 const Island = require('./objects/island.js');
 const ScoreBoard = require('./objects/score_board.js');
 const aux = require('./objects/_aux.js');
@@ -59,7 +59,7 @@ const game = {
   mod: 120
 };
 
-circle = new DeathCircle(1000, 1000, 1000, game.canvasWidth, game.canvasHeight);
+circle = new SafeZone(1000, 1000, 1000, game.canvasWidth, game.canvasHeight);
 
 setInterval(updateGame, 1000 * UPDATE_TIME);
 

@@ -1,19 +1,18 @@
 ////////////////////////////////////////////////////////////////////////////////
 //                            Pirate Ship Battles                             //
 //                                                                            //
-//                           Server - Death Circle                            //
+//                           Server - Safe Zone                               //
 ////////////////////////////////////////////////////////////////////////////////
-// Note that, although it is called  "death  circle",  the  actual  circle  area
-// represents the safe zone for the player. Only  the  outer  area  actually  is
-// harmful to the player.
+// The safe zone is a circle server-side that can change its size over time.
+// Due to the isometric view, its graphic representation is a circle.
 
 const SAT = require('sat');
 const unique = require('node-uuid');
 
 ////////////////////////////////////////////////////////////////////////////////
-// DeathCircle                                                                //
+// Safe Zone                                                                  //
 ////////////////////////////////////////////////////////////////////////////////
-module.exports = class DeathCircle {
+module.exports = class SafeZone {
   constructor (center_x, center_y, radius, max_x, max_y) {
     try {
       if (center_x < 0 || center_x >= max_x) throw "center_x must be non-negative or smaller than max_x";
@@ -26,7 +25,7 @@ module.exports = class DeathCircle {
       this.radius = radius;
       this.radius_sqr = radius**2;
     } catch (err) {
-      console.log("DeathCircle constructor: " + err);
+      console.log("SafeZone constructor: " + err);
     }
   }
 
@@ -42,7 +41,7 @@ module.exports = class DeathCircle {
       this.radius = new_radius;
       this.radius_sqr = new_radius**2;
     } catch (err) {
-      console.log("DeathCircle update_circle: " + err);
+      console.log("SafeZone update_circle: " + err);
     }
   }
 

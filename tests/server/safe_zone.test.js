@@ -1,20 +1,20 @@
 ////////////////////////////////////////////////////////////////////////////////
 //                            Pirate Ship Battles                             //
 //                                                                            //
-//                       Tests - Server - Death Circle                        //
+//                       Tests - Server - Safe Zone                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-const DeathCircle = require('../../objects/death_circle.js'); // todo : Improve this finding the absolute root
+const SafeZone = require('../../objects/safe_zone.js'); // todo : Improve this finding the absolute root
 const Player = require('../../objects/player.js');
 
 ////////////////////////////////////////////////////////////////////////////////
-// Constructs a valid DeathCircle
-test('objects/death_circle: class DeathCircle - constructor - sucess', () => {
+// Constructs a valid SafeZone
+test('objects/safe_zone: class SafeZone - constructor - sucess', () => {
   let x = Math.floor(Math.random() * 2000);
   let y = Math.floor(Math.random() * 2000);
   let r = Math.floor(Math.random() * 500);
 
-  let dc = new DeathCircle(x, y, r, 2000, 2000);
+  let dc = new SafeZone(x, y, r, 2000, 2000);
 
   expect(dc.center_x).toBe(x);
   expect(dc.center_y).toBe(y);
@@ -22,26 +22,26 @@ test('objects/death_circle: class DeathCircle - constructor - sucess', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-// Constructs a invalid DeathCircle, in all ways possible.
-test('objects/death_circle: class DeathCircle - constructor - failure', () => {
+// Constructs a invalid SafeZone, in all ways possible.
+test('objects/safe_zone: class SafeZone - constructor - failure', () => {
   let temp_neg = Math.floor(Math.random() * -2000);
   let temp_bigger = Math.floor(Math.random() * 2000) + 2000;
 
-  expect(new DeathCircle(temp_neg, 1000, 1000, 2000, 2000)).toThrow;
-  expect(new DeathCircle(1000, temp_neg, 1000, 2000, 2000)).toThrow;
-  expect(new DeathCircle(temp_bigger, 1000, 1000, 2000, 2000)).toThrow;
-  expect(new DeathCircle(1000, temp_bigger, 1000, 2000, 2000)).toThrow;
-  expect(new DeathCircle(1000, 1000, temp_neg, 2000, 2000)).toThrow;
+  expect(new SafeZone(temp_neg, 1000, 1000, 2000, 2000)).toThrow;
+  expect(new SafeZone(1000, temp_neg, 1000, 2000, 2000)).toThrow;
+  expect(new SafeZone(temp_bigger, 1000, 1000, 2000, 2000)).toThrow;
+  expect(new SafeZone(1000, temp_bigger, 1000, 2000, 2000)).toThrow;
+  expect(new SafeZone(1000, 1000, temp_neg, 2000, 2000)).toThrow;
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-// Successfully updates de center and radius of a DeathCircle.
-test('objects/death_circle: update_circle() - sucess', () => {
+// Successfully updates de center and radius of a SafeZone.
+test('objects/safe_zone: update_circle() - sucess', () => {
   let temp_x = Math.floor(Math.random() * 1000);
   let temp_y = Math.floor(Math.random() * 1000);
   let temp_r = Math.floor(Math.random() * 1000);
 
-  let dc = new DeathCircle(temp_x, temp_y, temp_r, temp_x + 2000, temp_y + 2000);
+  let dc = new SafeZone(temp_x, temp_y, temp_r, temp_x + 2000, temp_y + 2000);
 
   let new_temp_x = Math.floor(Math.random() * temp_x);
   let new_temp_y = Math.floor(Math.random() * temp_y);
@@ -54,12 +54,12 @@ test('objects/death_circle: update_circle() - sucess', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-// Fails to update the DeathCircle in all ways that it could break.
-test('objects/death_circle: update_circle() - failure', () => {
+// Fails to update the SafeZone in all ways that it could break.
+test('objects/safe_zone: update_circle() - failure', () => {
   let temp = Math.floor(Math.random() * 1000);
-  let dc1 = new DeathCircle(temp, 1000, 1000, 2000, 2000);
-  let dc2 = new DeathCircle(1000, temp, 1000, 2000, 2000);
-  let dc3 = new DeathCircle(1000, 1000, temp, 2000, 2000);
+  let dc1 = new SafeZone(temp, 1000, 1000, 2000, 2000);
+  let dc2 = new SafeZone(1000, temp, 1000, 2000, 2000);
+  let dc3 = new SafeZone(1000, 1000, temp, 2000, 2000);
 
   expect(dc1.update_circle(temp + 500, 1000, 1000)).toThrow;
   expect(dc2.update_circle(1000, temp + 500, 1000)).toThrow;
@@ -68,18 +68,23 @@ test('objects/death_circle: update_circle() - failure', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tests if we correctly say if a player is in the circle.
-test('objects/death_circle: in_circle()', () => {
+test('objects/safe_zone: in_circle()', () => {
   let border = Math.floor(Math.random() * 5000);
   let center = Math.floor(Math.random() * border);
   let radius = Math.floor(Math.random() * 1000);
 
-  let dc = new DeathCircle(center, center, radius, border, border);
+  let dc = new SafeZone(center, center, radius, border, border);
 
-  let inside_x = (center + radius) - Math.random() * radius;
-  let inside_y = (center + radius) - Math.random() * radius;
+  // Approach using polar coordinates to determine a point inside the circle.
+  let theta = 2 * Math.PI * Math.random();
+  let l = Math.random() * radius;
+  let inside_x = center + Math.cos(theta) * l;
+  let inside_y = center + Math.sin(theta) * l;
 
-  let outside_x = Math.random() * 1000 + (center + radius);
-  let outside_y = Math.random() * 1000 + (center + radius);
+  theta = 2 * Math.PI * Math.random();
+  l = Math.random() * radius + radius;
+  let outside_x = center + Math.cos(theta) * l;
+  let outside_y = center + Math.sin(theta) * l;
 
   let inside_p = new Player(inside_x, inside_y, 0, 0, 'test1');
   let outside_p = new Player(outside_x, outside_y, 0, 0, 'test2');
