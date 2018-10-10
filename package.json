@@ -19,7 +19,7 @@
     "test": "jest"
   },
   "engines": {
-    "node": ">8.x"
+    "node": ">=8.x"
   },
   "devDependencies": {
     "jest": "^23.5.0"
