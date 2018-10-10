@@ -158,18 +158,14 @@ class Main extends Phaser.Scene {
       }
     }
 
-    let circle = this.add.graphics();
+    let safe_zone = this.add.graphics();
     let color = 0xff0000;
     let thickness = 4;
     let alpha = 1;
-
-    circle.lineStyle(thickness, color, alpha);
-
-    let a = new Phaser.Geom.Point(1000, 1000);
-    let radius = 1000;
-
-    circle.strokeCircle(a.x, a.y, radius);
-  
+    let smoothness = 64;
+    safe_zone.lineStyle(thickness, color, alpha);
+    let a = new Phaser.Geom.Point(1000, toIsometric(1000));
+    safe_zone.strokeEllipse(a.x, a.y, 1000*2, toIsometric(1000)*2, smoothness);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
