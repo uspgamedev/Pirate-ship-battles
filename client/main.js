@@ -16,6 +16,39 @@ const TILE_H = 144;
 const TILE_W = 328;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Safe Zone Shader                                                           //
+////////////////////////////////////////////////////////////////////////////////
+var CustomPipeline2 = new Phaser.Class({
+
+    Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline,
+
+    initialize:
+
+    function CustomPipeline2 (game)
+    {
+        Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, {
+            game: game,
+            renderer: game.renderer,
+            fragShader: `
+            precision mediump float;
+
+            uniform sampler2D uMainSampler;
+
+            varying vec2 outTexCoord;
+            varying vec4 outTint;
+
+
+            void main(void)
+            {
+              gl_FragColor = texture2D(uMainSampler, outTexCoord);
+              gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
+            }
+            `
+        });
+    }
+});
+
+////////////////////////////////////////////////////////////////////////////////
 function onSocketConnected (data) {
   console.log("connected to server");
   if (!gameProperties.inGame) {
@@ -88,6 +121,8 @@ class Main extends Phaser.Scene {
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
     socket.on('update_game', onUpdate);
+
+    this.customPipeline;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -106,7 +141,8 @@ class Main extends Phaser.Scene {
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
-    this.load.image('mask', 'client/assets/mask1.png');
+
+
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -166,6 +202,10 @@ class Main extends Phaser.Scene {
     safe_zone.lineStyle(thickness, color, alpha);
     let a = new Phaser.Geom.Point(1000, toIsometric(1000));
     safe_zone.strokeEllipse(a.x, a.y, 1000*2, toIsometric(1000)*2, smoothness);
+
+    // Add Safe Zone shader to the game camera
+    //this.customPipeline = this.game.renderer.addPipeline('Custom', new CustomPipeline2(this.game));
+    //this.cameras.main.setRenderToTexture(this.customPipeline);
   }
 
   ////////////////////////////////////////////////////////////////////////////////

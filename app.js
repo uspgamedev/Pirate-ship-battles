@@ -218,7 +218,7 @@ function onNewPlayer (data) {
 
   while (colliding(newPlayer) && !circle.in_circle(newPlayer)) {
     newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-             mapFloatToInt(Math.random(), 0, 1, 250, gane.canvasHeight - 250));
+             mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
   }
   console.log("Created new player with id " + this.id);
 
