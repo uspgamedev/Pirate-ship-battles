@@ -37,15 +37,26 @@ test('objects/safe_zone: class SafeZone - constructor - failure', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Successfully updates de center and radius of a SafeZone.
 test('objects/safe_zone: update_circle() - sucess', () => {
-  let temp_x = Math.floor(Math.random() * 1000);
-  let temp_y = Math.floor(Math.random() * 1000);
-  let temp_r = Math.floor(Math.random() * 1000);
+  let temp_x = Math.floor(1 + Math.random() * 1000);
+  let temp_y = Math.floor(1 + Math.random() * 1000);
+  let temp_r = Math.floor(1 + Math.random() * 1000);
 
   let dc = new SafeZone(temp_x, temp_y, temp_r, temp_x + 2000, temp_y + 2000);
 
   let new_temp_x = Math.floor(Math.random() * temp_x);
+  while (new_temp_x == temp_x) {
+    new_temp_x = Math.floor(Math.random() * temp_x);
+  }
+
   let new_temp_y = Math.floor(Math.random() * temp_y);
+  while (new_temp_y == temp_y) {
+    new_temp_y = Math.floor(Math.random() * temp_y);
+  }
+
   let new_temp_r = Math.floor(Math.random() * temp_r);
+  while (new_temp_r == temp_r) {
+    new_temp_r = Math.floor(Math.random() * temp_r);
+  }
 
   dc.update_circle(new_temp_x, new_temp_y, new_temp_r);
   expect(dc.center_y).toBe(new_temp_y);
@@ -56,7 +67,7 @@ test('objects/safe_zone: update_circle() - sucess', () => {
 ////////////////////////////////////////////////////////////////////////////////
 // Fails to update the SafeZone in all ways that it could break.
 test('objects/safe_zone: update_circle() - failure', () => {
-  let temp = Math.floor(Math.random() * 1000);
+  let temp = Math.floor(1 + Math.random() * 1000);
   let dc1 = new SafeZone(temp, 1000, 1000, 2000, 2000);
   let dc2 = new SafeZone(1000, temp, 1000, 2000, 2000);
   let dc3 = new SafeZone(1000, 1000, temp, 2000, 2000);
