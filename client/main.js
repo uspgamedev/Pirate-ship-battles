@@ -19,33 +19,31 @@ const TILE_W = 328;
 // Safe Zone Shader                                                           //
 ////////////////////////////////////////////////////////////////////////////////
 var CustomPipeline2 = new Phaser.Class({
+  Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline,
 
-    Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline,
+  initialize:
 
-    initialize:
+  function CustomPipeline2 (game) {
+    Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, {
+      game: game,
+      renderer: game.renderer,
+      fragShader: `
+      precision mediump float;
 
-    function CustomPipeline2 (game)
-    {
-        Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, {
-            game: game,
-            renderer: game.renderer,
-            fragShader: `
-            precision mediump float;
+      uniform sampler2D uMainSampler;
 
-            uniform sampler2D uMainSampler;
-
-            varying vec2 outTexCoord;
-            varying vec4 outTint;
+      varying vec2 outTexCoord;
+      varying vec4 outTint;
 
 
-            void main(void)
-            {
-              gl_FragColor = texture2D(uMainSampler, outTexCoord);
-              gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
-            }
-            `
-        });
-    }
+      void main(void)
+      {
+        gl_FragColor = texture2D(uMainSampler, outTexCoord);
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
+      }
+      `
+    });
+  }
 });
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -141,8 +139,6 @@ class Main extends Phaser.Scene {
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
-
-
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -206,6 +202,17 @@ class Main extends Phaser.Scene {
     // Add Safe Zone shader to the game camera
     //this.customPipeline = this.game.renderer.addPipeline('Custom', new CustomPipeline2(this.game));
     //this.cameras.main.setRenderToTexture(this.customPipeline);
+
+    // Mini Map
+    this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+    this.minimap.setBackgroundColor(0x000000);
+    this.minimap.scrollX = 0;
+    this.minimap.scrollY = 0;
+    var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
+    var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+    border_graphics.fillRectShape(border);
+    border_graphics.setScrollFactor(0);
+    console.log(this.minimap);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -251,6 +258,12 @@ class Main extends Phaser.Scene {
         else if (tile.y > cameraCornerY + this.heightTiles*TILE_H)
           tile.y -= this.heightTiles*TILE_H;
       }
+    }
+
+    // Mini Map
+    if (player != null) {
+      this.minimap.scrollX = player.body.x;
+      this.minimap.scrollY = player.body.y;
     }
   }
 
