@@ -28,6 +28,7 @@ test('objects/score_board: remove_player()', () => {
   let p = new ScoreBoard();
 
   p.add_player(1); //Add a player
+  expect(p.score_list[1]).toBeDefined();
   p.remove_player(1);
   expect(p.score_list[1]).toBeUndefined();
 });
