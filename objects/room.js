@@ -179,16 +179,6 @@ module.exports = class Room {
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  function colliding (newPlayer) {
-    let minDist = 130*130;
-    for (const k in game.playerList) {
-      if (distSq(newPlayer, game.playerList[k]) < minDist)
-        return true;
-    }
-    return false;
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
   // Called when a new player connects to the server
   function onNewPlayer (data) {
     if (this.id in game.playerList) {

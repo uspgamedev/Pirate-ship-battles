@@ -202,7 +202,7 @@ module.exports = class Player {
         this.bullets += 3;
         this.ammo_counter = delta;
       }
-    }  
+    }
   }
 
   drainResource(delta, mod) {
@@ -210,7 +210,7 @@ module.exports = class Player {
       this.life_counter -= delta;
     if (this.ammo_counter > 0)
       this.ammo_counter -= delta;
-  }  
+  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////
