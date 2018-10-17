@@ -34,6 +34,7 @@ module.exports = class Player {
     this.invul_time = 0;
     this.ammo_counter = 0;
     this.life_counter = 0;
+    this.anchored_timer = 0;
     this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
       new SAT.Vector(-47, -4),
       new SAT.Vector(-33, -19),

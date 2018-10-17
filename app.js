@@ -350,6 +350,14 @@ function collidePlayerAndIslandRestore (p1, isl) {
     p1.speed = 0;
     p1.accel = 0;
 
+    if (p1.anchored_timer < 180) {
+      p1.anchored_timer += 1;
+    }
+    else {
+      // Move player on server and client
+      p1.x += 3;
+    }
+
     p1.gainResource(game.delta, game.mod, isl.type);
 
   }

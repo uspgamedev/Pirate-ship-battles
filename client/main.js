@@ -231,6 +231,10 @@ class Main extends Phaser.Scene {
   }
 
   disableInputs () {
+    if (player) {
+      player.inputs.up = false;
+    }
+
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S);
