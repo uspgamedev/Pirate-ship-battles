@@ -67,7 +67,9 @@ function updateGame () {
     if (!(k in game.playerList))
       continue;
     let p = game.playerList[k];
-    p.updatePos(UPDATE_TIME);
+    if (!p.anchored) {
+      p.updatePos(UPDATE_TIME);
+    }
 
     if (p.inputs.shootLeft && !p.leftHoldStart && p.canShoot(false))
       p.leftHoldStart = Date.now();
@@ -344,6 +346,10 @@ function collidePlayerAndIslandRestore (p1, isl) {
     return;
 
   if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
+    io.to(p1.id).emit("disable_inputs");
+    p1.speed = 0;
+    p1.accel = 0;
+
     p1.gainResource(game.delta, game.mod, isl.type);
 
   }

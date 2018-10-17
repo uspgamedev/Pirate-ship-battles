@@ -87,6 +87,8 @@ class Main extends Phaser.Scene {
     socket.on('island_create', onCreateIsland.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
+    socket.on('enable_inputs', this.enableInputs.bind(this));
+    socket.on('disable_inputs', this.disableInputs.bind(this));
     socket.on('update_game', onUpdate);
   }
 
@@ -169,7 +171,7 @@ class Main extends Phaser.Scene {
     let radius = 1000;
 
     circle.strokeCircle(a.x, a.y, radius);
-  
+
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -219,6 +221,15 @@ class Main extends Phaser.Scene {
   }
 
   ////////////////////////////////////////////////////////////////////////////////
+  enableInputs () {
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+  }
+
   disableInputs () {
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A);
