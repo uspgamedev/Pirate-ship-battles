@@ -1,4 +1,6 @@
 # Code name: Pirate-ship-battles
+ [![Build Status](https://travis-ci.org/uspgamedev/Pirate-ship-battles.svg?branch=master)](https://travis-ci.org/uspgamedev/Pirate-ship-battles) 
+ 
 Online multiplayer game about pirates for USPGameDev
 
 ## Install dependencies

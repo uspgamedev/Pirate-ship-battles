@@ -7,7 +7,7 @@
 var socket = io({transports: ['websocket'], upgrade: false});
 
 var config = {
-  type: Phaser.CANVAS,
+  type: Phaser.WEBGL,
   width: window.innerWidth,
   height: window.innerHeight,
   physics: {

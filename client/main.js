@@ -16,6 +16,37 @@ const TILE_H = 144;
 const TILE_W = 328;
 
 ////////////////////////////////////////////////////////////////////////////////
+// Safe Zone Shader                                                           //
+////////////////////////////////////////////////////////////////////////////////
+var CustomPipeline2 = new Phaser.Class({
+  Extends: Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline,
+
+  initialize:
+
+  function CustomPipeline2 (game) {
+    Phaser.Renderer.WebGL.Pipelines.TextureTintPipeline.call(this, {
+      game: game,
+      renderer: game.renderer,
+      fragShader: `
+      precision mediump float;
+
+      uniform sampler2D uMainSampler;
+
+      varying vec2 outTexCoord;
+      varying vec4 outTint;
+
+
+      void main(void)
+      {
+        gl_FragColor = texture2D(uMainSampler, outTexCoord);
+        gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
+      }
+      `
+    });
+  }
+});
+
+////////////////////////////////////////////////////////////////////////////////
 function onSocketConnected (data) {
   console.log("connected to server");
   if (!gameProperties.inGame) {
@@ -90,6 +121,8 @@ class Main extends Phaser.Scene {
     socket.on('enable_inputs', this.enableInputs.bind(this));
     socket.on('disable_inputs', this.disableInputs.bind(this));
     socket.on('update_game', onUpdate);
+
+    this.customPipeline;
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -108,7 +141,6 @@ class Main extends Phaser.Scene {
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
-    this.load.image('mask', 'client/assets/mask1.png');
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -160,18 +192,34 @@ class Main extends Phaser.Scene {
       }
     }
 
-    let circle = this.add.graphics();
+    let safe_zone = this.add.graphics();
     let color = 0xff0000;
     let thickness = 4;
     let alpha = 1;
+    let smoothness = 64;
+    safe_zone.lineStyle(thickness, color, alpha);
+    let a = new Phaser.Geom.Point(1000, toIsometric(1000));
+    safe_zone.strokeEllipse(a.x, a.y, 1000*2, toIsometric(1000)*2, smoothness);
 
-    circle.lineStyle(thickness, color, alpha);
+    // Add Safe Zone shader to the game camera
+    //this.customPipeline = this.game.renderer.addPipeline('Custom', new CustomPipeline2(this.game));
+    //this.cameras.main.setRenderToTexture(this.customPipeline);
 
-    let a = new Phaser.Geom.Point(1000, 1000);
-    let radius = 1000;
-
+<<<<<<< HEAD
     circle.strokeCircle(a.x, a.y, radius);
 
+=======
+    // Mini Map
+    this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+    this.minimap.setBackgroundColor(0x000000);
+    this.minimap.scrollX = 0;
+    this.minimap.scrollY = 0;
+    var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
+    var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+    border_graphics.fillRectShape(border);
+    border_graphics.setScrollFactor(0);
+    console.log(this.minimap);
+>>>>>>> f3f2020461ba9c4bfac61741786ecb651c4966ec
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -217,6 +265,12 @@ class Main extends Phaser.Scene {
         else if (tile.y > cameraCornerY + this.heightTiles*TILE_H)
           tile.y -= this.heightTiles*TILE_H;
       }
+    }
+
+    // Mini Map
+    if (player != null) {
+      this.minimap.scrollX = player.body.x;
+      this.minimap.scrollY = player.body.y;
     }
   }
 

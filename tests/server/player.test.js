@@ -62,6 +62,35 @@ test('objects/player: takeDamage()', () => {
 
   p.takeDamage(1, 1);
   expect(p.life).toBe(2);
+  expect(p.invul_time).toBe(1);
 });
 
 ////////////////////////////////////////////////////////////////////////////////
+test('objects/player: gainResource - life()', () => {
+  let p = new Player(0, 0, 0, 0, 'test');
+
+  p.gainResource(1, 1, "life");
+  expect(p.life).toBe(4);
+  expect(p.life_counter).toBe(1);
+});
+
+////////////////////////////////////////////////////////////////////////////////
+test('objects/player: gainResource - not life()', () => {
+  let p = new Player(0, 0, 0, 0, 'test');
+
+  p.gainResource(1, 1, "death");
+  expect(p.bullets).toBe(13);
+  expect(p.ammo_counter).toBe(1);
+});
+
+////////////////////////////////////////////////////////////////////////////////
+test('objects/player: drainResource', () => {
+  let p = new Player(0, 0, 0, 0, 'test');
+
+  p.gainResource(1, 1, "life"); //Do life_counter to be 1
+  p.gainResource(1, 1, "death"); //Do ammo_counter to be 1
+
+  p.drainResource(1, 1);
+  expect(p.life_counter).toBe(0);
+  expect(p.ammo_counter).toBe(0);
+});
