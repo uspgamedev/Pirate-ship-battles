@@ -204,11 +204,7 @@ class Main extends Phaser.Scene {
     // Add Safe Zone shader to the game camera
     //this.customPipeline = this.game.renderer.addPipeline('Custom', new CustomPipeline2(this.game));
     //this.cameras.main.setRenderToTexture(this.customPipeline);
-
-<<<<<<< HEAD
-    circle.strokeCircle(a.x, a.y, radius);
-
-=======
+    
     // Mini Map
     this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
     this.minimap.setBackgroundColor(0x000000);
@@ -219,7 +215,6 @@ class Main extends Phaser.Scene {
     border_graphics.fillRectShape(border);
     border_graphics.setScrollFactor(0);
     console.log(this.minimap);
->>>>>>> f3f2020461ba9c4bfac61741786ecb651c4966ec
   }
 
   ////////////////////////////////////////////////////////////////////////////////
