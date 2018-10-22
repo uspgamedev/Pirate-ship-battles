@@ -35,7 +35,6 @@ var CustomPipeline2 = new Phaser.Class({
       varying vec2 outTexCoord;
       varying vec4 outTint;
 
-
       void main(void)
       {
         gl_FragColor = texture2D(uMainSampler, outTexCoord);
@@ -204,7 +203,7 @@ class Main extends Phaser.Scene {
     // Add Safe Zone shader to the game camera
     //this.customPipeline = this.game.renderer.addPipeline('Custom', new CustomPipeline2(this.game));
     //this.cameras.main.setRenderToTexture(this.customPipeline);
-    
+
     // Mini Map
     this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
     this.minimap.setBackgroundColor(0x000000);
@@ -215,6 +214,13 @@ class Main extends Phaser.Scene {
     border_graphics.fillRectShape(border);
     border_graphics.setScrollFactor(0);
     console.log(this.minimap);
+
+    // Score Board
+    this.ScoreBoard = this.add.text(32, 250, 'ScoreBoard', {
+      backgroundColor: '#FFFFFF',
+      fill: '#009696',
+      fontSize: '24px'
+    }).setScrollFactor(0).setDepth(5000);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -260,12 +266,13 @@ class Main extends Phaser.Scene {
         else if (tile.y > cameraCornerY + this.heightTiles*TILE_H)
           tile.y -= this.heightTiles*TILE_H;
       }
-    }
 
-    // Mini Map
-    if (player != null) {
+      // Mini Map
       this.minimap.scrollX = player.body.x;
       this.minimap.scrollY = player.body.y;
+
+      // Score Board
+      this.ScoreBoard.setText('ScoreBoard');
     }
   }
 
