@@ -9,6 +9,7 @@ const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
 const SafeZone = require('./objects/safe_zone.js');
 const Island = require('./objects/island.js');
+const Stone = require('./objects/stone.js');
 const ScoreBoard = require('./objects/score_board.js');
 const aux = require('./objects/_aux.js');
 
@@ -39,6 +40,8 @@ const game = {
   bulletList: {},
   //List of islands in the game
   islandList: {},
+  //List of stones in the game
+  stoneList: {},
   // boxes object list
   boxList: {},
   // The list of scores form active players
@@ -49,6 +52,8 @@ const game = {
   numOfBoxes: 0,
   // The max number of islands in the game
   islandMax: 10,
+  // The max number of stones in the game
+  stoneMax: 20,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -164,6 +169,19 @@ function addIslands () {
     let islandentity = new Island(x, y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function addStones () {
+  let n = game.stoneMax - Object.keys(game.stoneList).length;
+  for (let i = 0; i < n; i++) {
+    let x = aux.getRndInteger(0, game.canvasWidth);
+    let y = aux.getRndInteger(0, game.canvasHeight);
+    // Verify if this (x, y) generated are not already in some island coordinates
+    let stoneentity = new Stone(x, y, 100, game.canvasWidth, game.canvasHeight);
+    game.stoneList[stoneentity.id] = stoneentity;
+    io.in('game').emit("stone_create", stoneentity);
   }
 }
 
@@ -368,6 +386,7 @@ function collidePlayerAndIslandRestore (p1, isl) {
       p1.x = isl.x + Math.cos(theta) * l;
       p1.y = isl.y + Math.sin(theta) * l;
       p1.anchored_timer = 0;
+      p1.angle = -Math.PI/2;
       p1.gainResource(game.delta, game.mod, isl.type);
     }
   }
@@ -436,5 +455,7 @@ io.sockets.on('connection', function(socket) {
 addBox();
 // Prepare the islands
 addIslands();
+// Prepare the stones
+addStones();
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -7,6 +7,7 @@
 var boxList = {}; // The box list
 var bulletList = {}; // Bullets list
 var islandList = {}; // Islands list
+var stoneList = {}; // Stones list
 
 ////////////////////////////////////////////////////////////////////////////////
 // Bullet                                                                     //
@@ -93,6 +94,27 @@ class Island {
 };
 
 ////////////////////////////////////////////////////////////////////////////////
+// Stone                                                                        //
+////////////////////////////////////////////////////////////////////////////////
+// Client Stone class
+class Stone {
+  constructor (scene, id, x, y, r) {
+    this.sizeX = 172;
+    this.sizeY = 131;
+    this.id = id;
+    this.stone = scene.add.image(x, toIsometric(y), "stone");
+    this.stone.setDisplaySize(this.sizeX, this.sizeY);
+    this.stone.setSize(this.sizeX, this.sizeY);
+    this.stone.par_obj = this; // Just to associate this id with the image
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  destroy () {
+    this.stone.destroy();
+  }
+};
+
+////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -126,6 +148,16 @@ function onCreateIsland (data) {
     console.log(`Criando ilha ${data.id}`);
     let newIsland = new Island(this, data.id, data.x, data.y, data.r);
     islandList[data.id] = newIsland;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Function called when new stone is added at the server.
+function onCreateStone (data) {
+  if (!(data.id in stoneList)) {
+    console.log(`Criando pedra ${data.id}`);
+    let newStone = new Stone(this, data.id, data.x, data.y, data.r);
+    stoneList[data.id] = newStone;
   }
 }
 

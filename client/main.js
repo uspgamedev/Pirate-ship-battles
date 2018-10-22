@@ -80,6 +80,7 @@ function resetObjects () {
   boxList = {};
   bulletList = {};
   islandList = {};
+  stoneList = {};
   background = [];
 }
 
@@ -115,6 +116,7 @@ class Main extends Phaser.Scene {
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('island_create', onCreateIsland.bind(this));
+    socket.on('stone_create', onCreateStone.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
     socket.on('enable_inputs', this.enableInputs.bind(this));
@@ -135,6 +137,7 @@ class Main extends Phaser.Scene {
     this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
     this.load.image("barrel", "client/assets/barrel.png");
     this.load.image("island", "client/assets/island.png");
+    this.load.image("stone", "client/assets/heart.png");
     this.load.image("enemy", "client/assets/enemy.png");
     this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     this.load.image('base_controller', 'client/assets/base_controller.png');
