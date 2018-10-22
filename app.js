@@ -361,11 +361,10 @@ function collidePlayerAndIslandRestore (p1, isl) {
 
     else {
       // Move player on server and client
-      del_x = isl.x - p1.x
-      del_y = isl.y - p1.y
-      alpha = del_y / del_x 
-      theta = Math.atan(alpha)
-      l = isl.radius * 2
+      del_x = p1.x - isl.x;
+      del_y = p1.y - isl.y;
+      theta = Math.atan2(del_y, del_x);
+      l = isl.radius * 4;
       p1.x = isl.x + Math.cos(theta) * l;
       p1.y = isl.y + Math.sin(theta) * l;
       p1.anchored_timer = 0;
