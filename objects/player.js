@@ -34,6 +34,7 @@ module.exports = class Player {
     this.invul_time = 0;
     this.ammo_counter = 0;
     this.life_counter = 0;
+    this.anchored_timer = 0;
     this.poly = new SAT.Polygon(new SAT.Vector(this.x, this.y), [
       new SAT.Vector(-47, -4),
       new SAT.Vector(-33, -19),
@@ -190,27 +191,13 @@ module.exports = class Player {
   //adcionar os counter no player
   gainResource (delta, mod, type) {
     if (type == "life") {
-      this.life_counter += delta;
-      if (this.life_counter % (mod * delta) == 0) {
-        this.life++;
-        this.life_counter = delta;
-      }
+      this.life += 1;
     }
     else {
-      this.ammo_counter += delta;
-      if (this.ammo_counter % (mod * delta) == 0) {
-        this.bullets += 3;
-        this.ammo_counter = delta;
-      }
+      this.bullets += 3;
     }
   }
 
-  drainResource(delta, mod) {
-    if (this.life_counter > 0)
-      this.life_counter -= delta;
-    if (this.ammo_counter > 0)
-      this.ammo_counter -= delta;
-  }
 };
 
 ////////////////////////////////////////////////////////////////////////////////

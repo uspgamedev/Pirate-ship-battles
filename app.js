@@ -9,6 +9,7 @@ const Player = require('./objects/player.js');
 const Box = require('./objects/box.js');
 const SafeZone = require('./objects/safe_zone.js');
 const Island = require('./objects/island.js');
+const Stone = require('./objects/stone.js');
 const ScoreBoard = require('./objects/score_board.js');
 const aux = require('./objects/_aux.js');
 
@@ -39,6 +40,8 @@ const game = {
   bulletList: {},
   //List of islands in the game
   islandList: {},
+  //List of stones in the game
+  stoneList: {},
   // boxes object list
   boxList: {},
   // The list of scores form active players
@@ -49,6 +52,8 @@ const game = {
   numOfBoxes: 0,
   // The max number of islands in the game
   islandMax: 10,
+  // The max number of stones in the game
+  stoneMax: 20,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -162,6 +167,19 @@ function addIslands () {
     let islandentity = new Island(x, y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+function addStones () {
+  let n = game.stoneMax - Object.keys(game.stoneList).length;
+  for (let i = 0; i < n; i++) {
+    let x = aux.getRndInteger(0, game.canvasWidth);
+    let y = aux.getRndInteger(0, game.canvasHeight);
+    // Verify if this (x, y) generated are not already in some island coordinates
+    let stoneentity = new Stone(x, y, 100, game.canvasWidth, game.canvasHeight);
+    game.stoneList[stoneentity.id] = stoneentity;
+    io.in('game').emit("stone_create", stoneentity);
   }
 }
 
@@ -349,8 +367,42 @@ function collidePlayerAndIslandRestore (p1, isl) {
     return;
 
   if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
-    p1.gainResource(game.delta, game.mod, isl.type);
 
+    // Player has touched island area, and is waiting
+    if (p1.anchored_timer < 180) {
+      io.to(p1.id).emit("disable_inputs");
+      p1.speed = 0;
+      p1.accel = 0;
+      p1.anchored_timer += 1;
+    }
+
+    // Player is ready to be freed
+    else {
+      // Move player on server and client
+      del_x = p1.x - isl.x;
+      del_y = p1.y - isl.y;
+      theta = Math.atan2(del_y, del_x);
+      // Setting anchored_timer to zero here may cause issues, because
+      // the player is still in contact with the island's restore poly.
+      // We should make this state known to the game (something like, moving_away).
+      p1.angle = theta + Math.PI/2;
+
+      if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
+        //Waiting for player to move out of the area
+        p1.x += Math.sign(Math.cos(theta)) * 0.2;
+        p1.y += Math.sign(Math.sin(theta)) * 0.2;
+
+        t_p1_poly = JSON.parse(JSON.stringify(p1.poly));
+        t_p1_poly.pos.x = p1.x;
+        t_p1_poly.pos.y = p2.y;
+
+        // Player left the area after this movement
+        if (!SAT.testPolygonCircle(t_p1_poly, isl.restore_poly)) {
+          p1.gainResource(game.delta, game.mod, isl.type);
+          p1.anchored_timer = 0;
+        }
+      }
+    }
   }
 }
 
@@ -417,5 +469,7 @@ io.sockets.on('connection', function(socket) {
 addBox();
 // Prepare the islands
 addIslands();
+// Prepare the stones
+addStones();
 
 ////////////////////////////////////////////////////////////////////////////////

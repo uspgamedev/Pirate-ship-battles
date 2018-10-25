@@ -40,7 +40,6 @@ var CustomPipeline2 = new Phaser.Class({
       varying vec2 outTexCoord;
       varying vec4 outTint;
 
-
       void main() {
 	       vec2 pos = gl_FragCoord.xy;
          vec2 world_pos = vec2(viewport.x + pos.x, viewport.y + pos.y);
@@ -93,6 +92,7 @@ function resetObjects () {
   boxList = {};
   bulletList = {};
   islandList = {};
+  stoneList = {};
   background = [];
 }
 
@@ -128,8 +128,11 @@ class Main extends Phaser.Scene {
     socket.on('item_remove', onItemRemove);
     socket.on('item_create', onCreateItem.bind(this));
     socket.on('island_create', onCreateIsland.bind(this));
+    socket.on('stone_create', onCreateStone.bind(this));
     socket.on('bullet_remove', onBulletRemove);
     socket.on('bullet_create', onCreateBullet.bind(this));
+    socket.on('enable_inputs', this.enableInputs.bind(this));
+    socket.on('disable_inputs', this.disableInputs.bind(this));
     socket.on('update_game', onUpdate);
 
     this.customPipeline = null;
@@ -146,6 +149,7 @@ class Main extends Phaser.Scene {
     this.load.image("bullet_shadow", "client/assets/bullet_shadow.png");
     this.load.image("barrel", "client/assets/barrel.png");
     this.load.image("island", "client/assets/island.png");
+    this.load.image("stone", "client/assets/heart.png");
     this.load.image("enemy", "client/assets/enemy.png");
     this.load.atlas('ocean', 'client/assets/Animations/ocean.png', 'client/assets/Animations/ocean.json');
     this.load.image('base_controller', 'client/assets/base_controller.png');
@@ -233,6 +237,13 @@ class Main extends Phaser.Scene {
     border_graphics.fillRectShape(border);
     border_graphics.setScrollFactor(0);
     console.log(this.minimap);
+
+    // Score Board
+    this.ScoreBoard = this.add.text(32, 250, 'ScoreBoard', {
+      backgroundColor: '#FFFFFF',
+      fill: '#009696',
+      fontSize: '24px'
+    }).setScrollFactor(0).setDepth(5000);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -280,17 +291,31 @@ class Main extends Phaser.Scene {
         else if (tile.y > cameraCornerY + this.heightTiles*TILE_H)
           tile.y -= this.heightTiles*TILE_H;
       }
-    }
 
-    // Mini Map
-    if (player != null) {
+      // Mini Map
       this.minimap.scrollX = player.body.x;
       this.minimap.scrollY = player.body.y;
+
+      // Score Board
+      this.ScoreBoard.setText('ScoreBoard');
     }
   }
 
   ////////////////////////////////////////////////////////////////////////////////
+  enableInputs () {
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.J);
+    this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.K);
+  }
+
   disableInputs () {
+    if (player) {
+      player.inputs.up = false;
+    }
+
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S);

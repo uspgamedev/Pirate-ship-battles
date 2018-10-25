@@ -1,12 +1,14 @@
 language: node_js
 node_js:
-  - "iojs"
-  - "8"
-before_script:
-  - yarn install --frozen-lockfile
+  - "10"
 notifications:
   email:
     recipients:
       - herezk@gmail.com
+      - herez@ime.usp.br
+      - herez@herez.com.br
+      - xgvieira@gmail.com
+      - jgabriel.basi@hotmail.com
+      - jairo@jahdsoft.com
     on_success: change
     on_failure: always
