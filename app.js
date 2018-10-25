@@ -75,9 +75,7 @@ function updateGame () {
     if (!(k in game.playerList))
       continue;
     let p = game.playerList[k];
-    if (!p.anchored) {
-      p.updatePos(UPDATE_TIME);
-    }
+    p.updatePos(UPDATE_TIME);
 
     if (p.inputs.shootLeft && !p.leftHoldStart && p.canShoot(false))
       p.leftHoldStart = Date.now();
@@ -369,25 +367,36 @@ function collidePlayerAndIslandRestore (p1, isl) {
     return;
 
   if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
-    io.to(p1.id).emit("disable_inputs");
-    p1.speed = 0;
-    p1.accel = 0;
 
-    if (p1.anchored_timer < 180) {
+    // Player has touched island area, and is waiting
+    if (p1.anchored_timer < 60) {
+      io.to(p1.id).emit("disable_inputs");
+      p1.speed = 0;
+      p1.accel = 0;
       p1.anchored_timer += 1;
     }
 
+    // Player is ready to be freed
     else {
       // Move player on server and client
       del_x = p1.x - isl.x;
       del_y = p1.y - isl.y;
       theta = Math.atan2(del_y, del_x);
-      l = isl.radius * 4;
-      p1.x = isl.x + Math.cos(theta) * l;
-      p1.y = isl.y + Math.sin(theta) * l;
-      p1.anchored_timer = 0;
-      p1.angle = -Math.PI/2;
-      p1.gainResource(game.delta, game.mod, isl.type);
+      // Setting anchored_timer to zero here may cause issues, because
+      // the player is still in contact with the island's restore poly.
+      // We should make this state known to the game (something like, moving_away).
+      p1.angle = theta + Math.PI/2;
+
+      if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
+        p1.x += Math.sign(Math.cos(theta)) * 0.1;
+        p1.y += Math.sign(Math.sin(theta)) * 0.1;
+        //Waiting for player to move out of the area
+      }
+      else {
+        p1.gainResource(game.delta, game.mod, isl.type);
+        p1.anchored_timer = 0;
+        p1.anchored = false;
+      }
     }
   }
 }
