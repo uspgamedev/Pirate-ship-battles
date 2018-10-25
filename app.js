@@ -369,7 +369,7 @@ function collidePlayerAndIslandRestore (p1, isl) {
   if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
 
     // Player has touched island area, and is waiting
-    if (p1.anchored_timer < 60) {
+    if (p1.anchored_timer < 180) {
       io.to(p1.id).emit("disable_inputs");
       p1.speed = 0;
       p1.accel = 0;
@@ -388,14 +388,19 @@ function collidePlayerAndIslandRestore (p1, isl) {
       p1.angle = theta + Math.PI/2;
 
       if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
-        p1.x += Math.sign(Math.cos(theta)) * 0.1;
-        p1.y += Math.sign(Math.sin(theta)) * 0.1;
         //Waiting for player to move out of the area
-      }
-      else {
-        p1.gainResource(game.delta, game.mod, isl.type);
-        p1.anchored_timer = 0;
-        p1.anchored = false;
+        p1.x += Math.sign(Math.cos(theta)) * 0.2;
+        p1.y += Math.sign(Math.sin(theta)) * 0.2;
+
+        t_p1_poly = JSON.parse(JSON.stringify(p1.poly));
+        t_p1_poly.pos.x = p1.x;
+        t_p1_poly.pos.y = p2.y;
+
+        // Player left the area after this movement
+        if (!SAT.testPolygonCircle(t_p1_poly, isl.restore_poly)) {
+          p1.gainResource(game.delta, game.mod, isl.type);
+          p1.anchored_timer = 0;
+        }
       }
     }
   }
