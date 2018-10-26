@@ -45,6 +45,14 @@ class HUD {
       bullet.setScrollFactor(0).setDepth(5000);
       this.rightBulletBar.push(bullet);
     }
+
+    // Score Board
+    this.scoreBoard = scene.add.text(32, 250, 'ScoreBoard', {
+      backgroundColor: '#FFFFFF',
+      fill: '#009696',
+      fontSize: '24px'
+    }).setScrollFactor(0).setDepth(5000);
+
     if (this.mobileMode) {
       this.baseController = scene.add.sprite(this.JS_X, this.JS_Y, "base_controller");
       this.baseController.setScrollFactor(0).setDepth(5000);
@@ -121,6 +129,9 @@ class HUD {
         this.topController.setPosition(this.JS_X, this.JS_Y);
       }
     }
+
+    // Update score board
+    this.scoreBoard.setText('ScoreBoard');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -154,6 +165,28 @@ class HUD {
         (angle < pAngle && pAngle - angle < Math.PI && pAngle - angle < 2*Math.PI - 0.05))
       right = true;
     return [true, right, left, shootLeft, shootRight];
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  getGameObjects () {
+    let objs = [];
+    objs.push(this.bulletImage, this.bullets, this.scoreBoard);
+    for (let i = 0; i < this.hearts.length; i++) {
+      objs.push(this.hearts[i]);
+    }
+    for (let i = 0; i < this.leftBulletBar.length; i++) {
+      objs.push(this.leftBulletBar[i]);
+    }
+    for (let i = 0; i < this.rightBulletBar.length; i++) {
+      objs.push(this.rightBulletBar[i]);
+    }
+    if (this.mobileMode) {
+      objs.push(this.baseController);
+      objs.push(this.topController);
+      objs.push(this.rightShotController); 
+      objs.push(this.leftShotController);
+    }
+    return objs;
   }
 
   //////////////////////////////////////////////////////////////////////////////

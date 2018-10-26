@@ -236,14 +236,6 @@ class Main extends Phaser.Scene {
     var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
     border_graphics.fillRectShape(border);
     border_graphics.setScrollFactor(0);
-    console.log(this.minimap);
-
-    // Score Board
-    this.ScoreBoard = this.add.text(32, 250, 'ScoreBoard', {
-      backgroundColor: '#FFFFFF',
-      fill: '#009696',
-      fontSize: '24px'
-    }).setScrollFactor(0).setDepth(5000);
   }
 
   ////////////////////////////////////////////////////////////////////////////////
@@ -253,6 +245,7 @@ class Main extends Phaser.Scene {
 
       if (hud) {
         // Update inputs
+        this.minimap.ignore(hud.getGameObjects());
         let jsFeat = hud.getJSFeatures();
         let data = {
           up: (this.key_W.isDown || jsFeat[0]),
@@ -295,9 +288,6 @@ class Main extends Phaser.Scene {
       // Mini Map
       this.minimap.scrollX = player.body.x;
       this.minimap.scrollY = player.body.y;
-
-      // Score Board
-      this.ScoreBoard.setText('ScoreBoard');
     }
   }
 
