@@ -162,9 +162,25 @@ function addIslands () {
   for (let i = 0; i < n; i++) {
     // Generating them like this is redundant, considering the consistency check
     // contained inside island.js, but this may allow more customization options later
+    
+    let bad = true;
+    while (bad) {
+      bad = false;
+      var temp_x = aux.getRndInteger(0, game.canvasWidth);
+      var temp_y = aux.getRndInteger(0, game.canvasHeight);
+      for (let k in game.islandList) {
+        if (distSq({x: temp_x, y: temp_y}, k) < 20) {
+          bad = true;
+          break;
+        }
+      }
+    }
+    let islandentity = new Island(temp_x, temp_y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
+    /*
     let x = aux.getRndInteger(0, game.canvasWidth);
     let y = aux.getRndInteger(0, game.canvasHeight);
     let islandentity = new Island(x, y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
+    */
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
   }
