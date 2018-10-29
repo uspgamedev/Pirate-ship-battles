@@ -53,7 +53,7 @@ const game = {
   // The max number of islands in the game
   islandMax: 10,
   // The max number of stones in the game
-  stoneMax: 20,
+  stoneMax: 4,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -176,7 +176,18 @@ function addStones () {
   for (let i = 0; i < n; i++) {
     let x = aux.getRndInteger(0, game.canvasWidth);
     let y = aux.getRndInteger(0, game.canvasHeight);
-    // Verify if this (x, y) generated are not already in some island coordinates
+    for (let k in game.stoneList) {
+      while (k.x == x && k.y == y) {
+        let x = aux.getRndInteger(0, game.canvasWidth);
+        let y = aux.getRndInteger(0, game.canvasHeight);
+      }
+    }
+    for (let k in game.islandList) {
+      while (k.x == x && k.y == y) {
+        let x = aux.getRndInteger(0, game.canvasWidth);
+        let y = aux.getRndInteger(0, game.canvasHeight);
+      }
+    }
     let stoneentity = new Stone(x, y, 100, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
@@ -273,6 +284,9 @@ function onNewPlayer (data) {
 
   for (let k in game.islandList)
     this.emit('island_create', game.islandList[k]);
+
+  for (let k in game.stoneList)
+    this.emit('stone_create', game.stoneList[k]);
 
   //send message to every connected client except the sender
   this.broadcast.emit('new_enemyPlayer', current_info);
