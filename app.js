@@ -389,8 +389,7 @@ function collidePlayerAndIslandRestore (p1, isl) {
 
       if (SAT.testPolygonCircle(p1.poly, isl.restore_poly)) {
         //Waiting for player to move out of the area
-        p1.x += Math.sign(Math.cos(theta)) * 0.2;
-        p1.y += Math.sign(Math.sin(theta)) * 0.2;
+        p1.addPos(Math.sign(Math.cos(theta)) * 0.5, Math.sign(Math.sin(theta)) * 0.5);
 
         t_p1_poly = JSON.parse(JSON.stringify(p1.poly));
         t_p1_poly.pos.x = p1.x;
