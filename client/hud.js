@@ -60,8 +60,10 @@ class HUD {
       this.topController.setScrollFactor(0).setDepth(5001);
       this.rightShotController = scene.add.sprite(this.JS_SHOT_RIGHT_X, this.JS_SHOT_Y, "shot_controller");
       this.rightShotController.setScrollFactor(0).setDepth(5000);
+      this.rightShotController.setScale(0.75, 0.75);
       this.leftShotController = scene.add.sprite(this.JS_SHOT_LEFT_X, this.JS_SHOT_Y, "shot_controller");
       this.leftShotController.setScrollFactor(0).setDepth(5000);
+      this.leftShotController.setScale(0.75, 0.75);
       this.pointers = [scene.input.pointer1, scene.input.pointer2];
     }
     this.scene = scene;
@@ -183,7 +185,7 @@ class HUD {
     if (this.mobileMode) {
       objs.push(this.baseController);
       objs.push(this.topController);
-      objs.push(this.rightShotController); 
+      objs.push(this.rightShotController);
       objs.push(this.leftShotController);
     }
     return objs;
