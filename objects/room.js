@@ -203,6 +203,7 @@ module.exports = class Room {
       y: newPlayer.y,
       angle: newPlayer.angle,
       username: newPlayer.username,
+      anchored_timer: newPlayer.anchored_timer
     };
 
     for (let k in game.playerList) {

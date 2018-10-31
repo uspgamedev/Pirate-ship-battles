@@ -53,6 +53,13 @@ class HUD {
       fontSize: '24px'
     }).setScrollFactor(0).setDepth(5000);
 
+    // Timer
+    this.timer = scene.add.text(0, 0, 'Timer', {
+      backgroundColor: '#009696',
+      fill: '#FFFFFF',
+      fontSize: '32px'
+    }).setDepth(5000);
+
     if (this.mobileMode) {
       this.baseController = scene.add.sprite(this.JS_X, this.JS_Y, "base_controller");
       this.baseController.setScrollFactor(0).setDepth(5000);
@@ -132,6 +139,16 @@ class HUD {
 
     // Update score board
     this.scoreBoard.setText('ScoreBoard');
+
+    // Update timer
+    if (0 < player.anchored_timer && player.anchored_timer < 180) {
+      this.timer.visible = true;
+      this.timer.x = player.body.x;
+      this.timer.y = player.body.y;
+      this.timer.setText(Math.round(100*player.anchored_timer/180) + "%");
+    } else {
+      this.timer.visible = false;
+    }
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -183,7 +200,7 @@ class HUD {
     if (this.mobileMode) {
       objs.push(this.baseController);
       objs.push(this.topController);
-      objs.push(this.rightShotController); 
+      objs.push(this.rightShotController);
       objs.push(this.leftShotController);
     }
     return objs;

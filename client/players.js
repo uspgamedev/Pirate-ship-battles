@@ -49,6 +49,7 @@ class Player extends Ship {
   constructor (scene, x, y, username) {
     super();
     this.text = scene.add.text(x, toIsometric(y) - LABEL_DIFF, username, {fill: "white"});
+    this.anchored_timer = 0;
     let sprite = (ISOMETRIC)? "ship" : "ship_up";
     this.body = scene.physics.add.sprite(x, toIsometric(y) - IMAGE_OFFSET, sprite, 0);
     this.text.setOrigin(0.5);
@@ -71,6 +72,7 @@ class Player extends Ship {
     this.rightHoldStart = data.rightHoldStart;
     this.lastShootTimeLeft = data.lastShootTimeLeft;
     this.lastShootTimeRight = data.lastShootTimeRight;
+    this.anchored_timer = data.anchored_timer;
   }
 };
 
