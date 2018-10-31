@@ -10,16 +10,19 @@
 module.exports = class ScoreBoard {
   constructor() {
     this.score_list = {};
+    this.username_list = {};
   }
 
   //////////////////////////////////////////////////////////////////////////////
-  add_player(player_id) {
+  add_player(player_id, username) {
     this.score_list[player_id] = 0;
+    this.username_list[player_id] = username;
   }
 
   //////////////////////////////////////////////////////////////////////////////
   remove_player(player_id) {
     delete this.score_list[player_id];
+    delete this.username_list[player_id];
   }
 
   //////////////////////////////////////////////////////////////////////////////

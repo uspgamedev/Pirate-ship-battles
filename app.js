@@ -53,7 +53,7 @@ const game = {
   // The max number of islands in the game
   islandMax: 10,
   // The max number of stones in the game
-  stoneMax: 20,
+  stoneMax: 4,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -139,9 +139,15 @@ function updateGame () {
         collidePlayerAndIslandRestore(p1, game.islandList[kb]);
         collidePlayerAndIslandGround(p1, game.islandList[kb]);
       }
+
+      for (const kb in game.stoneList) {
+        collidePlayerAndStone(p1, game.stoneList[kb]);
+      }
   }
 
-  io.in('game').emit("update_game", {playerList: game.playerList, bulletList: game.bulletList});
+  io.in('game').emit("update_game", {playerList:  game.playerList,
+                                     bulletList:  game.bulletList,
+                                     score_board: game.score_board});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -162,9 +168,25 @@ function addIslands () {
   for (let i = 0; i < n; i++) {
     // Generating them like this is redundant, considering the consistency check
     // contained inside island.js, but this may allow more customization options later
+
+    let bad = true;
+    while (bad) {
+      bad = false;
+      var temp_x = aux.getRndInteger(0, game.canvasWidth);
+      var temp_y = aux.getRndInteger(0, game.canvasHeight);
+      for (let k in game.islandList) {
+        if (distSq({x: temp_x, y: temp_y}, k) < 20) {
+          bad = true;
+          break;
+        }
+      }
+    }
+    let islandentity = new Island(temp_x, temp_y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
+    /*
     let x = aux.getRndInteger(0, game.canvasWidth);
     let y = aux.getRndInteger(0, game.canvasHeight);
     let islandentity = new Island(x, y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
+    */
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
   }
@@ -176,7 +198,18 @@ function addStones () {
   for (let i = 0; i < n; i++) {
     let x = aux.getRndInteger(0, game.canvasWidth);
     let y = aux.getRndInteger(0, game.canvasHeight);
-    // Verify if this (x, y) generated are not already in some island coordinates
+    for (let k in game.stoneList) {
+      while (k.x == x && k.y == y) {
+        let x = aux.getRndInteger(0, game.canvasWidth);
+        let y = aux.getRndInteger(0, game.canvasHeight);
+      }
+    }
+    for (let k in game.islandList) {
+      while (k.x == x && k.y == y) {
+        let x = aux.getRndInteger(0, game.canvasWidth);
+        let y = aux.getRndInteger(0, game.canvasHeight);
+      }
+    }
     let stoneentity = new Stone(x, y, 100, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
@@ -211,6 +244,7 @@ function mapFloatToInt (v, fmin, fmax, imin, imax) {
 function colliding (newPlayer) {
   let minPlayerDist = 130*130;
   let minIslandDist = 300*300;
+  let minStoneDist = 200*200;
   // Check for players
   for (const k in game.playerList) {
     if (distSq(newPlayer, game.playerList[k]) < minPlayerDist)
@@ -218,6 +252,10 @@ function colliding (newPlayer) {
   }
   for (const i in game.islandList) {
     if (distSq(newPlayer, game.islandList[i]) < minIslandDist)
+      return true;
+  }
+  for (const i in game.stoneList) {
+    if (distSq(newPlayer, game.stoneList[i]) < minStoneDist)
       return true;
   }
   return false;
@@ -263,7 +301,7 @@ function onNewPlayer (data) {
   }
 
   game.playerList[this.id] = newPlayer;
-  game.score_board.add_player(this.id);
+  game.score_board.add_player(this.id, data.username);
 
   for (let k in game.boxList)
     this.emit('item_create', game.boxList[k]);
@@ -273,6 +311,9 @@ function onNewPlayer (data) {
 
   for (let k in game.islandList)
     this.emit('island_create', game.islandList[k]);
+
+  for (let k in game.stoneList)
+    this.emit('stone_create', game.stoneList[k]);
 
   //send message to every connected client except the sender
   this.broadcast.emit('new_enemyPlayer', current_info);
@@ -414,6 +455,16 @@ function collidePlayerAndIslandGround (p1, isl) {
   if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
     playerKilled(p1);
 
+  }
+}
+
+// Called to verify player is in stone area
+function collidePlayerAndStone (p1, stn) {
+  if (!(p1.id in game.playerList) || !(stn.id in game.stoneList))
+    return;
+
+  if (SAT.testPolygonCircle(p1.poly, stn.collision_poly)) {
+    playerKilled(p1);
   }
 }
 
