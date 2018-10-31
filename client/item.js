@@ -99,8 +99,8 @@ class Island {
 // Client Stone class
 class Stone {
   constructor (scene, id, x, y, r) {
-    this.sizeX = 111;
-    this.sizeY = 145;
+    this.sizeX = 100; //111;
+    this.sizeY = 100; //145;
     this.id = id;
     this.stone = scene.add.image(x, toIsometric(y), "stone");
     this.stone.setDisplaySize(this.sizeX, this.sizeY);

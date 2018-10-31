@@ -210,7 +210,7 @@ function addStones () {
         let y = aux.getRndInteger(0, game.canvasHeight);
       }
     }
-    let stoneentity = new Stone(x, y, 100, game.canvasWidth, game.canvasHeight);
+    let stoneentity = new Stone(x, y, 65, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
   }
