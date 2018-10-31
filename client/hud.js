@@ -8,6 +8,7 @@ var hud = null;
 const DBHT = 500; // ms  // Double bullet hold time
 const TBHT = 1000; // ms  // Triple bullet hold time
 const BULLET_COOLDOWN = 1000; // ms
+var scoreBoard;
 
 ////////////////////////////////////////////////////////////////////////////////
 // HUD                                                                        //
@@ -138,7 +139,13 @@ class HUD {
     }
 
     // Update score board
-    this.scoreBoard.setText('ScoreBoard');
+    if (scoreBoard) {
+      var text = "SCOREBOARD\n";
+      for (const i in scoreBoard.score_list) {
+        text += "\n" + scoreBoard.username_list[i] + ": " + scoreBoard.score_list[i];
+      }
+      this.scoreBoard.setText(text);
+    }
 
     // Update timer
     if (0 < player.anchored_timer && player.anchored_timer < 180) {

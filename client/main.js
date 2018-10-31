@@ -56,7 +56,6 @@ var CustomPipeline2 = new Phaser.Class({
   }
 });
 
-
 ////////////////////////////////////////////////////////////////////////////////
 function onSocketConnected (data) {
   console.log("connected to server");
@@ -112,6 +111,7 @@ function onUpdate (data) {
     if (bk in data.bulletList)
       bulletList[bk].update(data.bulletList[bk]);
   }
+  scoreBoard = data.score_board;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +138,7 @@ class Main extends Phaser.Scene {
     this.customPipeline = null;
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   preload () {
     this.load.spritesheet("ship", "client/assets/ship.png", {frameWidth: 112, frameHeight: 96});
     this.load.spritesheet("bullet_fill", "client/assets/bullet_fill_anim.png", {frameWidth: 24, frameHeight: 24});
@@ -157,7 +157,7 @@ class Main extends Phaser.Scene {
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   create (username) {
     let camera = this.cameras.main;
 
@@ -238,7 +238,7 @@ class Main extends Phaser.Scene {
     border_graphics.setScrollFactor(0);
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   update (dt) {
     if (gameProperties.inGame) {
       this.customPipeline.setFloat2('viewport', this.cameras.main.midPoint.x - this.cameras.main.width/2, this.cameras.main.midPoint.y + this.cameras.main.height/2);
@@ -291,7 +291,7 @@ class Main extends Phaser.Scene {
     }
   }
 
-  ////////////////////////////////////////////////////////////////////////////////
+  //////////////////////////////////////////////////////////////////////////////
   enableInputs () {
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A);

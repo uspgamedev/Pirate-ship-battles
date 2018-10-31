@@ -141,7 +141,9 @@ function updateGame () {
       }
   }
 
-  io.in('game').emit("update_game", {playerList: game.playerList, bulletList: game.bulletList});
+  io.in('game').emit("update_game", {playerList:  game.playerList,
+                                     bulletList:  game.bulletList,
+                                     score_board: game.score_board});
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +164,7 @@ function addIslands () {
   for (let i = 0; i < n; i++) {
     // Generating them like this is redundant, considering the consistency check
     // contained inside island.js, but this may allow more customization options later
-    
+
     let bad = true;
     while (bad) {
       bad = false;
@@ -290,7 +292,7 @@ function onNewPlayer (data) {
   }
 
   game.playerList[this.id] = newPlayer;
-  game.score_board.add_player(this.id);
+  game.score_board.add_player(this.id, data.username);
 
   for (let k in game.boxList)
     this.emit('item_create', game.boxList[k]);
