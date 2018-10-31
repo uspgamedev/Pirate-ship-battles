@@ -139,6 +139,10 @@ function updateGame () {
         collidePlayerAndIslandRestore(p1, game.islandList[kb]);
         collidePlayerAndIslandGround(p1, game.islandList[kb]);
       }
+
+      for (const kb in game.stoneList) {
+        collidePlayerAndStone(p1, game.stoneList[kb]);
+      }
   }
 
   io.in('game').emit("update_game", {playerList:  game.playerList,
@@ -240,6 +244,7 @@ function mapFloatToInt (v, fmin, fmax, imin, imax) {
 function colliding (newPlayer) {
   let minPlayerDist = 130*130;
   let minIslandDist = 300*300;
+  let minStoneDist = 200*200;
   // Check for players
   for (const k in game.playerList) {
     if (distSq(newPlayer, game.playerList[k]) < minPlayerDist)
@@ -247,6 +252,10 @@ function colliding (newPlayer) {
   }
   for (const i in game.islandList) {
     if (distSq(newPlayer, game.islandList[i]) < minIslandDist)
+      return true;
+  }
+  for (const i in game.stoneList) {
+    if (distSq(newPlayer, game.stoneList[i]) < minStoneDist)
       return true;
   }
   return false;
@@ -446,6 +455,16 @@ function collidePlayerAndIslandGround (p1, isl) {
   if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
     playerKilled(p1);
 
+  }
+}
+
+// Called to verify player is in stone area
+function collidePlayerAndStone (p1, stn) {
+  if (!(p1.id in game.playerList) || !(stn.id in game.stoneList))
+    return;
+
+  if (SAT.testPolygonCircle(p1.poly, stn.collision_poly)) {
+    playerKilled(p1);
   }
 }
 
