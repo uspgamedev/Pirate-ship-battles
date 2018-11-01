@@ -15,14 +15,20 @@ var scoreBoard;
 ////////////////////////////////////////////////////////////////////////////////
 class HUD {
   constructor (scene) {
-    this.JS_MARGIN = 120;
+    if (config.width < config.height) {
+      this.JS_ALL_SCALE = config.width / 540;
+    }
+    else {
+      this.JS_ALL_SCALE = config.height / 540;
+    }
+    this.JS_MARGIN = 120 * this.JS_ALL_SCALE;
     this.JS_RAD = 75;
     this.JS_X = this.JS_MARGIN;
     this.JS_Y = config.height - this.JS_X;
     this.JS_SHOT_RAD = 50;
     this.JS_SHOT_Y = config.height - this.JS_MARGIN;
-    this.JS_SHOT_RIGHT_X = config.width - this.JS_MARGIN;
-    this.JS_SHOT_LEFT_X = this.JS_SHOT_RIGHT_X - 150;
+    this.JS_SHOT_RIGHT_X = config.width * 0.85;
+    this.JS_SHOT_LEFT_X = this.JS_SHOT_RIGHT_X - (125 * this.JS_ALL_SCALE);
     this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
     this.hearts = [];
     for (let i = 0; i < 3; i++) {
@@ -64,12 +70,17 @@ class HUD {
     if (this.mobileMode) {
       this.baseController = scene.add.sprite(this.JS_X, this.JS_Y, "base_controller");
       this.baseController.setScrollFactor(0).setDepth(5000);
+      this.baseController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
       this.topController = scene.add.sprite(this.JS_X, this.JS_Y, "top_controller");
       this.topController.setScrollFactor(0).setDepth(5001);
+      this.topController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
       this.rightShotController = scene.add.sprite(this.JS_SHOT_RIGHT_X, this.JS_SHOT_Y, "shot_controller");
       this.rightShotController.setScrollFactor(0).setDepth(5000);
+      this.rightShotController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
       this.leftShotController = scene.add.sprite(this.JS_SHOT_LEFT_X, this.JS_SHOT_Y, "shot_controller");
       this.leftShotController.setScrollFactor(0).setDepth(5000);
+      this.leftShotController.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
+      console.log(`${this.JS_SHOT_RIGHT_X}`);
       this.pointers = [scene.input.pointer1, scene.input.pointer2];
     }
     this.scene = scene;
