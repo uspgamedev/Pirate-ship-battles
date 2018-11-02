@@ -175,18 +175,13 @@ function addIslands () {
       var temp_x = aux.getRndInteger(0, game.canvasWidth);
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
       for (let k in game.islandList) {
-        if (distSq({x: temp_x, y: temp_y}, k) < 20) {
+        if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
           bad = true;
           break;
         }
       }
     }
     let islandentity = new Island(temp_x, temp_y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
-    /*
-    let x = aux.getRndInteger(0, game.canvasWidth);
-    let y = aux.getRndInteger(0, game.canvasHeight);
-    let islandentity = new Island(x, y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
-    */
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
   }
@@ -229,33 +224,21 @@ function onEntername (data) {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function distSq (p1, p2) {
-  let xdiff = p1.x - p2.x;
-  let ydiff = p1.y - p2.y;
-  return xdiff*xdiff + ydiff*ydiff;
-}
-
-////////////////////////////////////////////////////////////////////////////////
-function mapFloatToInt (v, fmin, fmax, imin, imax) {
-  return Math.floor((v - fmin)*(imax - imin)/(fmax - fmin) + imin);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 function colliding (newPlayer) {
   let minPlayerDist = 130*130;
   let minIslandDist = 300*300;
   let minStoneDist = 200*200;
   // Check for players
   for (const k in game.playerList) {
-    if (distSq(newPlayer, game.playerList[k]) < minPlayerDist)
+    if (aux.distSq(newPlayer, game.playerList[k]) < minPlayerDist)
       return true;
   }
   for (const i in game.islandList) {
-    if (distSq(newPlayer, game.islandList[i]) < minIslandDist)
+    if (aux.distSq(newPlayer, game.islandList[i]) < minIslandDist)
       return true;
   }
   for (const i in game.stoneList) {
-    if (distSq(newPlayer, game.stoneList[i]) < minStoneDist)
+    if (aux.distSq(newPlayer, game.stoneList[i]) < minStoneDist)
       return true;
   }
   return false;
@@ -268,13 +251,13 @@ function onNewPlayer (data) {
     console.log(`Player with id ${this.id} already exists`);
     return;
   }
-  let newPlayer = new Player(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-                 mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
+  let newPlayer = new Player(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+                 aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
                  Math.PI / 2, this.id, data.username);
 
   while (colliding(newPlayer) && !circle.in_circle(newPlayer)) {
-    newPlayer.setPos(mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-             mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
+    newPlayer.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
+             aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
   }
   console.log("Created new player with id " + this.id);
 
