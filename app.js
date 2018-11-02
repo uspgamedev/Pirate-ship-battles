@@ -137,7 +137,6 @@ function updateGame () {
 
       for (const kb in game.islandList) {
         collidePlayerAndIslandRestore(p1, game.islandList[kb]);
-        collidePlayerAndIslandGround(p1, game.islandList[kb]);
       }
 
       for (const kb in game.stoneList) {
@@ -429,17 +428,6 @@ function collidePlayerAndIslandRestore (p1, isl) {
   }
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// Called to verify player is in island restore area
-function collidePlayerAndIslandGround (p1, isl) {
-  if (!(p1.id in game.playerList) || !(isl.id in game.islandList))
-    return;
-
-  if (SAT.testPolygonCircle(p1.poly, isl.collision_poly)) {
-    playerKilled(p1);
-
-  }
-}
 
 // Called to verify player is in stone area
 function collidePlayerAndStone (p1, stn) {
