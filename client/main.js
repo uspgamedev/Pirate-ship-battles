@@ -14,6 +14,8 @@ let background = [];
 const BG_MARGIN = 700;
 const TILE_H = 144;
 const TILE_W = 328;
+let countExplosion = 0;
+let signalExplosion = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Safe Zone Shader                                                           //
@@ -155,6 +157,7 @@ class Main extends Phaser.Scene {
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
+    this.load.image('explosion', 'client/assets/explosion.png');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -236,6 +239,14 @@ class Main extends Phaser.Scene {
     var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
     border_graphics.fillRectShape(border);
     border_graphics.setScrollFactor(0);
+
+
+
+
+
+
+    this.explosion = this.add.sprite(100, 100, 'explosion').setDepth(5100);
+
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -288,6 +299,21 @@ class Main extends Phaser.Scene {
       // Mini Map
       this.minimap.scrollX = player.body.x;
       this.minimap.scrollY = player.body.y;
+
+      this.explosion.x = player.body.x;
+      this.explosion.y = player.body.y;
+      if (signalExplosion == 1) {
+        countExplosion += 0.05;
+      } else {
+        countExplosion -= 0.05;
+      }
+      if (countExplosion > 1) {
+        signalExplosion = -1;
+      } else if (countExplosion < 0) {
+        signalExplosion = 1;
+      }
+      this.explosion.alpha = countExplosion;
+      console.log(countExplosion);
     }
   }
 

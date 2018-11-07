@@ -173,7 +173,7 @@ function addIslands () {
       bad = false;
       var temp_x = aux.getRndInteger(0, game.canvasWidth);
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
-      
+
       for (let k in game.islandList) {
         if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
           bad = true;
@@ -188,7 +188,7 @@ function addIslands () {
         }
       }
     }
-    
+
     let islandentity = new Island(temp_x, temp_y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
@@ -204,14 +204,14 @@ function addStones () {
       bad = false;
       var temp_x = aux.getRndInteger(0, game.canvasWidth);
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
-      
+
       for (let k in game.stoneList) {
         if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
           bad = true;
           break;
         }
       }
-      
+
       for (let k in game.islandList) {
         if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
           bad = true;
@@ -219,7 +219,7 @@ function addStones () {
         }
       }
     }
-    
+
     let stoneentity = new Stone(temp_x, temp_y, 65, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
