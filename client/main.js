@@ -138,6 +138,7 @@ class Main extends Phaser.Scene {
     socket.on('update_game', onUpdate);
 
     this.customPipeline = null;
+    this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -231,14 +232,16 @@ class Main extends Phaser.Scene {
     this.customPipeline.setFloat1('cam_height', camera.height);
 
     // Mini Map
-    this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
-    this.minimap.setBackgroundColor(0x000000);
-    this.minimap.scrollX = 0;
-    this.minimap.scrollY = 0;
-    var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
-    var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
-    border_graphics.fillRectShape(border);
-    border_graphics.setScrollFactor(0);
+    if (!this.mobileMode) {
+      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+      this.minimap.setBackgroundColor(0x000000);
+      this.minimap.scrollX = 0;
+      this.minimap.scrollY = 0;
+      var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
+      var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+      border_graphics.fillRectShape(border);
+      border_graphics.setScrollFactor(0);
+    }
 
 
 
@@ -256,7 +259,9 @@ class Main extends Phaser.Scene {
 
       if (hud) {
         // Update inputs
-        this.minimap.ignore(hud.getGameObjects());
+        if (!this.mobileMode) {
+          this.minimap.ignore(hud.getGameObjects());
+        }
         let jsFeat = hud.getJSFeatures();
         let data = {
           up: (this.key_W.isDown || jsFeat[0]),
@@ -297,8 +302,10 @@ class Main extends Phaser.Scene {
       }
 
       // Mini Map
-      this.minimap.scrollX = player.body.x;
-      this.minimap.scrollY = player.body.y;
+      if (!this.mobileMode) {
+        this.minimap.scrollX = player.body.x;
+        this.minimap.scrollY = player.body.y;
+      }
 
       this.explosion.x = player.body.x;
       this.explosion.y = player.body.y;
@@ -313,7 +320,7 @@ class Main extends Phaser.Scene {
         signalExplosion = 1;
       }
       this.explosion.alpha = countExplosion;
-      console.log(countExplosion);
+      //console.log(countExplosion);
     }
   }
 
