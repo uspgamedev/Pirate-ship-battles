@@ -16,6 +16,7 @@
   "scripts": {
     "start": "node app.js",
     "serve": "npx nodemon app.js",
+    "clienttest": "npx nodemon client_test.js",
     "test": "jest"
   },
   "engines": {
