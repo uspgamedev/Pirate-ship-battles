@@ -174,17 +174,15 @@ function addIslands () {
       var temp_x = aux.getRndInteger(0, game.canvasWidth);
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
 
-      for (let k in game.islandList) {
-        if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
+      for (let k in game.stoneList) {
+        if (bad == false && Math.abs(temp_x - k.x) < 600 && Math.abs(temp_y - k.y) < 600) {
           bad = true;
-          break;
         }
       }
 
-      for (let k in game.stoneList) {
-        if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
+      for (let k in game.islandList) {
+        if (bad == false && Math.abs(temp_x - k.x) < 3000 && Math.abs(temp_y - k.y) < 3000) {
           bad = true;
-          break;
         }
       }
     }
@@ -206,16 +204,14 @@ function addStones () {
       var temp_y = aux.getRndInteger(0, game.canvasHeight);
 
       for (let k in game.stoneList) {
-        if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
+        if (bad == false && Math.abs(temp_x - k.x) < 300 && Math.abs(temp_y - k.y) < 300) {
           bad = true;
-          break;
         }
       }
 
       for (let k in game.islandList) {
-        if (aux.distSq({x: temp_x, y: temp_y}, k) < 125) {
+        if (bad == false && Math.abs(temp_x - k.x) < 600 && Math.abs(temp_y - k.y) < 600) {
           bad = true;
-          break;
         }
       }
     }
