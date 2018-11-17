@@ -36,20 +36,31 @@ var CustomPipeline2 = new Phaser.Class({
       uniform vec2 ellipse_pos;
       uniform vec2 ellipse_size;
       uniform float cam_height;
+      uniform int is_blinking;
+      uniform float time;
+
+      #define SPEED 10.0
 
       varying vec2 outTexCoord;
       varying vec4 outTint;
 
       void main() {
-	     vec2 pos = gl_FragCoord.xy;
-         vec2 world_pos = vec2(viewport.x + pos.x, viewport.y - pos.y);
-
-         float k = pow((world_pos.x-ellipse_pos.x)/ellipse_size.x, 2.0) + pow((world_pos.y-ellipse_pos.y)/ellipse_size.y, 2.0);
-
-         gl_FragColor = texture2D(uMainSampler, outTexCoord);
-         if (k>1.0) {
-           gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
-         }
+        if (is_blinking != 0) {
+          float c = cos(time * SPEED);
+          float s = sin(time * SPEED);
+          mat4 hueRotation = mat4(0.299, 0.587, 0.114, 0.0, 0.299, 0.587, 0.114, 0.0, 0.299, 0.587, 0.114, 0.0, 0.0, 0.0, 0.0, 1.0) + mat4(0.701, -0.587, -0.114, 0.0, -0.299, 0.413, -0.114, 0.0, -0.300, -0.588, 0.886, 0.0, 0.0, 0.0, 0.0, 0.0) * c + mat4(0.168, 0.330, -0.497, 0.0, -0.328, 0.035, 0.292, 0.0, 1.250, -1.050, -0.203, 0.0, 0.0, 0.0, 0.0, 0.0) * s;
+          vec4 pixel = texture2D(uMainSampler, outTexCoord);
+          gl_FragColor = pixel * hueRotation;
+        }
+        else {
+  	      vec2 pos = gl_FragCoord.xy;
+          vec2 world_pos = vec2(viewport.x + pos.x, viewport.y - pos.y);
+          float k = pow((world_pos.x-ellipse_pos.x)/ellipse_size.x, 2.0) + pow((world_pos.y-ellipse_pos.y)/ellipse_size.y, 2.0);
+          gl_FragColor = texture2D(uMainSampler, outTexCoord);
+          if (k > 1.0) {
+            gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
+          }
+        }
        }
       `
     });
@@ -136,6 +147,9 @@ class Main extends Phaser.Scene {
     socket.on('update_game', onUpdate);
 
     this.customPipeline = null;
+    this.player_life = 3; // Player life to make the screen blink when it takes damage.
+    this.blink_timer = 2;
+    this.t = 0;
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -164,6 +178,9 @@ class Main extends Phaser.Scene {
     console.log("client started");
 
     socket.emit('logged_in', {username: username});
+    this.player_life = 3;
+    this.blink_timer = 2;
+    this.t = 0;
 
     // Set camera limits
     camera.setBounds(0, 0, gameProperties.gameWidth, gameProperties.gameHeight);
@@ -226,6 +243,7 @@ class Main extends Phaser.Scene {
     this.customPipeline.setFloat2('ellipse_pos', 1000, toIsometric(1000));
     this.customPipeline.setFloat2('ellipse_size', 1000, toIsometric(1000));
     this.customPipeline.setFloat1('cam_height', camera.height);
+    this.customPipeline.setInt1('is_blinking', 0);
 
     // Mini Map
     this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
@@ -285,9 +303,26 @@ class Main extends Phaser.Scene {
           tile.y -= this.heightTiles*TILE_H;
       }
 
+      this.customPipeline.setFloat1('time', this.t);
+      this.t += 0.005;
+      // Make screen blink if player takes damage
+      if (player.life < this.player_life) {
+        if (this.blink_timer > 0) {
+          this.blink_timer -= dt;
+          this.customPipeline.setInt1('is_blinking', 1);
+        }
+        else {
+          this.customPipeline.setInt1('is_blinking', 0);
+          this.blink_timer = 2;
+          this.player_life = player.life;
+        }
+      }
+
       // Mini Map
       this.minimap.scrollX = player.body.x;
       this.minimap.scrollY = player.body.y;
+
+
     }
   }
 
