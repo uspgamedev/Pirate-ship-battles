@@ -27,7 +27,7 @@ serv.listen({
   exclusive: true
 });
 
-console.log("Server started.");
+console.log("Test server started.");
 
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 1000; // ms
@@ -47,13 +47,13 @@ const game = {
   // The list of scores form active players
   score_board: new ScoreBoard(),
   // The max number of pickable boxes in the game
-  boxesMax: 15,
+  boxesMax: 1,
   // Size of the boxes list
   numOfBoxes: 0,
   // The max number of islands in the game
-  islandMax: 10,
+  islandMax: 1,
   // The max number of stones in the game
-  stoneMax: 4,
+  stoneMax: 1,
   // Game height
   canvasHeight: 2000,
   // Game width
@@ -151,10 +151,12 @@ function updateGame () {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Create the pickable boxes there are missing at the game
-function addBox () {
+function addBox (x, y) {
   let n = game.boxesMax - game.numOfBoxes;
-  for (let i = 0; i < n; i++) {
+  if (n > 0) {
     let boxentity = new Box(game.canvasWidth, game.canvasHeight, 'box');
+    boxentity.x = 200
+    boxentity.y = 200
     game.boxList[boxentity.id] = boxentity;
     io.in('game').emit("item_create", boxentity);
     game.numOfBoxes++;
@@ -162,31 +164,9 @@ function addBox () {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function addIslands () {
+function addIslands (temp_x, temp_y) {
   let n = game.islandMax - Object.keys(game.islandList).length;
-  for (let i = 0; i < n; i++) {
-    // Generating them like this is redundant, considering the consistency check
-    // contained inside island.js, but this may allow more customization options later
-
-    let bad = true;
-    while (bad) {
-      bad = false;
-      var temp_x = aux.getRndInteger(0, game.canvasWidth);
-      var temp_y = aux.getRndInteger(0, game.canvasHeight);
-
-      for (let k in game.stoneList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 600 && Math.abs(temp_y - k.y) < 600) {
-          bad = true;
-        }
-      }
-
-      for (let k in game.islandList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 3000 && Math.abs(temp_y - k.y) < 3000) {
-          bad = true;
-        }
-      }
-    }
-
+  if (n > 0) {
     let islandentity = new Island(temp_x, temp_y, 100, "bullet_island", game.canvasWidth, game.canvasHeight);
     game.islandList[islandentity.id] = islandentity;
     io.in('game').emit("island_create", islandentity);
@@ -194,28 +174,9 @@ function addIslands () {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-function addStones () {
+function addStones (temp_x, temp_y) {
   let n = game.stoneMax - Object.keys(game.stoneList).length;
-  for (let i = 0; i < n; i++) {
-    let bad = true;
-    while (bad) {
-      bad = false;
-      var temp_x = aux.getRndInteger(0, game.canvasWidth);
-      var temp_y = aux.getRndInteger(0, game.canvasHeight);
-
-      for (let k in game.stoneList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 300 && Math.abs(temp_y - k.y) < 300) {
-          bad = true;
-        }
-      }
-
-      for (let k in game.islandList) {
-        if (bad == false && Math.abs(temp_x - k.x) < 600 && Math.abs(temp_y - k.y) < 600) {
-          bad = true;
-        }
-      }
-    }
-
+  if (n > 0) {
     let stoneentity = new Stone(temp_x, temp_y, 65, game.canvasWidth, game.canvasHeight);
     game.stoneList[stoneentity.id] = stoneentity;
     io.in('game').emit("stone_create", stoneentity);
@@ -262,14 +223,8 @@ function onNewPlayer (data) {
     console.log(`Player with id ${this.id} already exists`);
     return;
   }
-  let newPlayer = new Player(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-                 aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250),
-                 Math.PI / 2, this.id, data.username);
+  let newPlayer = new Player(250, 250, Math.PI / 2, this.id, data.username);
 
-  while (colliding(newPlayer) && !circle.in_circle(newPlayer)) {
-    newPlayer.setPos(aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasWidth - 250),
-             aux.mapFloatToInt(Math.random(), 0, 1, 250, game.canvasHeight - 250));
-  }
   console.log("Created new player with id " + this.id);
 
   this.emit('create_player', data);

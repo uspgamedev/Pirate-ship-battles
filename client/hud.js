@@ -29,6 +29,8 @@ class HUD {
     this.JS_SHOT_Y = config.height - this.JS_MARGIN;
     this.JS_SHOT_RIGHT_X = config.width * 0.85;
     this.JS_SHOT_LEFT_X = this.JS_SHOT_RIGHT_X - (125 * this.JS_ALL_SCALE);
+    this.BULLET_FILL_X = 30 * this.JS_ALL_SCALE;
+    this.BULLET_FILL_Y = 70 * this.JS_ALL_SCALE;
     this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
     this.hearts = [];
     for (let i = 0; i < 3; i++) {
@@ -42,13 +44,27 @@ class HUD {
     this.bullets.setScrollFactor(0).setDepth(5000);
     this.leftBulletBar = [];
     for (let i = 0; i < 3; i++) {
-      let bullet = scene.add.sprite(70 + 30*i, 170, "bullet_fill", 0);
+      let bullet;
+      if (this.mobileMode) {
+        bullet = scene.add.sprite(this.JS_SHOT_LEFT_X + (this.BULLET_FILL_X * (i - 1)), this.JS_SHOT_Y - this.BULLET_FILL_Y, "bullet_fill", 0);
+        bullet.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
+      }
+      else {
+        bullet = scene.add.sprite(70 + 30*i, 170, "bullet_fill", 0);
+      }
       bullet.setScrollFactor(0).setDepth(5000);
       this.leftBulletBar.push(bullet);
     }
     this.rightBulletBar = [];
     for (let i = 0; i < 3; i++) {
-      let bullet = scene.add.sprite(70 + 30*i, 200, "bullet_fill", 0);
+      let bullet;
+      if (this.mobileMode) {
+        bullet = scene.add.sprite(this.JS_SHOT_RIGHT_X + (this.BULLET_FILL_X * (i - 1)), this.JS_SHOT_Y - this.BULLET_FILL_Y, "bullet_fill", 0);
+        bullet.setScale(this.JS_ALL_SCALE, this.JS_ALL_SCALE);
+      }
+      else {
+        bullet = scene.add.sprite(70 + 30*i, 200, "bullet_fill", 0);
+      }
       bullet.setScrollFactor(0).setDepth(5000);
       this.rightBulletBar.push(bullet);
     }

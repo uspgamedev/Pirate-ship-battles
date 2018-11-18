@@ -6,7 +6,7 @@ import re
 
 def concat_file(files, target) :
 	subprocess.call(["cat " + files + " > " + target], shell=True)
-	subprocess.call(["rm " + files])
+	subprocess.call(["rm " + files], shell=True)
 
 #Only works if there is inly one / in the names of the files.
 def replace(files, target) :

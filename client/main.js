@@ -14,6 +14,8 @@ let background = [];
 const BG_MARGIN = 700;
 const TILE_H = 144;
 const TILE_W = 328;
+let countExplosion = 0;
+let signalExplosion = 1;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Safe Zone Shader                                                           //
@@ -35,31 +37,17 @@ var CustomPipeline2 = new Phaser.Class({
       uniform vec2 viewport;
       uniform vec2 ellipse_pos;
       uniform vec2 ellipse_size;
-      uniform float cam_height;
-      uniform int is_blinking;
-      uniform float time;
-
-      #define SPEED 10.0
 
       varying vec2 outTexCoord;
       varying vec4 outTint;
 
       void main() {
-        if (is_blinking != 0) {
-          float c = cos(time * SPEED);
-          float s = sin(time * SPEED);
-          mat4 hueRotation = mat4(0.299, 0.587, 0.114, 0.0, 0.299, 0.587, 0.114, 0.0, 0.299, 0.587, 0.114, 0.0, 0.0, 0.0, 0.0, 1.0) + mat4(0.701, -0.587, -0.114, 0.0, -0.299, 0.413, -0.114, 0.0, -0.300, -0.588, 0.886, 0.0, 0.0, 0.0, 0.0, 0.0) * c + mat4(0.168, 0.330, -0.497, 0.0, -0.328, 0.035, 0.292, 0.0, 1.250, -1.050, -0.203, 0.0, 0.0, 0.0, 0.0, 0.0) * s;
-          vec4 pixel = texture2D(uMainSampler, outTexCoord);
-          gl_FragColor = pixel * hueRotation;
-        }
-        else {
-  	      vec2 pos = gl_FragCoord.xy;
-          vec2 world_pos = vec2(viewport.x + pos.x, viewport.y - pos.y);
-          float k = pow((world_pos.x-ellipse_pos.x)/ellipse_size.x, 2.0) + pow((world_pos.y-ellipse_pos.y)/ellipse_size.y, 2.0);
-          gl_FragColor = texture2D(uMainSampler, outTexCoord);
-          if (k > 1.0) {
-            gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
-          }
+  	    vec2 pos = gl_FragCoord.xy;
+        vec2 world_pos = vec2(viewport.x + pos.x, viewport.y - pos.y);
+        float k = pow((world_pos.x-ellipse_pos.x)/ellipse_size.x, 2.0) + pow((world_pos.y-ellipse_pos.y)/ellipse_size.y, 2.0);
+        gl_FragColor = texture2D(uMainSampler, outTexCoord);
+        if (k > 1.0) {
+          gl_FragColor.rgb = mix(gl_FragColor.rgb, vec3(0.216 * gl_FragColor.r + 0.7152 * gl_FragColor.g + 0.0722 * gl_FragColor.b), 1.0);
         }
        }
       `
@@ -149,7 +137,7 @@ class Main extends Phaser.Scene {
     this.customPipeline = null;
     this.player_life = 3; // Player life to make the screen blink when it takes damage.
     this.blink_timer = 2;
-    this.t = 0;
+    this.mobileMode = (isTouchDevice() || mobilecheckbox.checked);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -169,6 +157,7 @@ class Main extends Phaser.Scene {
     this.load.image('base_controller', 'client/assets/base_controller.png');
     this.load.image('top_controller', 'client/assets/top_controller.png');
     this.load.image('shot_controller', 'client/assets/shot_controller.png');
+    this.load.image('explosion', 'client/assets/explosion.png');
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -180,7 +169,6 @@ class Main extends Phaser.Scene {
     socket.emit('logged_in', {username: username});
     this.player_life = 3;
     this.blink_timer = 2;
-    this.t = 0;
 
     // Set camera limits
     camera.setBounds(0, 0, gameProperties.gameWidth, gameProperties.gameHeight);
@@ -231,8 +219,6 @@ class Main extends Phaser.Scene {
     safe_zone.lineStyle(thickness, color, alpha);
     let a = new Phaser.Geom.Point(1000, toIsometric(1000));
     safe_zone.strokeEllipse(a.x, a.y, 1000*2, toIsometric(1000)*2, smoothness);
-    console.log(toIsometric(1000));
-    console.log(toIsometric(1000*2));
 
     // Add Safe Zone shader to the game camera
     if (this.customPipeline == null) {
@@ -242,18 +228,19 @@ class Main extends Phaser.Scene {
     this.customPipeline.setFloat2('viewport', camera.midPoint.x - camera.width/2, camera.midPoint.y - camera.height/2);
     this.customPipeline.setFloat2('ellipse_pos', 1000, toIsometric(1000));
     this.customPipeline.setFloat2('ellipse_size', 1000, toIsometric(1000));
-    this.customPipeline.setFloat1('cam_height', camera.height);
-    this.customPipeline.setInt1('is_blinking', 0);
 
     // Mini Map
-    this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
-    this.minimap.setBackgroundColor(0x000000);
-    this.minimap.scrollX = 0;
-    this.minimap.scrollY = 0;
-    var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
-    var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
-    border_graphics.fillRectShape(border);
-    border_graphics.setScrollFactor(0);
+    if (!this.mobileMode) {
+      this.minimap = this.cameras.add(camera.width-200, 0, 200, 200).setZoom(0.2).setName('mini');
+      this.minimap.setBackgroundColor(0x000000);
+      this.minimap.scrollX = 0;
+      this.minimap.scrollY = 0;
+      var border = new Phaser.Geom.Rectangle(camera.width-201, 0, 201, 201);
+      var border_graphics = this.add.graphics({ fillStyle: { color: 0x000000 } });
+      border_graphics.fillRectShape(border);
+      border_graphics.setScrollFactor(0);
+    }
+    this.explosion = this.add.sprite(100, 100, 'explosion').setDepth(5100);
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -263,7 +250,9 @@ class Main extends Phaser.Scene {
 
       if (hud) {
         // Update inputs
-        this.minimap.ignore(hud.getGameObjects());
+        if (!this.mobileMode) {
+          this.minimap.ignore(hud.getGameObjects());
+        }
         let jsFeat = hud.getJSFeatures();
         let data = {
           up: (this.key_W.isDown || jsFeat[0]),
@@ -303,26 +292,37 @@ class Main extends Phaser.Scene {
           tile.y -= this.heightTiles*TILE_H;
       }
 
-      this.customPipeline.setFloat1('time', this.t);
-      this.t += 0.005;
       // Make screen blink if player takes damage
       if (player.life < this.player_life) {
         if (this.blink_timer > 0) {
-          this.blink_timer -= dt;
-          this.customPipeline.setInt1('is_blinking', 1);
+          this.blink_timer -= 0.05;
+          this.explosion.x = player.body.x;
+          this.explosion.y = player.body.y;
+          if (signalExplosion == 1) {
+            countExplosion += 0.05;
+          } else {
+            countExplosion -= 0.05;
+          }
+          if (countExplosion > 1) {
+            signalExplosion = -1;
+          } else if (countExplosion < 0) {
+            signalExplosion = 1;
+          }
+          this.explosion.alpha = countExplosion;
+          //this.customPipeline.setInt1('is_blinking', 1);
         }
         else {
-          this.customPipeline.setInt1('is_blinking', 0);
+          //this.customPipeline.setInt1('is_blinking', 0);
           this.blink_timer = 2;
           this.player_life = player.life;
         }
       }
 
       // Mini Map
-      this.minimap.scrollX = player.body.x;
-      this.minimap.scrollY = player.body.y;
-
-
+      if (!this.mobileMode) {
+        this.minimap.scrollX = player.body.x;
+        this.minimap.scrollY = player.body.y;
+      }
     }
   }
 
@@ -340,7 +340,6 @@ class Main extends Phaser.Scene {
     if (player) {
       player.inputs.up = false;
     }
-
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.W);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.A);
     this.input.keyboard.removeKey(Phaser.Input.Keyboard.KeyCodes.S);
