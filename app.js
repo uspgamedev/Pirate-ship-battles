@@ -12,6 +12,7 @@ const Island = require('./objects/island.js');
 const Stone = require('./objects/stone.js');
 const ScoreBoard = require('./objects/score_board.js');
 const aux = require('./objects/_aux.js');
+const GameObj = require('./objects/game.js');
 
 let app = express();
 let serv = require('http').Server(app);
@@ -32,37 +33,7 @@ console.log("Server started.");
 const UPDATE_TIME = 0.06; // sec
 const BULLET_LIFETIME = 1000; // ms
 
-// Create a new game instance
-const game = {
-  // List of players in the game
-  playerList: {},
-  /** @type Bullet{}*/
-  bulletList: {},
-  //List of islands in the game
-  islandList: {},
-  //List of stones in the game
-  stoneList: {},
-  // boxes object list
-  boxList: {},
-  // The list of scores form active players
-  score_board: new ScoreBoard(),
-  // The max number of pickable boxes in the game
-  boxesMax: 15,
-  // Size of the boxes list
-  numOfBoxes: 0,
-  // The max number of islands in the game
-  islandMax: 10,
-  // The max number of stones in the game
-  stoneMax: 4,
-  // Game height
-  canvasHeight: 2000,
-  // Game width
-  canvasWidth: 2000,
-  // Advances by one each game update cycle (related to player invulnerability)
-  delta: 1,
-  // Arbitrary integer variable, used to define invulnerability time
-  mod: 120
-};
+const game = new GameObj();
 
 circle = new SafeZone(1000, 1000, 1000, game.canvasWidth, game.canvasHeight);
 
