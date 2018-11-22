@@ -4,10 +4,10 @@
 //                            Tests - Server - Aux                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-const aux = require('../../objects/_aux.js'); // todo : Improve this finding the absolute root
+const aux = require('../../server/_aux.js'); // todo : Improve this finding the absolute root
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/_aux: getRndInteger()', () => {
+test('server/_aux: getRndInteger()', () => {
   for (i = 0; i < 20; i++) {
     var x = aux.getRndInteger(10, 50);
     expect(x).toBeGreaterThanOrEqual(10);
@@ -21,7 +21,7 @@ test('objects/_aux: getRndInteger()', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/_aux: rotate()', () => {
+test('server/_aux: rotate()', () => {
   var x = aux.rotate(Math.PI/2, 1, 2);
   expect(x[0]).toBeCloseTo(-2); expect(x[1]).toBeCloseTo(1);
   x = aux.rotate(Math.PI, 3, 4);

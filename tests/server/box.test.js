@@ -4,10 +4,10 @@
 //                            Tests - Server - Box                            //
 ////////////////////////////////////////////////////////////////////////////////
 
-const Box = require('../../objects/box.js'); // todo : Improve this finding the absolute root
+const Box = require('../../server/box.js'); // todo : Improve this finding the absolute root
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/box: class Box - constructor', () => {
+test('server/box: class Box - constructor', () => {
   let box = new Box(800, 600, 'box');
   expect(box.x).toBeGreaterThanOrEqual(100);
   expect(box.x).toBeLessThanOrEqual(700);

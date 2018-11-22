@@ -9,11 +9,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-//  const Room = require('../../objects/room.js');
-const Player = require('../../objects/player.js');
+//  const Room = require('../../server/room.js');
+const Player = require('../../server/player.js');
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/room: class Room - constructor', () => {
+test('server/room: class Room - constructor', () => {
   // let p = new Room('test', 10, 2000, 2000, 1, 120);
   //
   // expect(new Room('test', 10, 2000, 2000, 1, 120)).toBeInstanceOf(Room);
@@ -25,21 +25,21 @@ test('objects/room: class Room - constructor', () => {
 });
 
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: updateGame()', () => {
+// test('server/room: updateGame()', () => {
 //   let p = new Room('test', 10, 2000, 2000, 1, 120);
 //
 //   expect(p.updateGame()).not.toReturn;
 // });
 //
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: addBox()', () => {
+// test('server/room: addBox()', () => {
 //   let p = new Room('test', 10, 2000, 2000, 1, 120);
 //
 //   expect(p.addBox()).not.toReturn;
 // });
 //
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: distSq()', () => {
+// test('server/room: distSq()', () => {
 //   let p = new Room('test', 10, 2000, 2000, 1, 120);
 //   let p1 = new Player(5, 3, 0, 0, 'test');
 //   let p2 = new Player(2, 1, 0, 0, 'test');
@@ -49,14 +49,14 @@ test('objects/room: class Room - constructor', () => {
 // });
 //
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: mapFloatToInt()', () => {
+// test('server/room: mapFloatToInt()', () => {
 //   let p = new Room('test', 10, 2000, 2000, 1, 120);
 //
 //   expect(p.mapFloatToInt(1, 1, 2, 1, 1)).toBe(1);
 // });
 //
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: colliding()', () => {
+// test('server/room: colliding()', () => {
 //   let p1 = new Room('test', 10, 2000, 2000, 1, 120);
 //   let p2 = new Player(5, 3, 0, 0, 'test');
 //
@@ -64,7 +64,7 @@ test('objects/room: class Room - constructor', () => {
 // });
 //
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: playerKilled()', () => {
+// test('server/room: playerKilled()', () => {
 //   let p1 = new Room('test', 10, 2000, 2000, 1, 120);
 //   let p2 = new Player(5, 3, 0, 0, 'test');
 //
@@ -72,7 +72,7 @@ test('objects/room: class Room - constructor', () => {
 // });
 //
 // ////////////////////////////////////////////////////////////////////////////////
-// test('objects/room: onClientDisconnect()', () => {
+// test('server/room: onClientDisconnect()', () => {
 //   let p = new Room('test', 10, 2000, 2000, 1, 120);
 //
 //   expect(p.onClientDisconnect()).not.toReturn;

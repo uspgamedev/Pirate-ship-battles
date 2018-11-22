@@ -4,10 +4,10 @@
 //                        Tests - Server - Score Board                        //
 ////////////////////////////////////////////////////////////////////////////////
 
-const ScoreBoard = require('../../objects/score_board.js');
+const ScoreBoard = require('../../server/score_board.js');
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/score_board: class Score_Board - constructor', () => {
+test('server/score_board: class Score_Board - constructor', () => {
   let p = new ScoreBoard();
 
   expect(new ScoreBoard()).toBeInstanceOf(ScoreBoard);
@@ -15,7 +15,7 @@ test('objects/score_board: class Score_Board - constructor', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/score_board: add_player()', () => {
+test('server/score_board: add_player()', () => {
   let p = new ScoreBoard();
 
   p.add_player(1);
@@ -24,7 +24,7 @@ test('objects/score_board: add_player()', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/score_board: remove_player()', () => {
+test('server/score_board: remove_player()', () => {
   let p = new ScoreBoard();
 
   p.add_player(1); //Add a player
@@ -34,7 +34,7 @@ test('objects/score_board: remove_player()', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/score_board: update_score()', () => {
+test('server/score_board: update_score()', () => {
   let p = new ScoreBoard();
 
   p.add_player(1); //Add a player

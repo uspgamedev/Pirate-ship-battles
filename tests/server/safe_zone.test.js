@@ -4,12 +4,12 @@
 //                       Tests - Server - Safe Zone                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-const SafeZone = require('../../objects/safe_zone.js'); // todo : Improve this finding the absolute root
-const Player = require('../../objects/player.js');
+const SafeZone = require('../../server/safe_zone.js'); // todo : Improve this finding the absolute root
+const Player = require('../../server/player.js');
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructs a valid SafeZone
-test('objects/safe_zone: class SafeZone - constructor - sucess', () => {
+test('server/safe_zone: class SafeZone - constructor - sucess', () => {
   let x = Math.floor(Math.random() * 2000);
   let y = Math.floor(Math.random() * 2000);
   let r = Math.floor(Math.random() * 500);
@@ -23,7 +23,7 @@ test('objects/safe_zone: class SafeZone - constructor - sucess', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructs a invalid SafeZone, in all ways possible.
-test('objects/safe_zone: class SafeZone - constructor - failure', () => {
+test('server/safe_zone: class SafeZone - constructor - failure', () => {
   let temp_neg = Math.floor(Math.random() * -2000);
   let temp_bigger = Math.floor(Math.random() * 2000) + 2000;
 
@@ -36,7 +36,7 @@ test('objects/safe_zone: class SafeZone - constructor - failure', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Successfully updates de center and radius of a SafeZone.
-test('objects/safe_zone: update_circle() - sucess', () => {
+test('server/safe_zone: update_circle() - sucess', () => {
   let temp_x = Math.floor(1 + Math.random() * 1000);
   let temp_y = Math.floor(1 + Math.random() * 1000);
   let temp_r = Math.floor(1 + Math.random() * 1000);
@@ -66,7 +66,7 @@ test('objects/safe_zone: update_circle() - sucess', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Fails to update the SafeZone in all ways that it could break.
-test('objects/safe_zone: update_circle() - failure', () => {
+test('server/safe_zone: update_circle() - failure', () => {
   let temp = Math.floor(1 + Math.random() * 1000);
   let dc1 = new SafeZone(temp, 1000, 1000, 2000, 2000);
   let dc2 = new SafeZone(1000, temp, 1000, 2000, 2000);
@@ -79,7 +79,7 @@ test('objects/safe_zone: update_circle() - failure', () => {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tests if we correctly say if a player is in the circle.
-test('objects/safe_zone: in_circle()', () => {
+test('server/safe_zone: in_circle()', () => {
   let border = Math.floor(Math.random() * 5000);
   let center = Math.floor(Math.random() * border);
   let radius = Math.floor(Math.random() * 1000);

@@ -4,11 +4,11 @@
 //                          Tests - Server - Island                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-const Stone = require('../../objects/stone.js');
-const Player = require('../../objects/player.js');
+const Stone = require('../../server/stone.js');
+const Player = require('../../server/player.js');
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/island: class Island - constructor', () => {
+test('server/island: class Island - constructor', () => {
   let p = new Stone(1, 1, 1, 10, 10);
 
   expect(new Stone(1, 1, 1, 10, 10)).toBeInstanceOf(Stone);
@@ -20,7 +20,7 @@ test('objects/island: class Island - constructor', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/stone: onStone()', () => {
+test('server/stone: onStone()', () => {
   let p1 = new Player(2, 2, 0, 0, "test");
   let p2 = new Stone(1, 1, 1, 10, 10);
 

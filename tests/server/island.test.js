@@ -4,11 +4,11 @@
 //                          Tests - Server - Island                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-const Island = require('../../objects/island.js');
-const Player = require('../../objects/player.js');
+const Island = require('../../server/island.js');
+const Player = require('../../server/player.js');
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/island: class Island - constructor', () => {
+test('server/island: class Island - constructor', () => {
   let p = new Island(1, 1, 1, "test", 10, 10);
 
   expect(new Island(1, 1, 1, "test", 10, 10)).toBeInstanceOf(Island);
@@ -21,7 +21,7 @@ test('objects/island: class Island - constructor', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/island: onIsland()', () => {
+test('server/island: onIsland()', () => {
   let p1 = new Player(2, 2, 0, 0, "test");
   let p2 = new Island(1, 1, 1, "test", 10, 10);
 

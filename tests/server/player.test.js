@@ -4,13 +4,13 @@
 //                          Tests - Server - Player                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-const Player = require('../../objects/player.js');
-const aux = require('../../objects/_aux.js');
+const Player = require('../../server/player.js');
+const aux = require('../../server/_aux.js');
 
 // Todo: position and angle related tests
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: class Player - constructor', () => {
+test('server/player: class Player - constructor', () => {
   let p = new Player(0, 0, 0, 0, 'test');
   expect(p.id).toBe(0);
   expect(p.username).toBe('test');
@@ -20,7 +20,7 @@ test('objects/player: class Player - constructor', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: tryToShoot() bullets', () => {
+test('server/player: tryToShoot() bullets', () => {
   let p = new Player(0, 0, 0, 0, 'test');
   const p_shoot = jest.fn(p.tryToShoot(true));
 
@@ -31,7 +31,7 @@ test('objects/player: tryToShoot() bullets', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: tryToShoot() no bullets', () => {
+test('server/player: tryToShoot() no bullets', () => {
   let p = new Player(0, 0, 0, 0, 'test');
   p.bullets = 0;
   const p_shoot = jest.fn(p.tryToShoot(true));
@@ -43,7 +43,7 @@ test('objects/player: tryToShoot() no bullets', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: canShoot()', () => {
+test('server/player: canShoot()', () => {
   let p = new Player(0, 0, 0, 0, 'test');
   let can = false;
 
@@ -57,7 +57,7 @@ test('objects/player: canShoot()', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: takeDamage()', () => {
+test('server/player: takeDamage()', () => {
   let p = new Player(0, 0, 0, 0, 'test');
 
   p.takeDamage(1, 1);
@@ -66,7 +66,7 @@ test('objects/player: takeDamage()', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: gainResource - life()', () => {
+test('server/player: gainResource - life()', () => {
   let p = new Player(0, 0, 0, 0, 'test');
 
   p.gainResource(1, 1, "life");
@@ -74,7 +74,7 @@ test('objects/player: gainResource - life()', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/player: gainResource - not life()', () => {
+test('server/player: gainResource - not life()', () => {
   let p = new Player(0, 0, 0, 0, 'test');
 
   p.gainResource(1, 1, "death");

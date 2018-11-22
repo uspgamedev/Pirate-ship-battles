@@ -4,10 +4,10 @@
 //                          Tests - Server - Bullet                           //
 ////////////////////////////////////////////////////////////////////////////////
 
-const Bullet = require('../../objects/bullet.js'); // todo : Improve this finding the absolute root
+const Bullet = require('../../server/bullet.js'); // todo : Improve this finding the absolute root
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/bullet: class Bullet - constructor', () => {
+test('server/bullet: class Bullet - constructor', () => {
   let bullet_test = new Bullet(200, 450, 10, 45, 1337, 300000000);
   expect(bullet_test.x).toBe(200);
   expect(bullet_test.y).toBe(450);
@@ -18,7 +18,7 @@ test('objects/bullet: class Bullet - constructor', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/bullet: addPos() - sucess', () => {
+test('server/bullet: addPos() - sucess', () => {
   let bullet_test = new Bullet(200, 450, 10, 45, 1337, 300000000);
   bullet_test.addPos(30, 70);
   expect(bullet_test.x).toBe(230);
@@ -26,7 +26,7 @@ test('objects/bullet: addPos() - sucess', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/bullet: addPos() - fail', () => {
+test('server/bullet: addPos() - fail', () => {
   let bullet_test = new Bullet(200, 450, 10, 45, 1337, 300000000);
   bullet_test.addPos(30, 70);
   expect(bullet_test.x).not.toBe(200);
@@ -34,7 +34,7 @@ test('objects/bullet: addPos() - fail', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/bullet: updatePos() - sucess', () => {
+test('server/bullet: updatePos() - sucess', () => {
   let bullet_test = new Bullet(200, 450, 10, 0, 1337, 300000000);
   bullet_test.updatePos(0.1);
   expect(bullet_test.x).toBe(200);
@@ -44,7 +44,7 @@ test('objects/bullet: updatePos() - sucess', () => {
 });
 
 ////////////////////////////////////////////////////////////////////////////////
-test('objects/bullet: updatePos() - fail', () => {
+test('server/bullet: updatePos() - fail', () => {
   let bullet_test = new Bullet(200, 450, 10, 0, 1337, 300000000);
   bullet_test.updatePos(0.1);
   expect(bullet_test.x).not.toBe(956378);
