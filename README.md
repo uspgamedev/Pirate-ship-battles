@@ -4,6 +4,13 @@
 Online multiplayer game about pirates for USPGameDev
 
 ## Install dependencies
+To run PSB (Pirate Ship Battles) you will need node.js and yarn installed in your machine.
+1. To get node.js follow the instructions found [here](https://nodejs.org/en/download/package-manager/), the latest node version will be fine.
+2. For the yarn installation follow this guide right [here](https://yarnpkg.com/lang/en/docs/install/#debian-stable).
+3. Make sure your node version is equal or higher than 8.0, to do that run.
+```
+node --version
+```
 Execute:
 ```
 yarn install
