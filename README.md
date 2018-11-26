@@ -31,6 +31,32 @@ yarn servep
 yarn up
 ```
 
+## Server on the cloud
+If you are gonna use some webservice to run the server, run 
+```
+sudo nano /lib/systemd/system/pirates_game.service
+```
+Now, add 
+```
+[Unit]
+Description=pirates
+After=network.target
+
+[Service]
+Environment=NODE_PORT=80
+Type=simple
+User=root
+ExecStart=/usr/bin/yarn --cwd /home/ubuntu/pirates serve
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+```
+to the file and Run
+```
+sudo systemctl start pirates_game
+```
+
 
 * Open http://localhost:2000 in a modern browser
 * Enjoy!
