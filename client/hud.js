@@ -71,9 +71,9 @@ class HUD {
 
     // Score Board
     this.scoreBoard = scene.add.text(32, 250, 'ScoreBoard', {
-      backgroundColor: '#FFFFFF',
-      fill: '#009696',
-      fontSize: '24px'
+      backgroundColor: null,
+      fill: '#FFFFFF',
+      fontSize: '24px',
     }).setScrollFactor(0).setDepth(5000);
 
     // Timer
