@@ -1,5 +1,5 @@
 # Code name: Pirate-ship-battles
-[![Build Status](https://travis-ci.org/uspgamedev/Pirate-ship-battles.svg?branch=dev)](https://travis-ci.org/uspgamedev/Pirate-ship-battles)
+[![Code Climate](https://codeclimate.com/github/mezuro/prezento/badges/gpa.svg)](https://codeclimate.com/github/Herez/Pirate-ship-battles)[![Test Coverage](https://codeclimate.com/github/Herez/Pirate-ship-battles/badges/coverage.svg)](https://codeclimate.com/github/Herez/Pirate-ship-battles/progress/coverage)[![Build Status](https://travis-ci.org/uspgamedev/Pirate-ship-battles.svg?branch=dev)](https://travis-ci.org/uspgamedev/Pirate-ship-battles)
 
 Online multiplayer game about pirates for USPGameDev
 
