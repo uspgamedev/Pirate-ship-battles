@@ -15,12 +15,15 @@ files=$(sed 's/\//\\\//g' <<< $files)
 
 files=($files)
 
-sed -i 's/'$files'/'$target'/' index.html 
+target=$(sed 's/\//\\\//g' <<< $target)
+target=($target)
+
+sed -i 's/'$files'/'$target'/' index.html
 
 i=$(( 1 ))
 while [ $i -lt ${#files[@]} ]
 do
     a=${files[$i]}
     sed -i '/'$a'/d' index.html
-    i=$((i+1)) 
+    i=$((i+1))
 done

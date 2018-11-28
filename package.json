@@ -15,8 +15,8 @@
   },
   "scripts": {
     "start": "node app.js",
-    "serve": "bash concat.sh target.js && npx nodemon app.js",
-    "servep": "python3 concat.py target.js && npx nodemon app.js",
+    "serve": "bash concat.sh client/target.js && npx nodemon app.js",
+    "servep": "python3 concat.py client/target.js && npx nodemon app.js",
     "up": "npx nodemon app.js",
     "clienttest": "npx nodemon client_test.js",
     "test": "jest"
