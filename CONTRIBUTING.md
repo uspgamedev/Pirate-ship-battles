@@ -16,3 +16,28 @@ and the definition of some constants.
 
 ###### hud.js
 Displays the ammo, life, score board.
+
+###### item.js
+Islands, stones, bullets crates.
+
+###### login.js
+It' clear what it does
+
+###### main.js
+Has the shader of the death circle, gets all the data from the server so that it can represent what is happening to the player.
+
+Some prediction of what the next position of the ship is done here, but that is not sent to the server.
+
+###### players.js
+Again, preaty clear.
+
+###### util.js
+Usefull functions that did not belong in any one specific file.
+
+###### lib
+The Phaser3 code, nothing to change here. 
+
+### 1.2 Server code <a name="server-code"></a>
+The code that runs on the server is the app.js and all the file that it calls, wich all can be found in the server/ folder
+
+In the server folder you will find all objects used by the server
