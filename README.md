@@ -5,10 +5,10 @@ Online multiplayer game about pirates for USPGameDev
 
 # Summary
 1. [Install dependencies](#install-dependencies)
-2. [Run server](2.-run-server)
-3. [Server on the cloud](3.-server-on-the-cloud)
-4. [Playing the game](4.-playing-the-game)
-5. [Unit testing](5.-unit-testing)
+2. [Run server](#run-server)
+3. [Server on the cloud](#server-on-the-cloud)
+4. [Playing the game](#playing-the-game)
+5. [Unit testing](#unit-testing)
 
 ## 1. Install dependencies <a name="install-dependencies"></a>
 To run PSB (Pirate Ship Battles) you will need node.js and yarn installed in your machine.
@@ -23,7 +23,7 @@ Execute:
 yarn install
 ```
 
-## 2. Run server
+## 2. Run server <a name="run-server"></a>
 * Execute:
 ```
 yarn serve
@@ -39,7 +39,7 @@ yarn up
 3. This command is for the developers only, not changing anything about any file, just getting the server up.
 
 
-## 3. Server on the cloud
+## 3. Server on the cloud <a name="server-on-the-cloud"></a>
 If you are gonna use some webservice to run the server, run :
 ```
 sudo nano /lib/systemd/system/pirates_game.service
@@ -64,12 +64,12 @@ to the file and run :
 ```
 sudo systemctl start pirates_game
 ```
-## 4. Playing the game
+## 4. Playing the game <a name="playing-the-game"></a>
 
 * Open http://localhost:2000 in a modern browser
 * Enjoy!
 
-## 5. Unit testing
+## 5. Unit testing <a name="unit-testing"></a>
 We have tests!! Just run :
 ```
 yarn test
