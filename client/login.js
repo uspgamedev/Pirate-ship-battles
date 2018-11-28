@@ -44,6 +44,9 @@ class Login extends Phaser.Scene {
     game.backgroundColor = "#AFF7F0";
     gameProperties.inGame = false;
     mobilecheckbox.checked = isTouchDevice();
+    if (isTouchDevice()) {
+      howto.style.display = "none";
+    }
   }
 }
 
