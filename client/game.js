@@ -17,7 +17,7 @@ var config = {
       debug: false
     }
   },
-  backgroundColor: "#AFF7F0",
+  backgroundColor: "#00BCD4",
   scene: [Login, Main]
 };
 

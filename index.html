@@ -17,16 +17,32 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" type="text/css" href="client/css/style.css" />
   </head>
-<!--=========================================================================-->
+
   <body>
     <!-- Form -->
-    <div id = "signDiv">
-		  <div class="sign-up">Enter your name:</div>
-			<input id="signdivusername" type="text" placeholder="Username"/>
-			<button id="entername" class="hidden"><span class="text">PLAY</span></button><br>
-			<input id="mobilecheckbox" type="checkbox"><span class="text"> Mobile Mode</span>
-			<p id="errorLog"></p>
-		</div>
+    <div id="signDiv">
+      <div class="signDiv-content">
+        <h1>Pirate Ship Battles</h1>
+
+        <p>Enter your name</p>
+        <input id="signdivusername" type="text" placeholder="Username"/>
+        <p id="errorLog"></p>
+
+        <div><input id="mobilecheckbox" type="checkbox" onclick="toggle();"><span>Mobile Mode</span></div>
+
+        <button id="entername" class="hidden">PLAY</button>
+
+      </div>
+
+      <div id="howto" class="howto">
+        <p><span>W</span>: Up</p>
+        <p><span>A</span>: Left</p>
+        <p><span>S</span>: Down</p>
+        <p><span>D</span>: Right</p>
+        <p><span>J</span>: Shoot Left</p>
+        <p><span>K</span>: Shoot Right   </p>
+      </div>
+    </div>
 
     <!-- Game -->
     <div id="gameDiv" display="none"></div>
@@ -42,8 +58,16 @@
     <script src="client/main.js"></script>
     <script src="client/game.js"></script>
     <script>
-      signdivusername.onkeypress = function (e) {
+      signdivusername.onkeypress = function(e) {
         if (e.keyCode == 13) entername.click();
+      }
+      function toggle() {
+        var howto = document.getElementById("howto");
+        if (document.getElementById('mobilecheckbox').checked){
+          howto.style.display = "none";
+        } else {
+          howto.style.display = "block";
+        }
       }
     </script>
   </body>
