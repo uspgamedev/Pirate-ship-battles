@@ -21,15 +21,15 @@ Displays the ammo, life, score board.
 Islands, stones, bullets crates.
 
 #### login.js
-It' clear what it does
+The login scene.
 
 #### main.js
-Has the shader of the death circle, gets all the data from the server so that it can represent what is happening to the player.
+Has the shader of the safe zone, gets all the data from the server so that it can represent what is happening to the player.
 
 Some prediction of what the next position of the ship is done here, but that is not sent to the server.
 
 #### players.js
-Again, preaty clear.
+The player class.
 
 #### util.js
 Usefull functions that did not belong in any one specific file.
